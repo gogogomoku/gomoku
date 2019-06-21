@@ -21,5 +21,3 @@
 	- must be "vaguely pleasing" and easily playable
 	- must have TIMER that shows how long AI takes to find next move
 - implement DEBUGGING that lets you examine reasoning of AI while running
-
-- tie thing?

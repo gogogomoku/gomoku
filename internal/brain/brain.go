@@ -5,30 +5,27 @@ import (
 	"gomoku/internal/player"
 )
 
-const SIZE = 19
-const MAXPIECES = 50
-
 const (
 	NotStarted = iota
-	Running
+	P1Turn
+	P2Turn
 	Concluded
 )
 
 type Round struct {
-	P1            *player.Player
-	P2            *player.Player
-	Goban         board.Board
-	Status        int
-	CurrentPlayer *player.Player
+	P1     *player.Player
+	P2     *player.Player
+	Goban  *board.Board
+	Status int
 }
 
-var GameRound Round = Round{}
+func Initialize() *Round {
+	p1 := player.CreatePlayer(1, 45)
+	p2 := player.CreatePlayer(2, 45)
+	tab := make([]byte, 19*19)
+	// fmt.Printf("%+v", board.Board)
+	goban := board.Board{Tab: tab, Size: 19}
 
-func init() {
-	GameRound.P1 = player.CreatePlayer(1, MAXPIECES)
-	GameRound.P2 = player.CreatePlayer(2, MAXPIECES)
-	GameRound.Goban = board.Board{}
-	GameRound.Goban.Tab = make([]byte, SIZE*SIZE)
-	GameRound.Goban.Size = SIZE
-	GameRound.Status = NotStarted
+	round := Round{P1: p1, P2: p2, Goban: &goban, Status: NotStarted}
+	return &round
 }

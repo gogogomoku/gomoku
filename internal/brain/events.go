@@ -32,6 +32,7 @@ func HandleMove(id int, position int) (code int, msg string) {
 	}
 	GameRound.Goban.Tab[position] = int8(id)
 	GameRound.CurrentPlayer.PiecesLeft--
+	GameRound.Turn++
 	updateWhoseTurn()
 	return 0, "Move done"
 }

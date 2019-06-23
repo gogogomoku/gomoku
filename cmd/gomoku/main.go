@@ -2,18 +2,28 @@ package main
 
 import (
 	"fmt"
-	"gomoku/internal/board"
 	"gomoku/internal/brain"
+	"gomoku/internal/server"
+	"os"
+
+	"github.com/akamensky/argparse"
 )
 
 func main() {
-	fmt.Println(brain.GameRound.Status)
-	board.PrintTab(brain.GameRound.Goban)
-	brain.StartRound()
-	brain.HandleMove(brain.GameRound.CurrentPlayer.Id, 1)
-	board.PrintTab(brain.GameRound.Goban)
-	brain.HandleMove(brain.GameRound.CurrentPlayer.Id, 2)
-	board.PrintTab(brain.GameRound.Goban)
-	brain.HandleMove(brain.GameRound.CurrentPlayer.Id, 3)
-	board.PrintTab(brain.GameRound.Goban)
+	parser := argparse.NewParser("gomoku", "A great Gomoku game, and solving algorithm")
+	s := parser.Flag("s", "solvable", &argparse.Options{Help: "Launch web server"})
+	err := parser.Parse(os.Args)
+	if err != nil {
+		fmt.Print(parser.Usage(err))
+		os.Exit(1)
+	}
+	if *s {
+		go server.StartServer()
+	} else {
+		fmt.Println("Start gomoku | no server")
+		brain.StartRound()
+	}
+	for {
+
+	}
 }

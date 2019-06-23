@@ -28,7 +28,7 @@ func init() {
 	GameRound.P1 = player.CreatePlayer(1, MAXPIECES)
 	GameRound.P2 = player.CreatePlayer(2, MAXPIECES)
 	GameRound.Goban = board.Board{}
-	GameRound.Goban.Tab = make([]byte, SIZE*SIZE)
+	GameRound.Goban.Tab = make([]int8, SIZE*SIZE)
 	GameRound.Goban.Size = SIZE
 	GameRound.Status = NotStarted
 }

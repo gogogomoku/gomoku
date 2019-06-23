@@ -3,7 +3,7 @@ package board
 import "fmt"
 
 type Board struct {
-	Tab  []byte
+	Tab  []int8
 	Size int
 }
 

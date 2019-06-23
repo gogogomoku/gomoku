@@ -8,5 +8,10 @@ type Board struct {
 }
 
 func PrintTab(tab Board) {
-	fmt.Println(tab)
+	for i := 0; i <= tab.Size; i++ {
+		s := make([]byte, tab.Size)
+		copy(s, tab.Tab[tab.Size*i:])
+		fmt.Println(s)
+	}
+	fmt.Println("")
 }

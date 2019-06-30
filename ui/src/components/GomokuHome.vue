@@ -1,21 +1,21 @@
 <template>
   <div class="home">
-    <h1>{{ msg }}</h1>
+    <img src="logogogogomoku.png" />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Home',
+  name: 'GomokuHome',
   props: {
-    msg: String
+
   }
 }
 </script>
 
 <style scoped>
   .home {
-      background-color: #69C;
+      background-color: #0b1c59;
       width: 50%;
       padding: 10px;
       border-radius: 10px;

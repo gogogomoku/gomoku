@@ -1,0 +1,28 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"></head><body><div id="webpack-dev-server-client-overlay-div" style="position: fixed; box-sizing: border-box; inset: 0px; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.85); color: rgb(232, 232, 232); font-family: Menlo, Consolas, monospace; font-size: large; padding: 2rem; line-height: 1.2; white-space: pre-wrap; overflow: auto;"><span style="color: #E36049">Failed to compile.</span><br><br>./src/App.vue?vue&amp;type=script&amp;lang=js&amp; (./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/App.vue?vue&amp;type=script&amp;lang=js&amp;)
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /Users/sjimenez/go_projects/src/gomoku/front/client/src/App.vue: Unexpected token, expected "," (18:2)
+
+<span style="font-weight:normal;opacity:1;color:#transparent;background:#transparent;"> <span style="color:#6D7891;"> 16 | </span>    <span style="color:#FFD080;">Goban</span></span>
+<span style="font-weight:normal;opacity:1;color:#transparent;background:#transparent;"> <span style="color:#6D7891;"> 17 | </span>  }</span>
+<span style="font-weight:normal;opacity:1;color:#transparent;background:#transparent;"><span style="color:#E36049;"><span style="font-weight:bold;">&gt;</span></span><span style="color:#6D7891;"> 18 | </span>  <span style="color:#C3C2EF;">var</span> xhttp <span style="color:#FFD080;">=</span> <span style="color:#C3C2EF;">new</span> <span style="color:#FFD080;">XMLHttpRequest</span>()<span style="color:#FFD080;">;</span></span>
+<span style="font-weight:normal;opacity:1;color:#transparent;background:#transparent;"> <span style="color:#6D7891;">    | </span>  <span style="color:#E36049;"><span style="font-weight:bold;">^</span></span></span>
+<span style="font-weight:normal;opacity:1;color:#transparent;background:#transparent;"> <span style="color:#6D7891;"> 19 | </span>  xhttp<span style="color:#FFD080;">.</span>onreadystatechange <span style="color:#FFD080;">=</span> <span style="color:#C3C2EF;">function</span>() {</span>
+<span style="font-weight:normal;opacity:1;color:#transparent;background:#transparent;"> <span style="color:#6D7891;"> 20 | </span>      <span style="color:#C3C2EF;">if</span> (<span style="color:#C3C2EF;">this</span><span style="color:#FFD080;">.</span>readyState <span style="color:#FFD080;">==</span> <span style="color:#7FACCA;">4</span> <span style="color:#FFD080;">&amp;&amp;</span> <span style="color:#C3C2EF;">this</span><span style="color:#FFD080;">.</span>status <span style="color:#FFD080;">==</span> <span style="color:#7FACCA;">200</span>) {</span>
+<span style="font-weight:normal;opacity:1;color:#transparent;background:#transparent;"> <span style="color:#6D7891;"> 21 | </span>          <span style="color:#C3C2EF;">var</span> res <span style="color:#FFD080;">=</span> <span style="color:#FFD080;">JSON</span><span style="color:#FFD080;">.</span>parse(<span style="color:#C3C2EF;">this</span><span style="color:#FFD080;">.</span>responseText)<span style="color:#FFD080;">;</span></span>
+    at Object.raise (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:6344:17)
+    at Object.unexpected (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:7659:16)
+    at Object.expect (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:7645:28)
+    at Object.parseObj (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:9134:14)
+    at Object.parseExprAtom (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:8774:21)
+    at Object.parseExprAtom (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:3599:20)
+    at Object.parseExprSubscripts (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:8413:23)
+    at Object.parseMaybeUnary (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:8393:21)
+    at Object.parseExprOps (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:8280:23)
+    at Object.parseMaybeConditional (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:8253:23)
+    at Object.parseMaybeAssign (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:8200:21)
+    at Object.parseExportDefaultExpression (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:10973:24)
+    at Object.parseExport (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:10868:31)
+    at Object.parseStatementContent (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:9892:27)
+    at Object.parseStatement (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:9788:17)
+    at Object.parseBlockOrModuleBlockBody (/Users/sjimenez/go_projects/src/gomoku/front/client/node_modules/@babel/parser/lib/index.js:10364:25)</div></body></html>

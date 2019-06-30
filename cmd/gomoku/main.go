@@ -11,7 +11,7 @@ import (
 
 func main() {
 	parser := argparse.NewParser("gomoku", "A great Gomoku game, and solving algorithm")
-	s := parser.Flag("s", "solvable", &argparse.Options{Help: "Launch web server"})
+	s := parser.Flag("s", "server", &argparse.Options{Help: "Launch web server"})
 	err := parser.Parse(os.Args)
 	if err != nil {
 		fmt.Print(parser.Usage(err))

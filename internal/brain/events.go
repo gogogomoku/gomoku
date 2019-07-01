@@ -1,11 +1,13 @@
 package brain
 
 import "gomoku/internal/player"
+import "gomoku/internal/suggestor"
 
 func StartRound() {
 	GameRound.Status = Running
 	player.ResetPlayers(GameRound.P1, GameRound.P2, MAXPIECES)
 	GameRound.CurrentPlayer = GameRound.P1
+	GameRound.SuggestedPosition = suggestor.SuggestMove()	
 }
 
 func checkValidMove() bool {
@@ -34,5 +36,6 @@ func HandleMove(id int, position int) (code int, msg string) {
 	GameRound.CurrentPlayer.PiecesLeft--
 	GameRound.Turn++
 	updateWhoseTurn()
+	GameRound.SuggestedPosition = suggestor.SuggestMove()
 	return 0, "Move done"
 }

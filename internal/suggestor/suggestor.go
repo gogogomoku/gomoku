@@ -1,6 +1,6 @@
 package suggestor
 
-import "gomoku/internal/board"
+import "github.com/gogogomoku/gomoku/internal/board"
 import "math/rand"
 
 func SuggestMove() int8 {

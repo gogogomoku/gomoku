@@ -1,7 +1,7 @@
 package brain
 
-import "gomoku/internal/player"
-import "gomoku/internal/suggestor"
+import "github.com/gogogomoku/gomoku/internal/player"
+import "github.com/gogogomoku/gomoku/internal/suggestor"
 
 func StartRound() {
 	GameRound.Status = Running

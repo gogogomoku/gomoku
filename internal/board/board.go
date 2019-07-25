@@ -5,10 +5,13 @@ import "fmt"
 const SIZE = 19
 
 type Board struct {
-	Tab  []int8
+	Tab  []int
 	Size int
 }
 
-func PrintTab(tab Board) {
-	fmt.Println(tab)
+func PrintBoard(tab Board) {
+	for i := 0; i < tab.Size; i++ {
+		fmt.Println(tab.Tab[tab.Size * i : tab.Size * (i + 1)])
+	}
+	fmt.Println("")
 }

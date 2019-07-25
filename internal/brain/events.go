@@ -1,6 +1,7 @@
 package brain
 
 import (
+	"fmt"
 	"gomoku/internal/board"
 	"gomoku/internal/player"
 	"gomoku/internal/suggestor"
@@ -86,6 +87,26 @@ func checkCapture(position int) []int {
 		}
 	}
 	return captureDirections
+}
+
+// For each direction in usual order, return how many contiguous pieces for playerId are present
+func checkSequence(position int, playerId int) []int {
+	sequenceLengths := []int{}
+	for direction := 0; direction < 8; direction++ {
+		counter := 0
+		tmpPosition := position
+		for {
+			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
+			nextIndexValue, edge := ReturnNextPiece(tmpPosition, direction)
+			if edge || nextIndexValue != playerId || nextIndexValue == 0 {
+				break
+			}
+			counter++
+			tmpPosition = nextIndex
+		}
+		sequenceLengths = append(sequenceLengths, counter)
+	}
+	return sequenceLengths
 }
 
 func capturePairs(position int, captureDirections []int) {

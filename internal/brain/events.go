@@ -141,7 +141,6 @@ func HandleMove(id int, position int) (code int, msg string) {
 	}
 	GameRound.Goban.Tab[position] = int(id)
 	GameRound.CurrentPlayer.PiecesLeft--
-	checkSequence(position, id)
 	captureDirections := checkCapture(position)
 	capturePairs(position, captureDirections)
 	GameRound.Turn++

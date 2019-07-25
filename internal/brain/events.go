@@ -1,7 +1,6 @@
 package brain
 
 import (
-	"fmt"
 	"gomoku/internal/board"
 	"gomoku/internal/player"
 	"gomoku/internal/suggestor"

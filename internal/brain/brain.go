@@ -37,6 +37,10 @@ type Round struct {
 var GameRound Round = Round{}
 
 func init() {
+	InitializeValues()
+}
+
+func InitializeValues() {
 	GameRound.P1 = player.CreatePlayer(1, MAXPIECES)
 	GameRound.P2 = player.CreatePlayer(2, MAXPIECES)
 	GameRound.Goban = board.Board{}

@@ -68,7 +68,8 @@ export default {
             }
         },
         restartGame() {
-            alert("Not implemented yet... sorry :(")
+            axios.get("http://localhost:4242/restart")
+            .then(response => this.updateTab(response))
         },
     }
 

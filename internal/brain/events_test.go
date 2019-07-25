@@ -147,3 +147,66 @@ func TestCheckCapture(t *testing.T) {
 		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	}
 }
+
+func TestCheckSequence(t *testing.T) {
+	// Initialize
+	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	GameRound.CurrentPlayer = GameRound.P1
+	center := (board.SIZE * board.SIZE) / 2
+	if board.SIZE%2 == 0 {
+		center += board.SIZE / 2
+	}
+	tables := []struct {
+		position                  int
+		opponentPositions         []int
+		currentPlayerPositions    []int
+		expectedSequenceLengths []int
+	}{
+		{
+			position:                  center,
+			opponentPositions:         []int{},
+			currentPlayerPositions:    []int{},
+			expectedSequenceLengths:   []int{0,0,0,0,0,0,0,0},
+		},
+		{
+			position:                  center,
+			opponentPositions:         []int{center + 1, center + 2},
+			currentPlayerPositions:    []int{center, center + 3},
+			expectedSequenceLengths:   []int{0,0,0,0,0,0,0,0},
+		},
+		{
+			position:                  center,
+			opponentPositions:         []int{center - 1, center - 2},
+			currentPlayerPositions:    []int{center, center + 1, center - 3},
+			expectedSequenceLengths:   []int{0,0,1,0,0,0,0,0},
+		},
+		{
+			position:                  center,
+			opponentPositions:         []int{center - board.SIZE, center - (2 * board.SIZE)},
+			currentPlayerPositions:    []int{center, center + board.SIZE, center - (board.SIZE), center + 1, center - 1, center - 2, center - 3},
+			expectedSequenceLengths:   []int{1, 1, 1, 3, 0, 0, 0, 0},
+		},
+		{
+			position:                  center,
+			opponentPositions:         []int{},
+			currentPlayerPositions:    []int{center, center - (board.SIZE) + 1, center - (board.SIZE) - 1, center + (board.SIZE) + 1, center + (board.SIZE) - 1},
+			expectedSequenceLengths:   []int{0,0,0,0,1,1,1,1},
+		},
+	}
+	for _, table := range tables {
+		// for _, v := range table.opponentPositions {
+		// 	GameRound.Goban.Tab[v] = 2
+		// }
+		for _, v := range table.currentPlayerPositions {
+			GameRound.Goban.Tab[v] = 1
+		}
+		sequenceLengths := checkSequence(table.position, GameRound.CurrentPlayer.Id)
+
+		if !reflect.DeepEqual(table.expectedSequenceLengths, sequenceLengths) {
+
+			t.Errorf("Wrong sequenceLengths for %d, expected %v, got %v", table.position, table.expectedSequenceLengths, sequenceLengths)
+
+		}
+		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	}
+}

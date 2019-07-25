@@ -15,3 +15,7 @@
 .idea
 
 .DS_Store
+
+# tmp until we decide how works
+go.mod
+go.sum

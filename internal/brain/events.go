@@ -13,8 +13,8 @@ func StartRound() {
 	GameRound.SuggestedPosition = suggestor.SuggestMove()
 }
 
-func checkValidMove() bool {
-	return true
+func checkValidMove(position int) bool {
+	return bool(position >= 0 && position <= (board.SIZE * board.SIZE) - 1 && GameRound.Goban.Tab[position] == 0)
 }
 
 func getNextIndexForDirection(position int, direction int) (nextIndex int, edge bool) {
@@ -132,7 +132,7 @@ func HandleMove(id int, position int) (code int, msg string) {
 	if GameRound.CurrentPlayer.Id != id {
 		return 1, "It is not your turn"
 	}
-	if !checkValidMove() {
+	if !checkValidMove(position) {
 		return 1, "Move isn't valid"
 	}
 	if GameRound.CurrentPlayer.PiecesLeft == 0 {

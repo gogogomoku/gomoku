@@ -24,6 +24,7 @@ func StartServer() {
 	}))
 	e.GET("/", home)
 	e.GET("/start", StartGame)
+	e.GET("/restart", RestartGame)
 	e.GET("/move/:pos/id/:id", MakeMove)
 	e.Start(":4242")
 }
@@ -39,6 +40,12 @@ func home(c echo.Context) error {
 }
 
 func StartGame(c echo.Context) error {
+	brain.StartRound()
+	return c.Redirect(http.StatusTemporaryRedirect, "/")
+}
+
+func RestartGame(c echo.Context) error {
+	brain.InitializeValues()
 	brain.StartRound()
 	return c.Redirect(http.StatusTemporaryRedirect, "/")
 }

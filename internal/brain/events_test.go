@@ -53,6 +53,12 @@ func TestCheckValidMove(t *testing.T) {
 	}
 }
 
+func BenchmarkCheckValidMove(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		checkValidMove(i % (board.SIZE * board.SIZE))
+	}
+}
+
 func TestGetNextIndexForDirection(t *testing.T) {
 	tables := []struct {
 		position          int
@@ -82,6 +88,15 @@ func TestGetNextIndexForDirection(t *testing.T) {
 		if table.expectedNextIndex != actualNextIndex {
 			t.Errorf("Wrong nextIndex, expected %d, got %d", table.expectedNextIndex, actualNextIndex)
 		}
+	}
+}
+
+func BenchmarkGetNextIndexForDirection(b *testing.B) {
+	// nTiles = math.Pow(GameRound.Goban.Size, 2)
+	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	GameRound.CurrentPlayer = GameRound.P1
+	for i := 0; i < b.N; i++ {
+		getNextIndexForDirection(i%(board.SIZE*board.SIZE), N)
 	}
 }
 
@@ -126,6 +141,14 @@ func TestReturnNextPiece(t *testing.T) {
 		if table.expectedNextIndex != actualNextIndex {
 			t.Errorf("Wrong nextIndex, expected %d, got %d", table.expectedNextIndex, actualNextIndex)
 		}
+	}
+}
+
+func BenchmarkReturnNextPiece(b *testing.B) {
+	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	GameRound.CurrentPlayer = GameRound.P1
+	for i := 0; i < b.N; i++ {
+		ReturnNextPiece((board.SIZE * board.SIZE), NE)
 	}
 }
 
@@ -191,6 +214,14 @@ func TestCheckCapture(t *testing.T) {
 	}
 }
 
+func BenchmarkCheckCapture(b *testing.B) {
+	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	GameRound.CurrentPlayer = GameRound.P1
+	for i := 0; i < b.N; i++ {
+		checkCapture(i % (board.SIZE * board.SIZE))
+	}
+}
+
 func TestCheckSequence(t *testing.T) {
 	// Initialize
 	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
@@ -251,6 +282,14 @@ func TestCheckSequence(t *testing.T) {
 
 		}
 		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	}
+}
+
+func BenchmarkCheckSequence(b *testing.B) {
+	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	GameRound.CurrentPlayer = GameRound.P1
+	for i := 0; i < b.N; i++ {
+		checkSequence(i%(board.SIZE*board.SIZE), 1)
 	}
 }
 

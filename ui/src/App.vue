@@ -37,7 +37,7 @@ export default {
         updateTab(response) {
             console.log(response.data);
             var res = response.data
-
+            if (res.Goban != undefined) {
                 var size = res.Goban.Size
                 var tab = res.Goban.Tab
                 var newTab = []
@@ -53,10 +53,17 @@ export default {
                 this._data.turn = res.Turn
                 this._data.currentPlayer = res.CurrentPlayer.Id
                 this._data.gameStatus = res.Status
+                this._data.Winner = res.Winner
+                if (res.Winner != 0) {
+                    alert("Winner: Player " + res.Winner)
+                }
+            }
         },
         makeMove(tileId, currentPlayer) {
-            axios.get("http://localhost:4242/move/" + tileId +"/id/" + currentPlayer)
-            .then(response => this.updateTab(response))
+            if (this._data.Winner == 0) {
+                axios.get("http://localhost:4242/move/" + tileId +"/id/" + currentPlayer)
+                .then(response => this.updateTab(response))
+            }
         },
         startGame() {
             axios.get("http://localhost:4242")

@@ -170,6 +170,18 @@ func capturePairs(position int, captureDirections []int) {
 	}
 }
 
+func checkWinningConditions (lastPosition int, sequences [][]int) bool {
+	if (GameRound.CurrentPlayer.CapturedPieces == 10) {
+		return true
+	}
+	for _, v := range(sequences) {
+		if (len(v) >= 5) {
+			return true
+		}
+	}
+	return false
+}
+
 func updateWhoseTurn() {
 	if GameRound.CurrentPlayer == GameRound.P1 {
 		GameRound.CurrentPlayer = GameRound.P2
@@ -179,6 +191,9 @@ func updateWhoseTurn() {
 }
 
 func HandleMove(id int, position int) (code int, msg string) {
+	if GameRound.Winner != 0 {
+		return 1, "Game is over"
+	}
 	if GameRound.CurrentPlayer.Id != id {
 		return 1, "It is not your turn"
 	}
@@ -192,6 +207,11 @@ func HandleMove(id int, position int) (code int, msg string) {
 	GameRound.CurrentPlayer.PiecesLeft--
 	captureDirections := checkCapture(position)
 	capturePairs(position, captureDirections)
+	sequences := completeSequenceForPosition(position, id)
+	win := checkWinningConditions(position, sequences)
+	if (win){
+		GameRound.Winner = id
+	}
 	GameRound.Turn++
 	updateWhoseTurn()
 	GameRound.SuggestedPosition = suggestor.SuggestMove()

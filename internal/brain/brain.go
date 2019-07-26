@@ -32,6 +32,7 @@ type Round struct {
 	CurrentPlayer     *player.Player
 	Turn              int
 	SuggestedPosition int
+	Winner            int
 }
 
 var GameRound Round = Round{}
@@ -48,4 +49,5 @@ func InitializeValues() {
 	GameRound.Goban.Size = board.SIZE
 	GameRound.Turn = 0
 	GameRound.Status = NotStarted
+	GameRound.Winner = 0
 }

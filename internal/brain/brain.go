@@ -1,8 +1,8 @@
 package brain
 
 import (
-	"gomoku/internal/board"
-	"gomoku/internal/player"
+	"github.com/gogogomoku/gomoku/internal/board"
+	"github.com/gogogomoku/gomoku/internal/player"
 )
 
 const MAXPIECES = 50

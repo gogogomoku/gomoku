@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"gomoku/internal/brain"
+	"github.com/gogogomoku/gomoku/internal/brain"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"

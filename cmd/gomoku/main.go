@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"gomoku/internal/brain"
-	"gomoku/internal/server"
+	"github.com/gogogomoku/gomoku/internal/server"
 	"os"
+
+	"github.com/gogogomoku/gomoku/internal/brain"
 
 	"github.com/akamensky/argparse"
 )

@@ -1,7 +1,7 @@
 package brain
 
 import (
-	"gomoku/internal/board"
+	"github.com/gogogomoku/gomoku/internal/board"
 	"reflect"
 	"testing"
 )

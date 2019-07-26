@@ -1,9 +1,9 @@
 package brain
 
 import (
-	"gomoku/internal/board"
-	"gomoku/internal/player"
-	"gomoku/internal/suggestor"
+	"github.com/gogogomoku/gomoku/internal/board"
+	"github.com/gogogomoku/gomoku/internal/player"
+	"github.com/gogogomoku/gomoku/internal/suggestor"
 )
 
 func StartRound() {

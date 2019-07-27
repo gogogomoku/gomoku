@@ -16,7 +16,8 @@ export default {
 <style scoped>
   .home {
       background-color: #0b1c59;
-      width: 50%;
+      width: 60%;
+      min-width: 600px;
       padding: 10px;
       border-radius: 10px;
       margin: 0 auto;

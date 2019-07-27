@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="gameContainer">
         <div id="goban">
             <div class="row" v-for="(line, posY) in tab">
                 <div class="tile" v-for="(tile, posX) in line">
@@ -26,15 +26,17 @@
                     </div>
                 </div>
             </div>
-            Size: {{ size }} <br>
-            Turn: {{ turn }} <br>
         </div>
     </div>
 </template>
 
 <script>
+// import Scoreboard from './Scoreboard.vue'
+
 export default {
     name: 'Goban',
+    components: {
+    },
     props: ["size", "tab", "turn", "currentPlayer"],
     methods: {
         mouseOver: function(tileId, currentPlayer){
@@ -46,16 +48,22 @@ export default {
             document.getElementById(tileId).opacity=1;
         },
         clickTile: function(tileId, currentPlayer){
-            this.$parent.makeMove(tileId, currentPlayer)
+            this.$parent.$parent.makeMove(tileId, currentPlayer)
         }
     }
 }
 </script>
 
 <style scoped>
+    #gameContainer {
+        background-color: #258;
+        width: 46%;
+        margin: 5px auto;
+    }
     #goban {
-        background-color: #369;
-        width: 50%;
+        background-color: #47A;
+        width: 46%;
+        min-width: 550px;
         margin: 5px auto;
         border-radius: 5px;
         padding: 10px;

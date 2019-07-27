@@ -1,28 +1,50 @@
 <template>
-    <div id="gameContainer">
+    <div id="gobanContainer">
         <div id="goban">
             <div class="row" v-for="(line, posY) in tab">
                 <div class="tile" v-for="(tile, posX) in line">
-                    <div class="tileAlpha" v-if="tile === 0">
-                        <img
-                            v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
-                            v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
-                            v-on:click="clickTile(posX + (posY * size), currentPlayer)"
-                            :id="posX + (posY * size)"
-                            class="tile0"
-                            src="0.png" />
+                    <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition">
+                        <div class="tileSuggested1" v-if="currentPlayer == 1">
+                            <img
+                                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                                v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
+                                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                                :id="posX + (posY * size)"
+                                class="tileSuggested"
+                                src="1.png" />
+                        </div>
+                        <div class="tileSuggested1" v-else-if="currentPlayer == 2">
+                            <img
+                                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                                v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
+                                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                                :id="posX + (posY * size)"
+                                class="tileSuggested"
+                                src="2.png" />
+                        </div>
                     </div>
-                    <div v-else-if="tile === 1">
-                        <img
-                            :id="posX + (posY * size)"
-                            class="tile1"
-                            src="1.png" />
-                    </div>
-                    <div v-else-if="tile === 2">
-                        <img
-                            :id="posX + (posY * size)"
-                            class="tile2"
-                            src="2.png" />
+                    <div class="tileImage" v-else>
+                        <div class="tileAlpha" v-if="tile === 0">
+                            <img
+                                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                                v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
+                                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                                :id="posX + (posY * size)"
+                                class="tile0"
+                                src="0.png" />
+                        </div>
+                        <div v-else-if="tile === 1">
+                            <img
+                                :id="posX + (posY * size)"
+                                class="tile1"
+                                src="1.png" />
+                        </div>
+                        <div v-else-if="tile === 2">
+                            <img
+                                :id="posX + (posY * size)"
+                                class="tile2"
+                                src="2.png" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -31,13 +53,18 @@
 </template>
 
 <script>
-// import Scoreboard from './Scoreboard.vue'
 
 export default {
     name: 'Goban',
     components: {
     },
-    props: ["size", "tab", "turn", "currentPlayer"],
+    props: [
+        "size",
+        "tab",
+        "turn",
+        "currentPlayer",
+        "suggestedPosition",
+    ],
     methods: {
         mouseOver: function(tileId, currentPlayer){
             document.getElementById(tileId).src=currentPlayer+".png";
@@ -47,6 +74,10 @@ export default {
             document.getElementById(tileId).src=tile+".png";
             document.getElementById(tileId).opacity=1;
         },
+        mouseOutSuggested: function(tileId, tile){
+            document.getElementById(tileId).src=tile+".png";
+            document.getElementById(tileId).opacity=0.5;
+        },
         clickTile: function(tileId, currentPlayer){
             this.$parent.$parent.makeMove(tileId, currentPlayer)
         }
@@ -55,32 +86,36 @@ export default {
 </script>
 
 <style scoped>
-    #gameContainer {
-        background-color: #258;
-        width: 46%;
-        margin: 5px auto;
+    #gobanContainer {
+        background-color:  #444477;
+        /* border: solid #FFF 2px; */
+        padding: 15px;
+        flex-grow: 2;
     }
     #goban {
-        background-color: #47A;
-        width: 46%;
-        min-width: 550px;
-        margin: 5px auto;
-        border-radius: 5px;
+        background-color:  	#99C;
+        width: 70%;
+        border-radius: 10px;
         padding: 10px;
+        margin: 0 auto;
+
+        /* border: solid #DAC 2px; */
     }
     .tile {
-        width: 25px;
-        border-radius: 50%;
+        width: 4.7%;
         display: inline-block;
-        margin: 1px;
+        margin: 0.25%;
         cursor: pointer;
     }
     .tile img {
-        width: 25px;
+        width: 100%;
     }
     .tileAlpha img {
         opacity: 0.5;
     }
-
-
+    .tileSuggested {
+        filter: contrast(70%);
+        filter: blur(1px);
+        opacity: 0.3;
+    }
 </style>

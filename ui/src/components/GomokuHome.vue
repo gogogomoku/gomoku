@@ -15,11 +15,10 @@ export default {
 
 <style scoped>
   .home {
-      background-color: #0b1c59;
+      background-color: #000033;
       width: 60%;
-      min-width: 600px;
-      padding: 10px;
-      border-radius: 10px;
+      min-width: 800px;
+      padding: 0;
       margin: 0 auto;
       color: #CDE;
   }

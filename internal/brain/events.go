@@ -10,7 +10,16 @@ func StartRound() {
 	GameRound.Status = Running
 	player.ResetPlayers(GameRound.P1, GameRound.P2, MAXPIECES)
 	GameRound.CurrentPlayer = GameRound.P1
-	GameRound.SuggestedPosition = suggestor.SuggestMove()
+	getSuggestion()
+}
+
+func getSuggestion() {
+	for {
+		GameRound.SuggestedPosition = suggestor.SuggestMove()
+		if checkValidMove(GameRound.SuggestedPosition) {
+			break
+		}
+	}
 }
 
 func checkValidMove(position int) bool {
@@ -133,20 +142,20 @@ func completeSequenceForPosition(position int, playerId int) [][]int {
 	sequences := [][]int{}
 	sequenceDirections := []struct {
 		OpposingDirections []int
-		IncreaseValue int
+		IncreaseValue      int
 	}{
 		{
 			OpposingDirections: []int{N, S},
-			IncreaseValue: board.SIZE,
-		},{
+			IncreaseValue:      board.SIZE,
+		}, {
 			OpposingDirections: []int{W, E},
-			IncreaseValue: 1,
-		},{
+			IncreaseValue:      1,
+		}, {
 			OpposingDirections: []int{NW, SE},
-			IncreaseValue: board.SIZE + 1,
-		},{
+			IncreaseValue:      board.SIZE + 1,
+		}, {
 			OpposingDirections: []int{NE, SW},
-			IncreaseValue: board.SIZE - 1,
+			IncreaseValue:      board.SIZE - 1,
 		},
 	}
 	for _, d := range sequenceDirections {
@@ -170,12 +179,12 @@ func capturePairs(position int, captureDirections []int) {
 	}
 }
 
-func checkWinningConditions (lastPosition int, sequences [][]int) bool {
-	if (GameRound.CurrentPlayer.CapturedPieces == 10) {
+func checkWinningConditions(lastPosition int, sequences [][]int) bool {
+	if GameRound.CurrentPlayer.CapturedPieces == 10 {
 		return true
 	}
-	for _, v := range(sequences) {
-		if (len(v) >= 5) {
+	for _, v := range sequences {
+		if len(v) >= 5 {
 			return true
 		}
 	}
@@ -209,11 +218,11 @@ func HandleMove(id int, position int) (code int, msg string) {
 	capturePairs(position, captureDirections)
 	sequences := completeSequenceForPosition(position, id)
 	win := checkWinningConditions(position, sequences)
-	if (win){
+	if win {
 		GameRound.Winner = id
 	}
 	GameRound.Turn++
 	updateWhoseTurn()
-	GameRound.SuggestedPosition = suggestor.SuggestMove()
+	getSuggestion()
 	return 0, "Move done"
 }

@@ -9,18 +9,30 @@
         <div id="generalSb">
             Turn: {{ turn }} <br>
         </div>
+        <StartButton
+            v-bind:buttonMessage="buttonMessage"
+            v-bind:gameStatus="gameStatus"
+        />
     </div>
 </template>
 
 <script>
 import PlayerScoreBoard from './PlayerScoreBoard.vue'
+import StartButton from './StartButton.vue'
 
 export default {
     name: 'Scoreboard',
     components: {
         PlayerScoreBoard,
+        StartButton,
     },
-    props: ["turn", "currentPlayer", "playerInfo"],
+    props: [
+        "turn",
+        "currentPlayer",
+        "playerInfo",
+        "buttonMessage",
+        "gameStatus",
+    ],
     methods: {
     }
 }
@@ -28,21 +40,23 @@ export default {
 
 <style scoped>
     #scoreboard {
-        background-color: #47A;
-        width: 25%;
-        min-width: 200px;
-        margin: 10px;
-        padding: 5px;
+        background-color:  	#222255;
+        min-width: 210px;
+        flex-grow: 1;
+        color: #2a1a0a;
     }
     #generalSb {
-        background-color: #69C;
-        margin: 10px;
+        width: 70%;
+        background-color: #AAD;
+        margin: 10px auto;
         padding: 5px;
+        /* box-shadow: 0px 2px #036; */
     }
     .playerSb {
-        background-color: #8BD;
-        margin: 10px;
+        background-color: #AAD;
+        margin: 10px 0;
         padding: 5px;
-        color: #036;
+
+        /* box-shadow: 0px 2px #036; */
     }
 </style>

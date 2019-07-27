@@ -5,11 +5,14 @@
             v-bind:tab="tab"
             v-bind:turn="turn"
             v-bind:currentPlayer="currentPlayer"
+            v-bind:suggestedPosition="suggestedPosition"
         />
         <Scoreboard
             v-bind:turn="turn"
             v-bind:currentPlayer="currentPlayer"
             v-bind:playerInfo="playerInfo"
+            v-bind:buttonMessage="buttonMessage"
+            v-bind:gameStatus="gameStatus"
         />
     </div>
 </template>
@@ -24,7 +27,16 @@ export default {
         Goban,
         Scoreboard,
     },
-    props: ["size", "tab", "turn", "currentPlayer", "playerInfo"],
+    props: [
+        "size",
+        "tab",
+        "turn",
+        "currentPlayer",
+        "playerInfo",
+        "suggestedPosition",
+        "buttonMessage",
+        "gameStatus",
+    ],
     methods: {
     }
 }
@@ -32,14 +44,13 @@ export default {
 
 <style scoped>
     #gameContainer {
-        background-color: #258;
-
-        margin: 5px auto;
+        margin: 0px auto;
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-wrap: nowrap;
+        justify-content: space-around;
+        align-items: stretch;
         width: 60%;
-        min-width: 600px;
+        min-width: 800px;
     }
 </style>

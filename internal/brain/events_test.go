@@ -1,9 +1,10 @@
 package brain
 
 import (
-	"github.com/gogogomoku/gomoku/internal/board"
 	"reflect"
 	"testing"
+
+	"github.com/gogogomoku/gomoku/internal/board"
 )
 
 func TestStartRound(t *testing.T) {

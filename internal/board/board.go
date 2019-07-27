@@ -2,7 +2,7 @@ package board
 
 import "fmt"
 
-const SIZE = 19
+const SIZE = 15
 
 type Board struct {
 	Tab  []int
@@ -11,7 +11,7 @@ type Board struct {
 
 func PrintBoard(tab Board) {
 	for i := 0; i < tab.Size; i++ {
-		fmt.Println(tab.Tab[tab.Size * i : tab.Size * (i + 1)])
+		fmt.Println(tab.Tab[tab.Size*i : tab.Size*(i+1)])
 	}
 	fmt.Println("")
 }

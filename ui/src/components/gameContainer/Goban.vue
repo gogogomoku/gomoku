@@ -3,6 +3,7 @@
         <div id="goban">
             <div class="row" v-for="(line, posY) in tab">
                 <div class="tile" v-for="(tile, posX) in line">
+                    {{posX + (posY * size)}}
                     <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition">
                         <div class="tileSuggested1" v-if="currentPlayer == 1">
                             <img
@@ -79,6 +80,7 @@ export default {
             document.getElementById(tileId).opacity=0.5;
         },
         clickTile: function(tileId, currentPlayer){
+            console.log("Make move: \nID: " + tileId + " currentPlayer" + currentPlayer);
             this.$parent.$parent.makeMove(tileId, currentPlayer)
         }
     }

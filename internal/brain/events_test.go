@@ -45,7 +45,7 @@ func TestCheckValidMove(t *testing.T) {
 			GameRound.Goban.Tab[v] = 1
 		}
 
-		isValidMove := checkValidMove(table.position)
+		isValidMove := CheckValidMove(table.position)
 		if table.expectedIsValid != isValidMove {
 			t.Errorf("position %d, valid: %t, expected: %t", table.position, isValidMove, table.expectedIsValid)
 		}
@@ -55,7 +55,7 @@ func TestCheckValidMove(t *testing.T) {
 
 func BenchmarkCheckValidMove(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		checkValidMove(i % (board.SIZE * board.SIZE))
+		CheckValidMove(i % (board.SIZE * board.SIZE))
 	}
 }
 

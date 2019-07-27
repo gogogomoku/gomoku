@@ -59,7 +59,7 @@ func TestCheckSequence(t *testing.T) {
 		for _, v := range table.currentPlayerPositions {
 			GameRound.Goban.Tab[v] = 1
 		}
-		sequenceLengths := checkSequence(table.position, GameRound.CurrentPlayer.Id)
+		sequenceLengths := CheckSequence(table.position, GameRound.CurrentPlayer.Id)
 
 		if !reflect.DeepEqual(table.expectedSequences, sequenceLengths) {
 
@@ -74,7 +74,7 @@ func BenchmarkCheckSequence(b *testing.B) {
 	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	GameRound.CurrentPlayer = GameRound.P1
 	for i := 0; i < b.N; i++ {
-		checkSequence(i%(board.SIZE*board.SIZE), 1)
+		CheckSequence(i%(board.SIZE*board.SIZE), 1)
 	}
 }
 
@@ -116,7 +116,7 @@ func TestCompleteSequenceForPosition(t *testing.T) {
 		for _, v := range table.currentPlayerPositions {
 			GameRound.Goban.Tab[v] = 1
 		}
-		completeSequences := completeSequenceForPosition(table.position, GameRound.CurrentPlayer.Id)
+		completeSequences := CompleteSequenceForPosition(table.position, GameRound.CurrentPlayer.Id)
 		if !reflect.DeepEqual(table.expectedSequences, completeSequences) {
 			t.Errorf("Wrong completeSequences for %d, expected %v, got %v", table.position, table.expectedSequences, completeSequences)
 		}

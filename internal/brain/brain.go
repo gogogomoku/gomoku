@@ -5,7 +5,7 @@ import (
 	"github.com/gogogomoku/gomoku/internal/player"
 )
 
-const MAXPIECES = 50
+const MAXPIECES = 150
 
 const (
 	NotStarted = iota

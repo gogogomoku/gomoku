@@ -5,12 +5,14 @@ import (
 )
 
 // For each direction in usual order, return how many contiguous pieces for playerId are present
-func checkSequence(position int, playerId int) []int {
-	sequenceLengths := []int{}
+func CheckSequence(position int, playerId int) []int {
+	// fmt.Println("===================== Checking sequence for ", position)
+	sequenceLengths := []int{0, 0, 0, 0, 0, 0, 0, 0}
 	for direction := 0; direction < 8; direction++ {
+		// fmt.Println("Direction: ", direction)
 		counter := 0
 		tmpPosition := position
-		for {
+		for i := 0; i < 8; i++ {
 			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
 			nextIndexValue, edge := ReturnNextPiece(tmpPosition, direction)
 			if edge || nextIndexValue != playerId || nextIndexValue == 0 {
@@ -19,13 +21,19 @@ func checkSequence(position int, playerId int) []int {
 			counter++
 			tmpPosition = nextIndex
 		}
-		sequenceLengths = append(sequenceLengths, counter)
+		sequenceLengths[direction] = counter
+		// fmt.Println("Counter: ", counter)
 	}
+	// fmt.Println("sequence: ", sequenceLengths)
 	return sequenceLengths
 }
 
 func sequenceOpposingDirections(position int, playerId int, dir []int, increase int) []int {
-	partialSequences := checkSequence(position, playerId)
+	// fmt.Println("SEQ OPPOSING Start...")
+	partialSequences := CheckSequence(position, playerId)
+	// fmt.Println(partialSequences)
+	// fmt.Println("SEQ OPPOSING call to CheckSequence() ended...")
+
 	if partialSequences[dir[0]] != 0 || partialSequences[dir[1]] != 0 {
 		p := []int{position}
 		// Add elements in dir[0]
@@ -42,10 +50,10 @@ func sequenceOpposingDirections(position int, playerId int, dir []int, increase 
 		}
 		return p
 	}
-	return nil
+	return []int{}
 }
 
-func completeSequenceForPosition(position int, playerId int) [][]int {
+func CompleteSequenceForPosition(position int, playerId int) [][]int {
 	sequences := [][]int{}
 	sequenceDirections := []struct {
 		OpposingDirections []int
@@ -65,11 +73,14 @@ func completeSequenceForPosition(position int, playerId int) [][]int {
 			IncreaseValue:      board.SIZE - 1,
 		},
 	}
+	// fmt.Println("COMPLETE SEQ Start...")
 	for _, d := range sequenceDirections {
 		seq := sequenceOpposingDirections(position, playerId, d.OpposingDirections, d.IncreaseValue)
-		if seq != nil {
+		if len(seq) > 0 {
 			sequences = append(sequences, seq)
 		}
 	}
+	// fmt.Println("COMPLETE SEQ End...")
+
 	return sequences
 }

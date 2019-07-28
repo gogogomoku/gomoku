@@ -23,7 +23,7 @@ func main() {
 		os.Exit(1)
 	}
 	if *s {
-		go server.StartServer()
+		server.StartServer()
 		for {
 
 		}

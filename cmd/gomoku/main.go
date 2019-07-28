@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/gogogomoku/gomoku/internal/server"
 	"os"
+	"strconv"
+
+	"github.com/gogogomoku/gomoku/internal/board"
+	"github.com/gogogomoku/gomoku/internal/server"
 
 	"github.com/gogogomoku/gomoku/internal/brain"
 
@@ -20,11 +24,27 @@ func main() {
 	}
 	if *s {
 		go server.StartServer()
+		for {
+
+		}
 	} else {
 		fmt.Println("Start gomoku | no server")
 		brain.StartRound()
-	}
-	for {
-
+		for brain.GameRound.Winner == 0 {
+			brain.SuggestMove()
+			fmt.Println("Suggestion: ", brain.GameRound.SuggestedPosition)
+			fmt.Println("Player's turn: ", brain.GameRound.CurrentPlayer.Id)
+			if brain.GameRound.CurrentPlayer.Id == 1 {
+				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, brain.GameRound.SuggestedPosition)
+			} else {
+				reader := bufio.NewReader(os.Stdin)
+				fmt.Print("Enter new move: ")
+				text, _ := reader.ReadString('\n')
+				choice, _ := strconv.Atoi(text[:len(text)-1])
+				fmt.Println(choice)
+				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, choice)
+			}
+			board.PrintBoard(brain.GameRound.Goban)
+		}
 	}
 }

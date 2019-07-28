@@ -1,19 +1,20 @@
 package brain
 
 import (
+	"fmt"
+
 	"github.com/gogogomoku/gomoku/internal/board"
 	"github.com/gogogomoku/gomoku/internal/player"
-	"github.com/gogogomoku/gomoku/internal/suggestor"
 )
 
 func StartRound() {
 	GameRound.Status = Running
 	player.ResetPlayers(GameRound.P1, GameRound.P2, MAXPIECES)
 	GameRound.CurrentPlayer = GameRound.P1
-	GameRound.SuggestedPosition = suggestor.SuggestMove()
+	SuggestMove()
 }
 
-func checkValidMove(position int) bool {
+func CheckValidMove(position int) bool {
 	return bool(position >= 0 && position <= (board.SIZE*board.SIZE)-1 && GameRound.Goban.Tab[position] == 0)
 }
 
@@ -64,118 +65,12 @@ func ReturnNextPiece(position, direction int) (nextIndex int, edge bool) {
 	return GameRound.Goban.Tab[nextIndex], false
 }
 
-func checkCapture(position int) []int {
-	captureDirections := []int{}
-	for direction := 0; direction < 8; direction++ {
-		counter := 0
-		tmpPosition := position
-		for j := 0; j < 2; j++ {
-			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
-			nextIndexValue, edge := ReturnNextPiece(tmpPosition, direction)
-			if edge || nextIndexValue == GameRound.CurrentPlayer.Id || nextIndexValue == 0 {
-				break
-			}
-			counter++
-			tmpPosition = nextIndex
-		}
-		if counter == 2 {
-			nextIndexValue, _ := ReturnNextPiece(tmpPosition, direction)
-			if nextIndexValue == GameRound.CurrentPlayer.Id {
-				captureDirections = append(captureDirections, direction)
-			}
-		}
-	}
-	return captureDirections
-}
-
-// For each direction in usual order, return how many contiguous pieces for playerId are present
-func checkSequence(position int, playerId int) []int {
-	sequenceLengths := []int{}
-	for direction := 0; direction < 8; direction++ {
-		counter := 0
-		tmpPosition := position
-		for {
-			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
-			nextIndexValue, edge := ReturnNextPiece(tmpPosition, direction)
-			if edge || nextIndexValue != playerId || nextIndexValue == 0 {
-				break
-			}
-			counter++
-			tmpPosition = nextIndex
-		}
-		sequenceLengths = append(sequenceLengths, counter)
-	}
-	return sequenceLengths
-}
-
-func sequenceOpposingDirections(position int, playerId int, dir []int, increase int) []int {
-	partialSequences := checkSequence(position, playerId)
-	if partialSequences[dir[0]] != 0 || partialSequences[dir[1]] != 0 {
-		p := []int{position}
-		// Add elements in dir[0]
-		current := position
-		for i := 0; i < partialSequences[dir[0]]; i++ {
-			current -= increase
-			p = append(p, current)
-		}
-		// Add elements in dir[1]
-		current = position
-		for i := 0; i < partialSequences[dir[1]]; i++ {
-			current += increase
-			p = append(p, current)
-		}
-		return p
-	}
-	return nil
-}
-
-func completeSequenceForPosition(position int, playerId int) [][]int {
-	sequences := [][]int{}
-	sequenceDirections := []struct {
-		OpposingDirections []int
-		IncreaseValue int
-	}{
-		{
-			OpposingDirections: []int{N, S},
-			IncreaseValue: board.SIZE,
-		},{
-			OpposingDirections: []int{W, E},
-			IncreaseValue: 1,
-		},{
-			OpposingDirections: []int{NW, SE},
-			IncreaseValue: board.SIZE + 1,
-		},{
-			OpposingDirections: []int{NE, SW},
-			IncreaseValue: board.SIZE - 1,
-		},
-	}
-	for _, d := range sequenceDirections {
-		seq := sequenceOpposingDirections(position, playerId, d.OpposingDirections, d.IncreaseValue)
-		if seq != nil {
-			sequences = append(sequences, seq)
-		}
-	}
-	return sequences
-}
-
-func capturePairs(position int, captureDirections []int) {
-	for _, captureDirection := range captureDirections {
-		tmpPosition := position
-		for j := 0; j < 2; j++ {
-			nextIndex, _ := getNextIndexForDirection(tmpPosition, captureDirection)
-			tmpPosition = nextIndex
-			GameRound.Goban.Tab[nextIndex] = 0
-		}
-		GameRound.CurrentPlayer.CapturedPieces += 2
-	}
-}
-
-func checkWinningConditions (lastPosition int, sequences [][]int) bool {
-	if (GameRound.CurrentPlayer.CapturedPieces == 10) {
+func checkWinningConditions(lastPosition int, sequences [][]int) bool {
+	if GameRound.CurrentPlayer.CapturedPieces == 10 {
 		return true
 	}
-	for _, v := range(sequences) {
-		if (len(v) >= 5) {
+	for _, v := range sequences {
+		if len(v) >= 5 {
 			return true
 		}
 	}
@@ -191,13 +86,14 @@ func updateWhoseTurn() {
 }
 
 func HandleMove(id int, position int) (code int, msg string) {
+	fmt.Println("making move at...", position, "for Player...", GameRound.CurrentPlayer.Id)
 	if GameRound.Winner != 0 {
 		return 1, "Game is over"
 	}
 	if GameRound.CurrentPlayer.Id != id {
 		return 1, "It is not your turn"
 	}
-	if !checkValidMove(position) {
+	if !CheckValidMove(position) {
 		return 1, "Move isn't valid"
 	}
 	if GameRound.CurrentPlayer.PiecesLeft == 0 {
@@ -207,13 +103,16 @@ func HandleMove(id int, position int) (code int, msg string) {
 	GameRound.CurrentPlayer.PiecesLeft--
 	captureDirections := checkCapture(position)
 	capturePairs(position, captureDirections)
-	sequences := completeSequenceForPosition(position, id)
+	sequences := CompleteSequenceForPosition(position, id)
 	win := checkWinningConditions(position, sequences)
-	if (win){
+	if win {
 		GameRound.Winner = id
 	}
 	GameRound.Turn++
 	updateWhoseTurn()
-	GameRound.SuggestedPosition = suggestor.SuggestMove()
+	SuggestMove()
+	if GameRound.CurrentPlayer.Id == 2 {
+		HandleMove(GameRound.CurrentPlayer.Id, GameRound.SuggestedPosition)
+	}
 	return 0, "Move done"
 }

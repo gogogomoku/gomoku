@@ -1,9 +1,9 @@
 package brain
 
 import (
-	"github.com/gogogomoku/gomoku/internal/board"
-	"reflect"
 	"testing"
+
+	"github.com/gogogomoku/gomoku/internal/board"
 )
 
 func TestStartRound(t *testing.T) {
@@ -45,7 +45,7 @@ func TestCheckValidMove(t *testing.T) {
 			GameRound.Goban.Tab[v] = 1
 		}
 
-		isValidMove := checkValidMove(table.position)
+		isValidMove := CheckValidMove(table.position)
 		if table.expectedIsValid != isValidMove {
 			t.Errorf("position %d, valid: %t, expected: %t", table.position, isValidMove, table.expectedIsValid)
 		}
@@ -55,7 +55,7 @@ func TestCheckValidMove(t *testing.T) {
 
 func BenchmarkCheckValidMove(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		checkValidMove(i % (board.SIZE * board.SIZE))
+		CheckValidMove(i % (board.SIZE * board.SIZE))
 	}
 }
 
@@ -149,192 +149,5 @@ func BenchmarkReturnNextPiece(b *testing.B) {
 	GameRound.CurrentPlayer = GameRound.P1
 	for i := 0; i < b.N; i++ {
 		ReturnNextPiece((board.SIZE * board.SIZE), NE)
-	}
-}
-
-func TestCheckCapture(t *testing.T) {
-	// Initialize
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
-	center := (board.SIZE * board.SIZE) / 2
-	if board.SIZE%2 == 0 {
-		center += board.SIZE / 2
-	}
-	tables := []struct {
-		position                  int
-		opponentPositions         []int
-		currentPlayerPositions    []int
-		expectedCaptureDirections []int
-	}{
-		{
-			position:                  center,
-			opponentPositions:         []int{},
-			currentPlayerPositions:    []int{},
-			expectedCaptureDirections: []int{},
-		},
-		{
-			position:                  center,
-			opponentPositions:         []int{center + 1, center + 2},
-			currentPlayerPositions:    []int{center, center + 3},
-			expectedCaptureDirections: []int{E},
-		},
-		{
-			position:                  center,
-			opponentPositions:         []int{center - 1, center - 2},
-			currentPlayerPositions:    []int{center, center - 3},
-			expectedCaptureDirections: []int{W},
-		},
-		{
-			position:                  center,
-			opponentPositions:         []int{center - board.SIZE, center - (2 * board.SIZE)},
-			currentPlayerPositions:    []int{center, center - (3 * board.SIZE)},
-			expectedCaptureDirections: []int{N},
-		},
-		{
-			position:                  center,
-			opponentPositions:         []int{center + board.SIZE, center + (2 * board.SIZE)},
-			currentPlayerPositions:    []int{center, center + (3 * board.SIZE)},
-			expectedCaptureDirections: []int{S},
-		},
-	}
-	for _, table := range tables {
-		for _, v := range table.opponentPositions {
-			GameRound.Goban.Tab[v] = 2
-		}
-		for _, v := range table.currentPlayerPositions {
-			GameRound.Goban.Tab[v] = 1
-		}
-		captureDirections := checkCapture(table.position)
-		if !reflect.DeepEqual(table.expectedCaptureDirections, captureDirections) {
-
-			t.Errorf("Wrong captureDirections for %d, expected %v, got %v", table.position, table.expectedCaptureDirections, captureDirections)
-
-		}
-		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	}
-}
-
-func BenchmarkCheckCapture(b *testing.B) {
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
-	for i := 0; i < b.N; i++ {
-		checkCapture(i % (board.SIZE * board.SIZE))
-	}
-}
-
-func TestCheckSequence(t *testing.T) {
-	// Initialize
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
-	center := (board.SIZE * board.SIZE) / 2
-	if board.SIZE%2 == 0 {
-		center += board.SIZE / 2
-	}
-	tables := []struct {
-		position               int
-		opponentPositions      []int
-		currentPlayerPositions []int
-		expectedSequences      []int
-	}{
-		{
-			position:               center,
-			opponentPositions:      []int{},
-			currentPlayerPositions: []int{},
-			expectedSequences:      []int{0, 0, 0, 0, 0, 0, 0, 0},
-		},
-		{
-			position:               center,
-			opponentPositions:      []int{center + 1, center + 2},
-			currentPlayerPositions: []int{center, center + 3},
-			expectedSequences:      []int{0, 0, 0, 0, 0, 0, 0, 0},
-		},
-		{
-			position:               center,
-			opponentPositions:      []int{center - 1, center - 2},
-			currentPlayerPositions: []int{center, center + 1, center - 3},
-			expectedSequences:      []int{0, 0, 1, 0, 0, 0, 0, 0},
-		},
-		{
-			position:               center,
-			opponentPositions:      []int{center - board.SIZE, center - (2 * board.SIZE)},
-			currentPlayerPositions: []int{center, center + board.SIZE, center - (board.SIZE), center + 1, center - 1, center - 2, center - 3},
-			expectedSequences:      []int{1, 1, 1, 3, 0, 0, 0, 0},
-		},
-		{
-			position:               center,
-			opponentPositions:      []int{},
-			currentPlayerPositions: []int{center, center - (board.SIZE) + 1, center - (board.SIZE) - 1, center + (board.SIZE) + 1, center + (board.SIZE) - 1},
-			expectedSequences:      []int{0, 0, 0, 0, 1, 1, 1, 1},
-		},
-	}
-	for _, table := range tables {
-		for _, v := range table.opponentPositions {
-			GameRound.Goban.Tab[v] = 2
-		}
-		for _, v := range table.currentPlayerPositions {
-			GameRound.Goban.Tab[v] = 1
-		}
-		sequenceLengths := checkSequence(table.position, GameRound.CurrentPlayer.Id)
-
-		if !reflect.DeepEqual(table.expectedSequences, sequenceLengths) {
-
-			t.Errorf("Wrong sequenceLengths for %d, expected %v, got %v", table.position, table.expectedSequences, sequenceLengths)
-
-		}
-		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	}
-}
-
-func BenchmarkCheckSequence(b *testing.B) {
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
-	for i := 0; i < b.N; i++ {
-		checkSequence(i%(board.SIZE*board.SIZE), 1)
-	}
-}
-
-func TestCompleteSequenceForPosition(t *testing.T) {
-	// Initialize
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
-	center := (board.SIZE * board.SIZE) / 2
-	if board.SIZE%2 == 0 {
-		center += board.SIZE / 2
-	}
-	tables := []struct {
-		position               int
-		currentPlayerPositions []int
-		expectedSequences      [][]int
-	}{
-		{
-			position:               center,
-			currentPlayerPositions: []int{center, center + 1, center - 1},
-			expectedSequences:      [][]int{[]int{center, center - 1, center + 1}},
-		},
-		{
-			position:               center,
-			currentPlayerPositions: []int{center, center + board.SIZE, center - board.SIZE},
-			expectedSequences:      [][]int{[]int{center, center - board.SIZE, center + board.SIZE}},
-		},
-		{
-			position:               center,
-			currentPlayerPositions: []int{center, center + (board.SIZE + 1), center - (board.SIZE + 1)},
-			expectedSequences:      [][]int{[]int{center, center - (board.SIZE + 1), center + (board.SIZE + 1)}},
-		},
-		{
-			position:               center,
-			currentPlayerPositions: []int{center, center + (board.SIZE - 1), center - (board.SIZE - 1)},
-			expectedSequences:      [][]int{[]int{center, center - (board.SIZE - 1), center + (board.SIZE - 1)}},
-		},
-	}
-	for _, table := range tables {
-		for _, v := range table.currentPlayerPositions {
-			GameRound.Goban.Tab[v] = 1
-		}
-		completeSequences := completeSequenceForPosition(table.position, GameRound.CurrentPlayer.Id)
-		if !reflect.DeepEqual(table.expectedSequences, completeSequences) {
-			t.Errorf("Wrong completeSequences for %d, expected %v, got %v", table.position, table.expectedSequences, completeSequences)
-		}
-		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	}
 }

@@ -1,23 +1,29 @@
 <template>
   <div id="app">
     <GomokuHome msg="Welcome to GoGoGomoku"/>
-    <Goban v-bind:size="size" v-bind:tab="tab" v-bind:turn="turn" v-bind:currentPlayer="currentPlayer"/>
-    <StartButton v-bind:buttonMessage="buttonMessage" v-bind:gameStatus="gameStatus"/>
+    <GameContainer
+        v-bind:size="size"
+        v-bind:tab="tab"
+        v-bind:turn="turn"
+        v-bind:currentPlayer="currentPlayer"
+        v-bind:playerInfo="playerInfo"
+        v-bind:suggestedPosition="suggestedPosition"
+        v-bind:buttonMessage="buttonMessage"
+        v-bind:gameStatus="gameStatus"
+    />
   </div>
 </template>
 
 <script>
 import GomokuHome from './components/GomokuHome.vue'
-import Goban from './components/Goban.vue'
+import GameContainer from './components/gameContainer/GameContainer.vue'
 import axios from "axios"
-import StartButton from './components/StartButton.vue'
 
 export default {
     name: 'app',
     components: {
         GomokuHome,
-        Goban,
-        StartButton,
+        GameContainer,
     },
     data() {
         return {
@@ -26,7 +32,20 @@ export default {
             tab: [[]],
             currentPlayer: 1,
             buttonMessage: "Start Game",
-            gameStatus: 0
+            gameStatus: 0,
+            suggestedPosition: -1,
+            playerInfo: {
+                p1: {
+                    Id: 1,
+                    CapturedPieces: 0,
+                    PiecesLeft: 0,
+                },
+                p2: {
+                    Id: 1,
+                    CapturedPieces: 0,
+                    PiecesLeft: 0,
+                },
+            },
         }
     },
     methods: {
@@ -51,8 +70,13 @@ export default {
                 this._data.tab = newTab
                 this._data.size = size
                 this._data.turn = res.Turn
+                this._data.playerInfo = {
+                    p1: res.P1,
+                    p2: res.P2,
+                }
                 this._data.currentPlayer = res.CurrentPlayer.Id
                 this._data.gameStatus = res.Status
+                this._data.suggestedPosition = res.SuggestedPosition
                 this._data.Winner = res.Winner
                 if (res.Winner != 0) {
                     alert("Winner: Player " + res.Winner)
@@ -90,9 +114,9 @@ export default {
       -moz-osx-font-smoothing: grayscale;
       text-align: center;
       color: #2c3e50;
-      margin-top: 60px;
+      margin-top: 20px;
     }
     body {
-        background-color: #036;
+        background-color: #111144;
     }
 </style>

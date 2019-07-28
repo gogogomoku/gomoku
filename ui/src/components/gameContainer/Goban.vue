@@ -1,0 +1,123 @@
+<template>
+    <div id="gobanContainer">
+        <div id="goban">
+            <div class="row" v-for="(line, posY) in tab">
+                <div class="tile" v-for="(tile, posX) in line">
+                    <!-- {{posX + (posY * size)}} -->
+                    <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition">
+                        <div class="tileSuggested1" v-if="currentPlayer == 1">
+                            <img
+                                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                                v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
+                                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                                :id="posX + (posY * size)"
+                                class="tileSuggested"
+                                src="1.png" />
+                        </div>
+                        <div class="tileSuggested1" v-else-if="currentPlayer == 2">
+                            <img
+                                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                                v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
+                                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                                :id="posX + (posY * size)"
+                                class="tileSuggested"
+                                src="2.png" />
+                        </div>
+                    </div>
+                    <div class="tileImage" v-else>
+                        <div class="tileAlpha" v-if="tile === 0">
+                            <img
+                                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                                v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
+                                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                                :id="posX + (posY * size)"
+                                class="tile0"
+                                src="0.png" />
+                        </div>
+                        <div v-else-if="tile === 1">
+                            <img
+                                :id="posX + (posY * size)"
+                                class="tile1"
+                                src="1.png" />
+                        </div>
+                        <div v-else-if="tile === 2">
+                            <img
+                                :id="posX + (posY * size)"
+                                class="tile2"
+                                src="2.png" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+export default {
+    name: 'Goban',
+    components: {
+    },
+    props: [
+        "size",
+        "tab",
+        "turn",
+        "currentPlayer",
+        "suggestedPosition",
+    ],
+    methods: {
+        mouseOver: function(tileId, currentPlayer){
+            document.getElementById(tileId).src=currentPlayer+".png";
+            document.getElementById(tileId).opacity=0.5;
+        },
+        mouseOut: function(tileId, tile){
+            document.getElementById(tileId).src=tile+".png";
+            document.getElementById(tileId).opacity=1;
+        },
+        mouseOutSuggested: function(tileId, tile){
+            document.getElementById(tileId).src=tile+".png";
+            document.getElementById(tileId).opacity=0.5;
+        },
+        clickTile: function(tileId, currentPlayer){
+            console.log("Make move: \nID: " + tileId + " currentPlayer" + currentPlayer);
+            this.$parent.$parent.makeMove(tileId, currentPlayer)
+        }
+    }
+}
+</script>
+
+<style scoped>
+    #gobanContainer {
+        background-color:  #444477;
+        /* border: solid #FFF 2px; */
+        padding: 15px;
+        flex-grow: 2;
+    }
+    #goban {
+        background-color:  	#99C;
+        width: 70%;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 0 auto;
+
+        /* border: solid #DAC 2px; */
+    }
+    .tile {
+        width: 4.7%;
+        display: inline-block;
+        margin: 0.25%;
+        cursor: pointer;
+    }
+    .tile img {
+        width: 100%;
+    }
+    .tileAlpha img {
+        opacity: 0.5;
+    }
+    .tileSuggested {
+        filter: contrast(70%);
+        filter: blur(1px);
+        opacity: 0.3;
+    }
+</style>

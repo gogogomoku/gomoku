@@ -2,7 +2,7 @@ package board
 
 import "fmt"
 
-const SIZE = 15
+const SIZE = 10
 
 type Board struct {
 	Tab  []int

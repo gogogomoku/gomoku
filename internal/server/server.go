@@ -2,8 +2,10 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gogogomoku/gomoku/internal/brain"
@@ -32,9 +34,27 @@ func startGame(w http.ResponseWriter, r *http.Request) {
 }
 
 func restartGame(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r)
 	brain.InitializeValues()
 	brain.StartRound()
 	json.NewEncoder(w).Encode(brain.GameRound)
+}
+
+func MakeMove(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r)
+	vars := mux.Vars(r)
+	id, err1 := strconv.Atoi(vars["id"])
+	position, err2 := strconv.Atoi(vars["pos"])
+	if err1 != nil || err2 != nil {
+		txtErr := fmt.Sprint("Error in params", err1, err2)
+		json.NewEncoder(w).Encode(SimpleResponse{-1, txtErr})
+	}
+	code, msg := brain.HandleMove(id, position)
+	if code == 0 {
+		json.NewEncoder(w).Encode(brain.GameRound)
+	} else {
+		json.NewEncoder(w).Encode(SimpleResponse{-1, msg})
+	}
 }
 
 func StartServer() {
@@ -43,11 +63,12 @@ func StartServer() {
 	router.HandleFunc("/", home)
 	router.HandleFunc("/start", startGame)
 	router.HandleFunc("/restart", restartGame)
+	router.HandleFunc("/move/{pos}/id/{id}", MakeMove)
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         "127.0.0.1:4242",
-		WriteTimeout: 45 * time.Second,
-		ReadTimeout:  45 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  5 * time.Second,
 	}
 	log.Fatal(srv.ListenAndServe())
 }

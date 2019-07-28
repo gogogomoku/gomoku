@@ -1,6 +1,8 @@
 package brain
 
 import (
+	"fmt"
+
 	"github.com/gogogomoku/gomoku/internal/board"
 	"github.com/gogogomoku/gomoku/internal/player"
 )
@@ -34,7 +36,6 @@ func getNextIndexForDirection(position int, direction int) (nextIndex int, edge 
 	if position%board.SIZE == 0 {
 		possibleDirection[W] = false
 	}
-	// fmt.Println("Possible Directions: ", possibleDirection)
 	switch {
 	case direction == N && possibleDirection[N]:
 		return position - board.SIZE, false
@@ -57,9 +58,7 @@ func getNextIndexForDirection(position int, direction int) (nextIndex int, edge 
 }
 
 func ReturnNextPiece(position, direction int) (nextIndex int, edge bool) {
-	// fmt.Println("Getting next Piece")
 	nextIndex, edge = getNextIndexForDirection(position, direction)
-	// fmt.Println("Got next Piece")
 	if edge {
 		return -42, true
 	}
@@ -71,7 +70,7 @@ func checkWinningConditions(lastPosition int, sequences [][]int) bool {
 		return true
 	}
 	for _, v := range sequences {
-		if len(v) >= 8 {
+		if len(v) >= 5 {
 			return true
 		}
 	}
@@ -87,7 +86,7 @@ func updateWhoseTurn() {
 }
 
 func HandleMove(id int, position int) (code int, msg string) {
-	// fmt.Println("making move...")
+	fmt.Println("making move at...", position, "for Player...", GameRound.CurrentPlayer.Id)
 	if GameRound.Winner != 0 {
 		return 1, "Game is over"
 	}
@@ -100,17 +99,11 @@ func HandleMove(id int, position int) (code int, msg string) {
 	if GameRound.CurrentPlayer.PiecesLeft == 0 {
 		return 1, "You have no pieces left"
 	}
-	// fmt.Println("Pass checks...")
 	GameRound.Goban.Tab[position] = int(id)
 	GameRound.CurrentPlayer.PiecesLeft--
-	// fmt.Println("Checking capture...")
 	captureDirections := checkCapture(position)
-	// fmt.Println("Capture checked...")
 	capturePairs(position, captureDirections)
-	// fmt.Println("Capturing done...")
-	// fmt.Println("Checking sequences...")
 	sequences := CompleteSequenceForPosition(position, id)
-	// fmt.Println("Sequences checked...")
 	win := checkWinningConditions(position, sequences)
 	if win {
 		GameRound.Winner = id
@@ -118,5 +111,8 @@ func HandleMove(id int, position int) (code int, msg string) {
 	GameRound.Turn++
 	updateWhoseTurn()
 	SuggestMove()
+	if GameRound.CurrentPlayer.Id == 2 {
+		HandleMove(GameRound.CurrentPlayer.Id, GameRound.SuggestedPosition)
+	}
 	return 0, "Move done"
 }

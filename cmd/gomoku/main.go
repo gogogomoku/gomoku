@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"math/rand"
 	"os"
-	"runtime"
+	"strconv"
 
 	"github.com/gogogomoku/gomoku/internal/board"
 	"github.com/gogogomoku/gomoku/internal/server"
@@ -15,7 +15,6 @@ import (
 )
 
 func main() {
-	runtime.GOMAXPROCS(30)
 	parser := argparse.NewParser("gomoku", "A great Gomoku game, and solving algorithm")
 	s := parser.Flag("s", "server", &argparse.Options{Help: "Launch web server"})
 	err := parser.Parse(os.Args)
@@ -32,32 +31,18 @@ func main() {
 		fmt.Println("Start gomoku | no server")
 		brain.StartRound()
 		for brain.GameRound.Winner == 0 {
-			possible := []int{}
-			best := []int{}
-			for i := 0; i < board.SIZE*board.SIZE; i++ {
-				if brain.GameRound.Goban.Tab[i] == 0 {
-					if brain.CheckValidMove(i) {
-						seq := brain.CompleteSequenceForPosition(i, brain.GameRound.CurrentPlayer.Id)
-						fmt.Println(i)
-						fmt.Println(seq)
-						if len(seq) > 0 {
-							best = append(best, i)
-						}
-						possible = append(possible, i)
-					}
-				}
-			}
-			ran := 0
-			if len(best) > 0 {
-				if len(best) > 4 {
-					ran = int(rand.Intn(len(best)))
-				}
-				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, best[ran])
+			brain.SuggestMove()
+			fmt.Println("Suggestion: ", brain.GameRound.SuggestedPosition)
+			fmt.Println("Player's turn: ", brain.GameRound.CurrentPlayer.Id)
+			if brain.GameRound.CurrentPlayer.Id == 1 {
+				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, brain.GameRound.SuggestedPosition)
 			} else {
-				if len(possible) > 4 {
-					ran = int(rand.Intn(len(possible)))
-				}
-				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, possible[ran])
+				reader := bufio.NewReader(os.Stdin)
+				fmt.Print("Enter new move: ")
+				text, _ := reader.ReadString('\n')
+				choice, _ := strconv.Atoi(text[:len(text)-1])
+				fmt.Println(choice)
+				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, choice)
 			}
 			board.PrintBoard(brain.GameRound.Goban)
 		}

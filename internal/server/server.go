@@ -70,6 +70,7 @@ func StartServer() {
 		WriteTimeout: 5 * time.Second,
 		ReadTimeout:  5 * time.Second,
 	}
+	log.Printf("Server setting up on %s\n", srv.Addr)
 	log.Fatal(srv.ListenAndServe())
 }
 

@@ -41,7 +41,7 @@ export default {
                     PiecesLeft: 0,
                 },
                 p2: {
-                    Id: 1,
+                    Id: 2,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
                 },

@@ -1,17 +1,39 @@
 # Gomoku 
 
 ⚪️⚫️⚪️⚫️
+
+## Get it
+
+```
+go get -u github.com/gogogomoku/gomoku
+```
+
 ## Development environment
 
 ### Install Golang dependencies
 
 ```
 $ export GO111MODULE=on
-$ go gen -v -d -u ./...
+$ go get -v -d -u ./...
 ```
 
-### Docker
+### Run server
 
-Run `docker build .` from repository root.
+```
+$ go run cmd/gomoku/main.go -s
+```
 
-Run `docker run -p 4242:4242 --name gomoku` from repository root.
+### Run UI
+
+```
+$ cd ./ui
+$ npm install
+$ npm run serve
+```
+
+## Docker
+Get a build up. You will need `docker` and `docker-compose`.
+
+```
+docker-compose up
+```

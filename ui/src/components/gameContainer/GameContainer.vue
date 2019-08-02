@@ -44,13 +44,20 @@ export default {
 
 <style scoped>
     #gameContainer {
-        margin: 0px auto;
         display: flex;
         flex-direction: row;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         justify-content: space-around;
         align-items: stretch;
-        width: 60%;
-        min-width: 800px;
+        width: 100%;
+    }
+
+    @media (min-width: 800px) {
+        #gameContainer {
+            margin: 0px auto;
+            width: 60%;
+            min-width: 800px;
+            flex-wrap: nowrap;
+        }
     }
 </style>

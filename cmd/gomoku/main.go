@@ -22,11 +22,8 @@ func main() {
 		fmt.Print(parser.Usage(err))
 		os.Exit(1)
 	}
-	if *s {
+	if *s || os.Getenv("RUNSERVER") == "true" {
 		server.StartServer()
-		for {
-
-		}
 	} else {
 		fmt.Println("Start gomoku | no server")
 		brain.StartRound()

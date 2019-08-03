@@ -12,6 +12,7 @@ func StartRound() {
 	player.ResetPlayers(GameRound.P1, GameRound.P2, MAXPIECES)
 	GameRound.CurrentPlayer = GameRound.P1
 	SuggestMove()
+	HandleMove(GameRound.CurrentPlayer.Id, GameRound.SuggestedPosition)
 }
 
 func CheckValidMove(position int) bool {
@@ -111,7 +112,7 @@ func HandleMove(id int, position int) (code int, msg string) {
 	GameRound.Turn++
 	updateWhoseTurn()
 	SuggestMove()
-	if GameRound.CurrentPlayer.Id == 2 {
+	if GameRound.CurrentPlayer.Id == 1 {
 		HandleMove(GameRound.CurrentPlayer.Id, GameRound.SuggestedPosition)
 	}
 	return 0, "Move done"

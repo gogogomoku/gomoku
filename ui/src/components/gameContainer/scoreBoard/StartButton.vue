@@ -20,13 +20,22 @@ export default {
 
 <style scoped>
     button {
-        width: 74%;
-        padding: 20px;
-        font-size: 2vmin;
-        border-radius: 3px;
-        background-color: #BBE;
+        padding: 9px 18px 12px;
+        background-color: rgb(255, 173, 79);
+        border: none;
+        font-size: 16px;
+        font-weight: bolder;
     }
     button:hover {
-        background-color: #CCF;
+        background-color: rgb(255, 145, 1);
+    }
+
+    @media (min-width: 800px) {
+        button {
+            padding: 9px 18px 12px;
+            font-size: 16px;
+            width: 74%;
+            border-radius: 3px;
+        }
     }
 </style>

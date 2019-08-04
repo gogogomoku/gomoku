@@ -90,21 +90,47 @@ export default {
 <style scoped>
     #gobanContainer {
         background-color:  #444477;
-        /* border: solid #FFF 2px; */
-        padding: 15px;
-        flex-grow: 2;
-    }
-    #goban {
+        padding: 16px;
+        display: flex;
+        flex-basis: 100%;
         background-color:  	#99C;
-        width: 70%;
+    }
+
+    #goban {
+        padding: 20px;
         border-radius: 10px;
         padding: 10px;
         margin: 0 auto;
-
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
         /* border: solid #DAC 2px; */
     }
+
+    .row {
+        flex-basis: 100%;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+    }
+
+    @media (min-width: 800px) {
+        #gobanContainer {
+            /* border: solid #FFF 2px; */
+            padding: 15px;
+            flex-grow: 3;
+        }
+        #goban {
+            width: 90%;
+        }
+    }
+
+    .row {
+        display: flex;
+    }
+    
     .tile {
-        width: 4.7%;
+        /* width: 4.7%; */
         display: inline-block;
         margin: 0.25%;
         cursor: pointer;

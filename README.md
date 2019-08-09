@@ -5,7 +5,7 @@
 ## Get it
 
 ```
-go get -u github.com/gogogomoku/gomoku
+GO111MODULE=off go get -u github.com/gogogomoku/gomoku
 ```
 
 ## Development environment

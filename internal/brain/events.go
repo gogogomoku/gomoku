@@ -8,66 +8,74 @@ import (
 )
 
 func StartRound() {
-	GameRound.Status = Running
-	player.ResetPlayers(GameRound.P1, GameRound.P2, MAXPIECES)
-	GameRound.CurrentPlayer = GameRound.P1
-	SuggestMove()
-	HandleMove(GameRound.CurrentPlayer.Id, GameRound.SuggestedPosition)
+	Game.Status = Running
+	player.ResetPlayers(Game.P1, Game.P2, MAXPIECES)
+	Game.CurrentPlayer = Game.P1
+	center := (board.SIZE * board.SIZE) / 2
+	if board.SIZE%2 == 0 {
+		center += board.SIZE / 2
+	}
+	HandleMove(Game.CurrentPlayer.Id, center)
 }
 
-func CheckValidMove(position int) bool {
-	return bool(position >= 0 && position <= (board.SIZE*board.SIZE)-1 && GameRound.Goban.Tab[position] == 0)
+func CheckValidMove(position int, tab []int) bool {
+	if position >= 0 && position <= (board.SIZE*board.SIZE)-1 {
+		if tab[position] == 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func getNextIndexForDirection(position int, direction int) (nextIndex int, edge bool) {
-	possibleDirection := [4]bool{true, true, true, true}
+	directions := [4]bool{true, true, true, true}
 	// First row
 	if position < board.SIZE {
-		possibleDirection[N] = false
+		directions[N] = false
 	}
 	// Last row
 	if position >= (board.SIZE * (board.SIZE - 1)) {
-		possibleDirection[S] = false
+		directions[S] = false
 	}
 	// East column
 	if position%board.SIZE == (board.SIZE - 1) {
-		possibleDirection[E] = false
+		directions[E] = false
 	}
 	// West column
 	if position%board.SIZE == 0 {
-		possibleDirection[W] = false
+		directions[W] = false
 	}
 	switch {
-	case direction == N && possibleDirection[N]:
+	case direction == N && directions[N]:
 		return position - board.SIZE, false
-	case direction == S && possibleDirection[S]:
+	case direction == S && directions[S]:
 		return position + board.SIZE, false
-	case direction == E && possibleDirection[E]:
+	case direction == E && directions[E]:
 		return position + 1, false
-	case direction == W && possibleDirection[W]:
+	case direction == W && directions[W]:
 		return position - 1, false
-	case direction == NE && possibleDirection[N] && possibleDirection[E]:
+	case direction == NE && directions[N] && directions[E]:
 		return position - (board.SIZE - 1), false
-	case direction == NW && possibleDirection[N] && possibleDirection[W]:
+	case direction == NW && directions[N] && directions[W]:
 		return position - (board.SIZE + 1), false
-	case direction == SE && possibleDirection[S] && possibleDirection[E]:
+	case direction == SE && directions[S] && directions[E]:
 		return position + (board.SIZE + 1), false
-	case direction == SW && possibleDirection[S] && possibleDirection[W]:
+	case direction == SW && directions[S] && directions[W]:
 		return position + (board.SIZE - 1), false
 	}
 	return -42, true
 }
 
-func ReturnNextPiece(position, direction int) (nextIndex int, edge bool) {
+func ReturnNextPiece(position int, direction int, tab *[]int) (nextIndex int, edge bool) {
 	nextIndex, edge = getNextIndexForDirection(position, direction)
 	if edge {
 		return -42, true
 	}
-	return GameRound.Goban.Tab[nextIndex], false
+	return (*tab)[nextIndex], false
 }
 
 func checkWinningConditions(lastPosition int, sequences [][]int) bool {
-	if GameRound.CurrentPlayer.CapturedPieces == 10 {
+	if Game.CurrentPlayer.CapturedPieces == 10 {
 		return true
 	}
 	for _, v := range sequences {
@@ -79,41 +87,43 @@ func checkWinningConditions(lastPosition int, sequences [][]int) bool {
 }
 
 func updateWhoseTurn() {
-	if GameRound.CurrentPlayer == GameRound.P1 {
-		GameRound.CurrentPlayer = GameRound.P2
+	if Game.CurrentPlayer == Game.P1 {
+		Game.CurrentPlayer = Game.P2
 	} else {
-		GameRound.CurrentPlayer = GameRound.P1
+		Game.CurrentPlayer = Game.P1
 	}
 }
 
 func HandleMove(id int, position int) (code int, msg string) {
-	fmt.Println("making move at...", position, "for Player...", GameRound.CurrentPlayer.Id)
-	if GameRound.Winner != 0 {
+	fmt.Println("making move at...", position,
+		"for Player...", Game.CurrentPlayer.Id)
+	if Game.Winner != 0 {
 		return 1, "Game is over"
 	}
-	if GameRound.CurrentPlayer.Id != id {
+	if Game.CurrentPlayer.Id != id {
 		return 1, "It is not your turn"
 	}
-	if !CheckValidMove(position) {
+	if !CheckValidMove(position, Game.Goban.Tab) {
 		return 1, "Move isn't valid"
 	}
-	if GameRound.CurrentPlayer.PiecesLeft == 0 {
+	if Game.CurrentPlayer.PiecesLeft == 0 {
 		return 1, "You have no pieces left"
 	}
-	GameRound.Goban.Tab[position] = int(id)
-	GameRound.CurrentPlayer.PiecesLeft--
-	captureDirections := checkCapture(position)
-	capturePairs(position, captureDirections)
-	sequences := CompleteSequenceForPosition(position, id)
+	Game.Goban.Tab[position] = int(id)
+	Game.CurrentPlayer.PiecesLeft--
+	captureDirections := checkCapture(position, &Game.Goban.Tab, Game.CurrentPlayer.Id)
+	capturePairs(position, captureDirections, &Game.Goban.Tab)
+	sequences := CompleteSequenceForPosition(position, id, &Game.Goban.Tab)
 	win := checkWinningConditions(position, sequences)
 	if win {
-		GameRound.Winner = id
-	}
-	GameRound.Turn++
-	updateWhoseTurn()
-	SuggestMove()
-	if GameRound.CurrentPlayer.Id == 1 {
-		HandleMove(GameRound.CurrentPlayer.Id, GameRound.SuggestedPosition)
+		Game.Winner = id
+	} else {
+		Game.Turn++
+		updateWhoseTurn()
+		SuggestMove()
+		if Game.CurrentPlayer.Id == 1 {
+			HandleMove(Game.CurrentPlayer.Id, Game.SuggestedPosition)
+		}
 	}
 	return 0, "Move done"
 }

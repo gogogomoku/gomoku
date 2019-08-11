@@ -35,19 +35,19 @@ type Round struct {
 	Winner            int
 }
 
-var GameRound Round = Round{}
+var Game Round = Round{}
 
 func init() {
 	InitializeValues()
 }
 
 func InitializeValues() {
-	GameRound.P1 = player.CreatePlayer(1, MAXPIECES)
-	GameRound.P2 = player.CreatePlayer(2, MAXPIECES)
-	GameRound.Goban = board.Board{}
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.Goban.Size = board.SIZE
-	GameRound.Turn = 0
-	GameRound.Status = NotStarted
-	GameRound.Winner = 0
+	Game.P1 = player.CreatePlayer(1, MAXPIECES)
+	Game.P2 = player.CreatePlayer(2, MAXPIECES)
+	Game.Goban = board.Board{}
+	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Size = board.SIZE
+	Game.Turn = 0
+	Game.Status = NotStarted
+	Game.Winner = 0
 }

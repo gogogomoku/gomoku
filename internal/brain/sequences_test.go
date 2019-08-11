@@ -9,8 +9,8 @@ import (
 
 func TestCheckSequence(t *testing.T) {
 	// Initialize
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
+	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.CurrentPlayer = Game.P1
 	center := (board.SIZE * board.SIZE) / 2
 	if board.SIZE%2 == 0 {
 		center += board.SIZE / 2
@@ -54,34 +54,34 @@ func TestCheckSequence(t *testing.T) {
 	}
 	for _, table := range tables {
 		for _, v := range table.opponentPositions {
-			GameRound.Goban.Tab[v] = 2
+			Game.Goban.Tab[v] = 2
 		}
 		for _, v := range table.currentPlayerPositions {
-			GameRound.Goban.Tab[v] = 1
+			Game.Goban.Tab[v] = 1
 		}
-		sequenceLengths := CheckSequence(table.position, GameRound.CurrentPlayer.Id)
+		sequenceLengths := CheckSequence(table.position, Game.CurrentPlayer.Id, &Game.Goban.Tab)
 
 		if !reflect.DeepEqual(table.expectedSequences, sequenceLengths) {
 
 			t.Errorf("Wrong sequenceLengths for %d, expected %v, got %v", table.position, table.expectedSequences, sequenceLengths)
 
 		}
-		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+		Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	}
 }
 
 func BenchmarkCheckSequence(b *testing.B) {
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
+	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.CurrentPlayer = Game.P1
 	for i := 0; i < b.N; i++ {
-		CheckSequence(i%(board.SIZE*board.SIZE), 1)
+		CheckSequence(i%(board.SIZE*board.SIZE), 1, &Game.Goban.Tab)
 	}
 }
 
 func TestCompleteSequenceForPosition(t *testing.T) {
 	// Initialize
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
+	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.CurrentPlayer = Game.P1
 	center := (board.SIZE * board.SIZE) / 2
 	if board.SIZE%2 == 0 {
 		center += board.SIZE / 2
@@ -114,12 +114,12 @@ func TestCompleteSequenceForPosition(t *testing.T) {
 	}
 	for _, table := range tables {
 		for _, v := range table.currentPlayerPositions {
-			GameRound.Goban.Tab[v] = 1
+			Game.Goban.Tab[v] = 1
 		}
-		completeSequences := CompleteSequenceForPosition(table.position, GameRound.CurrentPlayer.Id)
+		completeSequences := CompleteSequenceForPosition(table.position, Game.CurrentPlayer.Id, &Game.Goban.Tab)
 		if !reflect.DeepEqual(table.expectedSequences, completeSequences) {
 			t.Errorf("Wrong completeSequences for %d, expected %v, got %v", table.position, table.expectedSequences, completeSequences)
 		}
-		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+		Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	}
 }

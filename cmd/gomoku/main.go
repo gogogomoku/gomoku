@@ -27,21 +27,21 @@ func main() {
 	} else {
 		fmt.Println("Start gomoku | no server")
 		brain.StartRound()
-		for brain.GameRound.Winner == 0 {
+		for brain.Game.Winner == 0 {
 			brain.SuggestMove()
-			fmt.Println("Suggestion: ", brain.GameRound.SuggestedPosition)
-			fmt.Println("Player's turn: ", brain.GameRound.CurrentPlayer.Id)
-			if brain.GameRound.CurrentPlayer.Id == 1 {
-				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, brain.GameRound.SuggestedPosition)
+			fmt.Println("Suggestion: ", brain.Game.SuggestedPosition)
+			fmt.Println("Player's turn: ", brain.Game.CurrentPlayer.Id)
+			if brain.Game.CurrentPlayer.Id == 1 {
+				brain.HandleMove(brain.Game.CurrentPlayer.Id, brain.Game.SuggestedPosition)
 			} else {
 				reader := bufio.NewReader(os.Stdin)
 				fmt.Print("Enter new move: ")
 				text, _ := reader.ReadString('\n')
 				choice, _ := strconv.Atoi(text[:len(text)-1])
 				fmt.Println(choice)
-				brain.HandleMove(brain.GameRound.CurrentPlayer.Id, choice)
+				brain.HandleMove(brain.Game.CurrentPlayer.Id, choice)
 			}
-			board.PrintBoard(brain.GameRound.Goban)
+			board.PrintBoard(brain.Game.Goban.Tab, brain.Game.Goban.Size)
 		}
 	}
 }

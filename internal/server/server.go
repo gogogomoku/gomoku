@@ -46,10 +46,10 @@ func StartServer() {
 }
 
 func home(c echo.Context) error {
-	if brain.GameRound.Status == brain.NotStarted {
+	if brain.Game.Status == brain.NotStarted {
 		return c.JSON(http.StatusOK, &SimpleResponse{1, "Game hasn't started yet"})
-	} else if brain.GameRound.Status == brain.Running {
-		return c.JSON(http.StatusOK, brain.GameRound)
+	} else if brain.Game.Status == brain.Running {
+		return c.JSON(http.StatusOK, brain.Game)
 	} else {
 		return c.JSON(http.StatusOK, &SimpleResponse{3, "Game finished"})
 	}
@@ -75,7 +75,7 @@ func MakeMove(c echo.Context) error {
 	}
 	code, msg := brain.HandleMove(id, position)
 	if code == 0 {
-		return c.JSON(http.StatusOK, brain.GameRound)
+		return c.JSON(http.StatusOK, brain.Game)
 	} else {
 		return c.JSON(http.StatusBadRequest, &SimpleResponse{-1, msg})
 	}
@@ -101,10 +101,10 @@ func MakeMove(c echo.Context) error {
 
 // func home(w http.ResponseWriter, r *http.Request) {
 // 	brain.StartRound()
-// 	if brain.GameRound.Status == brain.NotStarted {
+// 	if brain.Game.Status == brain.NotStarted {
 // 		json.NewEncoder(w).Encode(SimpleResponse{ResCode: 1, Message: "Game hasn't started yet"})
-// 	} else if brain.GameRound.Status == brain.Running {
-// 		json.NewEncoder(w).Encode(brain.GameRound)
+// 	} else if brain.Game.Status == brain.Running {
+// 		json.NewEncoder(w).Encode(brain.Game)
 // 	} else {
 // 		json.NewEncoder(w).Encode(SimpleResponse{3, "Game finished"})
 // 	}
@@ -112,14 +112,14 @@ func MakeMove(c echo.Context) error {
 
 // func startGame(w http.ResponseWriter, r *http.Request) {
 // 	brain.StartRound()
-// 	json.NewEncoder(w).Encode(brain.GameRound)
+// 	json.NewEncoder(w).Encode(brain.Game)
 // }
 
 // func restartGame(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println(r)
 // 	brain.InitializeValues()
 // 	brain.StartRound()
-// 	json.NewEncoder(w).Encode(brain.GameRound)
+// 	json.NewEncoder(w).Encode(brain.Game)
 // }
 
 // func MakeMove(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +133,7 @@ func MakeMove(c echo.Context) error {
 // 	}
 // 	code, msg := brain.HandleMove(id, position)
 // 	if code == 0 {
-// 		json.NewEncoder(w).Encode(brain.GameRound)
+// 		json.NewEncoder(w).Encode(brain.Game)
 // 	} else {
 // 		json.NewEncoder(w).Encode(SimpleResponse{-1, msg})
 // 	}

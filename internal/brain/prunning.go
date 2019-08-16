@@ -31,8 +31,8 @@ func getMaxChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 		returnValue := MinimaxRecursivePruning(ch, depth-1, !max, alpha, beta)
 		alpha = maximum(alpha, returnValue)
 		bestValue = maximum(bestValue, returnValue)
-		if node.SelectedChild == nil || ch.Value > node.SelectedChild.Value {
-			node.SelectedChild = ch
+		if node.BestChild == nil || ch.Value > node.BestChild.Value {
+			node.BestChild = ch
 		}
 		if beta <= alpha {
 			break
@@ -47,8 +47,8 @@ func getMinChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 		returnValue := MinimaxRecursivePruning(ch, depth-1, !max, alpha, beta)
 		beta = minimum(beta, returnValue)
 		bestValue = minimum(bestValue, returnValue)
-		if node.SelectedChild == nil || ch.Value < node.SelectedChild.Value {
-			node.SelectedChild = ch
+		if node.BestChild == nil || ch.Value < node.BestChild.Value {
+			node.BestChild = ch
 		}
 		if beta <= alpha {
 			break

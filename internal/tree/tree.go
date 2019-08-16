@@ -1,16 +1,14 @@
 package tree
 
-import ()
-
 type Node struct {
-	Id            int
-	Value         int
-	Children      []*Node
-	SelectedChild *Node
-	Tab           []int
-	Position      int
-	Player        int
-	TotalDepth    int
+	Id         int
+	Value      int
+	Children   []*Node
+	BestChild  *Node
+	Tab        []int
+	Position   int
+	Player     int
+	TotalDepth int
 }
 
 /*

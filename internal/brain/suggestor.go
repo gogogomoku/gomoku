@@ -104,7 +104,7 @@ func SuggestMove() {
 	// Launch algo
 	LaunchMinimaxPruning(&tree, 3)
 
-	Game.SuggestedPosition = tree.SelectedChild.Position
+	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)
 	fmt.Println("Time spent on suggestion:", duration)
 }

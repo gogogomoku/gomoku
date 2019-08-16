@@ -156,29 +156,29 @@ func SuggestMove() {
 			addNewLayerPrePrunningMax(poss, ch2, Game.CurrentPlayer.Id)
 		}
 	}
-	// // opponents move
-	// for _, ch := range tree.Children {
-	// 	for _, ch2 := range ch.Children {
-	// 		for _, ch3 := range ch2.Children {
-	// 			poss := getPossibleMoves(ch3)
-	// 			addNewLayerPrePrunningMin(poss, ch3, opponent)
-	// 		}
-	// 	}
-	// }
-	// // Players move
-	// for _, ch := range tree.Children {
-	// 	for _, ch2 := range ch.Children {
-	// 		for _, ch3 := range ch2.Children {
-	// 			for _, ch4 := range ch3.Children {
-	// 				poss := getPossibleMoves(ch4)
-	// 				addNewLayerPrePrunningMax(poss, ch4, Game.CurrentPlayer.Id)
-	// 			}
-	// 		}
-	// 	}
-	// }
+	// opponents move
+	for _, ch := range tree.Children {
+		for _, ch2 := range ch.Children {
+			for _, ch3 := range ch2.Children {
+				poss := getPossibleMoves(ch3)
+				addNewLayerPrePrunningMin(poss, ch3, opponent)
+			}
+		}
+	}
+	// Players move
+	for _, ch := range tree.Children {
+		for _, ch2 := range ch.Children {
+			for _, ch3 := range ch2.Children {
+				for _, ch4 := range ch3.Children {
+					poss := getPossibleMoves(ch4)
+					addNewLayerPrePrunningMax(poss, ch4, Game.CurrentPlayer.Id)
+				}
+			}
+		}
+	}
 
 	// Launch algo
-	LaunchMinimaxPruning(&tree, 3)
+	LaunchMinimaxPruning(&tree, 5)
 
 	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)

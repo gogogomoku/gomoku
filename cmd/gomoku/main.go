@@ -12,9 +12,11 @@ import (
 	"github.com/gogogomoku/gomoku/internal/brain"
 
 	"github.com/akamensky/argparse"
+	"github.com/pkg/profile"
 )
 
 func main() {
+	defer profile.Start().Stop()
 	parser := argparse.NewParser("gomoku", "A great Gomoku game, and solving algorithm")
 	s := parser.Flag("s", "server", &argparse.Options{Help: "Launch web server"})
 	err := parser.Parse(os.Args)

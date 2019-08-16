@@ -128,7 +128,7 @@ export default {
     .row {
         display: flex;
     }
-    
+
     .tile {
         /* width: 4.7%; */
         display: inline-block;

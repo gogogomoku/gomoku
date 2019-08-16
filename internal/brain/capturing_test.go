@@ -9,8 +9,8 @@ import (
 
 func TestCheckCapture(t *testing.T) {
 	// Initialize
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
+	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.CurrentPlayer = Game.P1
 	center := (board.SIZE * board.SIZE) / 2
 	if board.SIZE%2 == 0 {
 		center += board.SIZE / 2
@@ -54,25 +54,25 @@ func TestCheckCapture(t *testing.T) {
 	}
 	for _, table := range tables {
 		for _, v := range table.opponentPositions {
-			GameRound.Goban.Tab[v] = 2
+			Game.Goban.Tab[v] = 2
 		}
 		for _, v := range table.currentPlayerPositions {
-			GameRound.Goban.Tab[v] = 1
+			Game.Goban.Tab[v] = 1
 		}
-		captureDirections := checkCapture(table.position)
+		captureDirections := checkCapture(table.position, &Game.Goban.Tab, Game.CurrentPlayer.Id)
 		if !reflect.DeepEqual(table.expectedCaptureDirections, captureDirections) {
 
 			t.Errorf("Wrong captureDirections for %d, expected %v, got %v", table.position, table.expectedCaptureDirections, captureDirections)
 
 		}
-		GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+		Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	}
 }
 
 func BenchmarkCheckCapture(b *testing.B) {
-	GameRound.Goban.Tab = make([]int, board.SIZE*board.SIZE)
-	GameRound.CurrentPlayer = GameRound.P1
+	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.CurrentPlayer = Game.P1
 	for i := 0; i < b.N; i++ {
-		checkCapture(i % (board.SIZE * board.SIZE))
+		checkCapture(i%(board.SIZE*board.SIZE), &Game.Goban.Tab, Game.CurrentPlayer.Id)
 	}
 }

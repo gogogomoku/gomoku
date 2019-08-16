@@ -5,15 +5,19 @@ import (
 )
 
 // For each direction in usual order, return how many contiguous pieces for playerId are present
-func CheckSequence(position int, playerId int) []int {
+func CheckSequence(position int, playerId int, tab *[]int) []int {
 	sequenceLengths := []int{0, 0, 0, 0, 0, 0, 0, 0}
 	for direction := 0; direction < 8; direction++ {
 		counter := 0
 		tmpPosition := position
 		for i := 0; i < 8; i++ {
 			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
-			nextIndexValue, edge := ReturnNextPiece(tmpPosition, direction)
-			if edge || nextIndexValue != playerId || nextIndexValue == 0 {
+
+			if edge {
+				break
+			}
+			nextIndexValue := (*tab)[nextIndex]
+			if nextIndexValue != playerId || nextIndexValue == 0 {
 				break
 			}
 			counter++
@@ -24,8 +28,8 @@ func CheckSequence(position int, playerId int) []int {
 	return sequenceLengths
 }
 
-func sequenceOpposingDirections(position int, playerId int, dir []int, increase int) []int {
-	partialSequences := CheckSequence(position, playerId)
+func sequenceOpposingDirections(position int, playerId int, dir []int, increase int, tab *[]int) []int {
+	partialSequences := CheckSequence(position, playerId, tab)
 	if partialSequences[dir[0]] != 0 || partialSequences[dir[1]] != 0 {
 		p := []int{position}
 		// Add elements in dir[0]
@@ -45,7 +49,7 @@ func sequenceOpposingDirections(position int, playerId int, dir []int, increase 
 	return []int{}
 }
 
-func CompleteSequenceForPosition(position int, playerId int) [][]int {
+func CompleteSequenceForPosition(position int, playerId int, tab *[]int) [][]int {
 	sequences := [][]int{}
 	sequenceDirections := []struct {
 		OpposingDirections []int
@@ -66,10 +70,29 @@ func CompleteSequenceForPosition(position int, playerId int) [][]int {
 		},
 	}
 	for _, d := range sequenceDirections {
-		seq := sequenceOpposingDirections(position, playerId, d.OpposingDirections, d.IncreaseValue)
+		seq := sequenceOpposingDirections(position, playerId, d.OpposingDirections, d.IncreaseValue, tab)
 		if len(seq) > 0 {
 			sequences = append(sequences, seq)
 		}
 	}
 	return sequences
+}
+
+// Return N next pieces for every directions
+func CheckNextN(position int, tab []int, size int) [][]int {
+	lines := make([][]int, 8)
+	for direction := 0; direction < 8; direction++ {
+		tmpPosition := position
+		for i := 0; i < size; i++ {
+			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
+
+			if edge {
+				break
+			}
+			nextIndexValue := tab[nextIndex]
+			lines[direction] = append(lines[direction], nextIndexValue)
+			tmpPosition = nextIndex
+		}
+	}
+	return lines
 }

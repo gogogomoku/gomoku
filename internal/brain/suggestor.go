@@ -2,6 +2,7 @@ package brain
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -56,6 +57,40 @@ func addNewLayer(poss []Move, node *tr.Node, playerId int) {
 	}
 }
 
+func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
+	newMovesToTest := []*tr.Node{}
+	for i, m := range poss {
+		newTab := append([]int{}, node.Tab...)
+		newTab[m.Position] = playerId
+		captureDirections := checkCapture(m.Position, &node.Tab, playerId)
+		// Virtual Capturing
+		capturePairs(m.Position, captureDirections, &newTab)
+		new := tr.Node{
+			Id:       i + node.Id,
+			Value:    0,
+			Tab:      newTab,
+			Position: m.Position,
+			Player:   playerId,
+		}
+		new.Value = getHeuristicValue(new.Position, playerId, &new.Tab)
+		// tr.AddChild(node, &new)
+		newMovesToTest = append(newMovesToTest, &new)
+	}
+	// fmt.Println("POSSIBLE MOVES: ", len(poss))
+	// fmt.Println("*** APPLYING PRE-PRUNNING ***")
+	sort.Slice(newMovesToTest, func(i int, j int) bool {
+		return newMovesToTest[i].Value > newMovesToTest[j].Value
+	})
+	i := 0
+	for i < 10 {
+		if i < len(newMovesToTest) {
+			newMovesToTest[i].Value = 0
+			tr.AddChild(node, newMovesToTest[i])
+		}
+		i++
+	}
+}
+
 func SuggestMove() {
 
 	startTime := time.Now()
@@ -67,7 +102,7 @@ func SuggestMove() {
 		opponent = 2
 	}
 	// Players move
-	addNewLayer(poss, &tree, Game.CurrentPlayer.Id)
+	addNewLayerPrePrunning(poss, &tree, Game.CurrentPlayer.Id)
 	// opponents move
 	for _, ch := range tree.Children {
 		poss := getPossibleMoves(ch)
@@ -77,7 +112,7 @@ func SuggestMove() {
 	for _, ch := range tree.Children {
 		for _, ch2 := range ch.Children {
 			poss := getPossibleMoves(ch2)
-			addNewLayer(poss, ch2, Game.CurrentPlayer.Id)
+			addNewLayerPrePrunning(poss, ch2, Game.CurrentPlayer.Id)
 		}
 	}
 	// // opponents move
@@ -95,14 +130,14 @@ func SuggestMove() {
 	// 		for _, ch3 := range ch2.Children {
 	// 			for _, ch4 := range ch3.Children {
 	// 				poss := getPossibleMoves(ch4)
-	// 				addNewLayer(poss, ch4, Game.CurrentPlayer.Id)
+	// 				addNewLayerPrePrunning(poss, ch4, Game.CurrentPlayer.Id)
 	// 			}
 	// 		}
 	// 	}
 	// }
 
 	// Launch algo
-	LaunchMinimaxPruning(&tree, 3)
+	LaunchMinimaxPruning(&tree, 4)
 
 	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)

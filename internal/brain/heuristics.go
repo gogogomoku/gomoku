@@ -4,7 +4,7 @@ import (
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
-func checkHorizontalSequences(playerId int, tab *[]int) int {
+func checkHorizontalSequences(playerId int, tab *[19 * 19]int) int {
 	score := 0
 	for l := 0; l < board.SIZE; l++ {
 		line := (*tab)[l*board.SIZE : (l+1)*board.SIZE]
@@ -13,7 +13,7 @@ func checkHorizontalSequences(playerId int, tab *[]int) int {
 	return score
 }
 
-func checkVerticalSequences(playerId int, tab *[]int) int {
+func checkVerticalSequences(playerId int, tab *[19 * 19]int) int {
 	score := 0
 	for c := 0; c < board.SIZE; c++ {
 		line := []int{}
@@ -25,7 +25,7 @@ func checkVerticalSequences(playerId int, tab *[]int) int {
 	return score
 }
 
-func checkDiagonalNWSESequences(playerId int, tab *[]int) int {
+func checkDiagonalNWSESequences(playerId int, tab *[19 * 19]int) int {
 	score := 0
 	for d := 1; d < board.SIZE*2; d++ {
 		line := []int{}
@@ -45,7 +45,7 @@ func checkDiagonalNWSESequences(playerId int, tab *[]int) int {
 	return score
 }
 
-func checkDiagonalNESWSequences(playerId int, tab *[]int) int {
+func checkDiagonalNESWSequences(playerId int, tab *[19 * 19]int) int {
 	score := 0
 	for d := 1; d < board.SIZE*2; d++ {
 		line := []int{}
@@ -65,7 +65,7 @@ func checkDiagonalNESWSequences(playerId int, tab *[]int) int {
 	return score
 }
 
-func getHeuristicValue(position int, playerId int, tab *[]int) int {
+func getHeuristicValue(position int, playerId int, tab *[19 * 19]int) int {
 	boardScore := 0
 	opponent := 1
 	if playerId == 1 {

@@ -11,7 +11,8 @@ func TestStartRound(t *testing.T) {
 }
 
 func TestCheckValidMove(t *testing.T) {
-	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Tab = [19 * 19]int{}
 	Game.CurrentPlayer = Game.P1
 	center := (board.SIZE * board.SIZE) / 2
 	if board.SIZE%2 == 0 {
@@ -49,7 +50,8 @@ func TestCheckValidMove(t *testing.T) {
 		if table.expectedIsValid != isValidMove {
 			t.Errorf("position %d, valid: %t, expected: %t", table.position, isValidMove, table.expectedIsValid)
 		}
-		Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+		// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+		Game.Goban.Tab = [19 * 19]int{}
 	}
 }
 
@@ -93,7 +95,8 @@ func TestGetNextIndexForDirection(t *testing.T) {
 
 func BenchmarkGetNextIndexForDirection(b *testing.B) {
 	// nTiles = math.Pow(Game.Goban.Size, 2)
-	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Tab = [19 * 19]int{}
 	Game.CurrentPlayer = Game.P1
 	for i := 0; i < b.N; i++ {
 		getNextIndexForDirection(i%(board.SIZE*board.SIZE), N)
@@ -101,7 +104,8 @@ func BenchmarkGetNextIndexForDirection(b *testing.B) {
 }
 
 func TestReturnNextPiece(t *testing.T) {
-	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Tab = [19 * 19]int{}
 	for i := range Game.Goban.Tab {
 		Game.Goban.Tab[i] = i
 	}
@@ -145,7 +149,8 @@ func TestReturnNextPiece(t *testing.T) {
 }
 
 func BenchmarkReturnNextPiece(b *testing.B) {
-	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Tab = [19 * 19]int{}
 	Game.CurrentPlayer = Game.P1
 	for i := 0; i < b.N; i++ {
 		ReturnNextPiece((board.SIZE * board.SIZE), NE, &Game.Goban.Tab)

@@ -5,7 +5,7 @@ type Node struct {
 	Value      int
 	Children   []*Node
 	BestChild  *Node
-	Tab        []int
+	Tab        [19 * 19]int
 	Position   int
 	Player     int
 	TotalDepth int

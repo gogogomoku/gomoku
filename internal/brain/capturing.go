@@ -1,6 +1,6 @@
 package brain
 
-func checkCapture(position int, tab *[]int, playerId int) []int {
+func checkCapture(position int, tab *[19 * 19]int, playerId int) []int {
 	captureDirections := []int{}
 	for direction := 0; direction < 8; direction++ {
 		counter := 0
@@ -24,7 +24,7 @@ func checkCapture(position int, tab *[]int, playerId int) []int {
 	return captureDirections
 }
 
-func capturePairs(position int, captureDirections []int, tab *[]int) {
+func capturePairs(position int, captureDirections []int, tab *[19 * 19]int) {
 	for _, captureDirection := range captureDirections {
 		tmpPosition := position
 		for j := 0; j < 2; j++ {

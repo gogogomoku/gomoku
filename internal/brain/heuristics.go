@@ -1,8 +1,9 @@
 package brain
 
 import (
-	"github.com/gogogomoku/gomoku/internal/board"
 	"sync"
+
+	"github.com/gogogomoku/gomoku/internal/board"
 )
 
 func convertArrayToSlice(line [board.SIZE]int) []int {

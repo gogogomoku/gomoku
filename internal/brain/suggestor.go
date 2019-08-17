@@ -40,29 +40,9 @@ func getPossibleMoves(node *tr.Node) []Move {
 	return poss
 }
 
-func addNewLayer(poss []Move, node *tr.Node, playerId int) {
-	for i, m := range poss {
-		// newTab := append([]int{}, node.Tab...)
-		newTab := node.Tab
-		newTab[m.Position] = playerId
-		captureDirections := checkCapture(m.Position, &node.Tab, playerId)
-		// Virtual Capturing
-		capturePairs(m.Position, captureDirections, &newTab)
-		new := tr.Node{
-			Id:       i + node.Id,
-			Value:    0,
-			Tab:      newTab,
-			Position: m.Position,
-			Player:   playerId,
-		}
-		tr.AddChild(node, &new)
-	}
-}
-
 func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
 	newMovesToTest := []*tr.Node{}
 	for i, m := range poss {
-		// newTab := append([]int{}, node.Tab...)
 		newTab := node.Tab
 		newTab[m.Position] = playerId
 		captureDirections := checkCapture(m.Position, &node.Tab, playerId)
@@ -76,11 +56,8 @@ func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
 			Player:   playerId,
 		}
 		new.Value = getHeuristicValue(new.Position, playerId, &new.Tab)
-		// tr.AddChild(node, &new)
 		newMovesToTest = append(newMovesToTest, &new)
 	}
-	// fmt.Println("POSSIBLE MOVES: ", len(poss))
-	// fmt.Println("*** APPLYING PRE-PRUNNING ***")
 	sort.Slice(newMovesToTest, func(i int, j int) bool {
 		return newMovesToTest[i].Value > newMovesToTest[j].Value
 	})
@@ -97,12 +74,15 @@ func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
 func SuggestMove() {
 
 	if Game.CurrentPlayer.Id == 2 {
-		// if Game.Turn == 1 {
-		// 	Game.SuggestedPosition = 0
-		// } else {
-		// 	Game.SuggestedPosition = tree.BestChild.BestChild.Position
-		// }
-		Game.SuggestedPosition = board.TOT_SIZE + 1
+		if Game.Turn == 1 {
+			center := (board.SIZE * board.SIZE) / 2
+			if board.SIZE%2 == 0 {
+				center += board.SIZE / 2
+			}
+			Game.SuggestedPosition = center + 1
+		} else {
+			Game.SuggestedPosition = tree.BestChild.BestChild.Position
+		}
 		return
 	}
 	startTime := time.Now()
@@ -113,6 +93,8 @@ func SuggestMove() {
 	if Game.CurrentPlayer.Id == 1 {
 		opponent = 2
 	}
+
+	// UGLY ----- test. Do it the smart way :)
 	// Players move
 	addNewLayerPrePrunning(poss, &tree, Game.CurrentPlayer.Id)
 	// opponents move

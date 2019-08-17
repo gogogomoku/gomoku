@@ -9,7 +9,6 @@ import (
 
 func TestCheckSequence(t *testing.T) {
 	// Initialize
-	// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	Game.Goban.Tab = [board.TOT_SIZE]int{}
 	Game.CurrentPlayer = Game.P1
 	center := (board.SIZE * board.SIZE) / 2
@@ -67,13 +66,12 @@ func TestCheckSequence(t *testing.T) {
 			t.Errorf("Wrong sequenceLengths for %d, expected %v, got %v", table.position, table.expectedSequences, sequenceLengths)
 
 		}
-		// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+		// Game.Gban.Tab = make([]int, board.SIZE*board.SIZE)
 		Game.Goban.Tab = [board.TOT_SIZE]int{}
 	}
 }
 
 func BenchmarkCheckSequence(b *testing.B) {
-	// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	Game.Goban.Tab = [board.TOT_SIZE]int{}
 	Game.CurrentPlayer = Game.P1
 	for i := 0; i < b.N; i++ {
@@ -83,7 +81,6 @@ func BenchmarkCheckSequence(b *testing.B) {
 
 func TestCompleteSequenceForPosition(t *testing.T) {
 	// Initialize
-	// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 	Game.Goban.Tab = [board.TOT_SIZE]int{}
 	Game.CurrentPlayer = Game.P1
 	center := (board.SIZE * board.SIZE) / 2
@@ -124,7 +121,6 @@ func TestCompleteSequenceForPosition(t *testing.T) {
 		if !reflect.DeepEqual(table.expectedSequences, completeSequences) {
 			t.Errorf("Wrong completeSequences for %d, expected %v, got %v", table.position, table.expectedSequences, completeSequences)
 		}
-		// Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
 		Game.Goban.Tab = [board.TOT_SIZE]int{}
 	}
 }

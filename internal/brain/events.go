@@ -18,7 +18,7 @@ func StartRound() {
 	HandleMove(Game.CurrentPlayer.Id, center)
 }
 
-func CheckValidMove(position int, tab [19 * 19]int) bool {
+func CheckValidMove(position int, tab [board.TOT_SIZE]int) bool {
 	if position >= 0 && position <= (board.SIZE*board.SIZE)-1 {
 		if tab[position] == 0 {
 			return true
@@ -66,7 +66,7 @@ func getNextIndexForDirection(position int, direction int) (nextIndex int, edge 
 	return -42, true
 }
 
-func ReturnNextPiece(position int, direction int, tab *[19 * 19]int) (nextIndex int, edge bool) {
+func ReturnNextPiece(position int, direction int, tab *[board.TOT_SIZE]int) (nextIndex int, edge bool) {
 	nextIndex, edge = getNextIndexForDirection(position, direction)
 	if edge {
 		return -42, true

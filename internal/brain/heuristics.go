@@ -5,18 +5,18 @@ import (
 	"sync"
 )
 
-func convertArrayToSlice(line [19]int) []int {
-	new := make([]int, 19)
+func convertArrayToSlice(line [board.SIZE]int) []int {
+	new := make([]int, board.SIZE)
 	for i := 0; i < board.SIZE; i++ {
 		new[i] = line[i]
 	}
 	return new
 }
 
-func checkHorizontalSequences(playerId int, tab *[19 * 19]int) int {
+func checkHorizontalSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for l := 0; l < board.SIZE; l++ {
-		line := [19]int{}
+		line := [board.SIZE]int{}
 		for c := 0; c < board.SIZE; c++ {
 			line[c] = (*tab)[l*board.SIZE+c]
 		}
@@ -26,10 +26,10 @@ func checkHorizontalSequences(playerId int, tab *[19 * 19]int) int {
 	return score
 }
 
-func checkVerticalSequences(playerId int, tab *[19 * 19]int) int {
+func checkVerticalSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for c := 0; c < board.SIZE; c++ {
-		line := [19]int{}
+		line := [board.SIZE]int{}
 		for l := 0; l < board.SIZE; l++ {
 			line[l] = (*tab)[l*board.SIZE+c]
 		}
@@ -39,7 +39,7 @@ func checkVerticalSequences(playerId int, tab *[19 * 19]int) int {
 	return score
 }
 
-func checkDiagonalNWSESequences(playerId int, tab *[19 * 19]int) int {
+func checkDiagonalNWSESequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for d := 1; d < board.SIZE*2; d++ {
 		line := []int{}
@@ -59,7 +59,7 @@ func checkDiagonalNWSESequences(playerId int, tab *[19 * 19]int) int {
 	return score
 }
 
-func checkDiagonalNESWSequences(playerId int, tab *[19 * 19]int) int {
+func checkDiagonalNESWSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for d := 1; d < board.SIZE*2; d++ {
 		line := []int{}
@@ -79,7 +79,7 @@ func checkDiagonalNESWSequences(playerId int, tab *[19 * 19]int) int {
 	return score
 }
 
-func getHeuristicValue(position int, playerId int, tab *[19 * 19]int) int {
+func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int {
 	boardScorePlayerHV := 0
 	boardScorePlayerDI := 0
 	boardScoreOpponentHV := 0

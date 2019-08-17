@@ -5,7 +5,7 @@ import (
 )
 
 // For each direction in usual order, return how many contiguous pieces for playerId are present
-func CheckSequence(position int, playerId int, tab *[19 * 19]int) []int {
+func CheckSequence(position int, playerId int, tab *[board.TOT_SIZE]int) []int {
 	sequenceLengths := []int{0, 0, 0, 0, 0, 0, 0, 0}
 	for direction := 0; direction < 8; direction++ {
 		counter := 0
@@ -28,7 +28,7 @@ func CheckSequence(position int, playerId int, tab *[19 * 19]int) []int {
 	return sequenceLengths
 }
 
-func sequenceOpposingDirections(position int, playerId int, dir []int, increase int, tab *[19 * 19]int) []int {
+func sequenceOpposingDirections(position int, playerId int, dir []int, increase int, tab *[board.TOT_SIZE]int) []int {
 	partialSequences := CheckSequence(position, playerId, tab)
 	if partialSequences[dir[0]] != 0 || partialSequences[dir[1]] != 0 {
 		p := []int{position}
@@ -49,7 +49,7 @@ func sequenceOpposingDirections(position int, playerId int, dir []int, increase 
 	return []int{}
 }
 
-func CompleteSequenceForPosition(position int, playerId int, tab *[19 * 19]int) [][]int {
+func CompleteSequenceForPosition(position int, playerId int, tab *[board.TOT_SIZE]int) [][]int {
 	sequences := [][]int{}
 	sequenceDirections := []struct {
 		OpposingDirections []int
@@ -79,7 +79,7 @@ func CompleteSequenceForPosition(position int, playerId int, tab *[19 * 19]int) 
 }
 
 // Return N next pieces for every directions
-func CheckNextN(position int, tab [19 * 19]int, size int) [][]int {
+func CheckNextN(position int, tab [board.TOT_SIZE]int, size int) [][]int {
 	lines := make([][]int, 8)
 	for direction := 0; direction < 8; direction++ {
 		tmpPosition := position

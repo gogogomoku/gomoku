@@ -1,11 +1,15 @@
 package tree
 
+import (
+	"github.com/gogogomoku/gomoku/internal/board"
+)
+
 type Node struct {
 	Id         int
 	Value      int
 	Children   []*Node
 	BestChild  *Node
-	Tab        [19 * 19]int
+	Tab        [board.TOT_SIZE]int
 	Position   int
 	Player     int
 	TotalDepth int

@@ -85,7 +85,7 @@ func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
 		return newMovesToTest[i].Value > newMovesToTest[j].Value
 	})
 	i := 0
-	for i < 12 {
+	for i < 4 {
 		if i < len(newMovesToTest) {
 			newMovesToTest[i].Value = 0
 			tr.AddChild(node, newMovesToTest[i])
@@ -127,12 +127,36 @@ func SuggestMove() {
 			addNewLayerPrePrunning(poss, ch2, Game.CurrentPlayer.Id)
 		}
 	}
+	// opponents move
+	for _, ch := range tree.Children {
+		for _, ch2 := range ch.Children {
+			for _, ch3 := range ch2.Children {
+				poss := getPossibleMoves(ch3)
+				addNewLayerPrePrunning(poss, ch3, opponent)
+			}
+		}
+	}
+	// Players move
+	for _, ch := range tree.Children {
+		for _, ch2 := range ch.Children {
+			for _, ch3 := range ch2.Children {
+				for _, ch4 := range ch3.Children {
+					poss := getPossibleMoves(ch4)
+					addNewLayerPrePrunning(poss, ch4, Game.CurrentPlayer.Id)
+				}
+			}
+		}
+	}
 	// // opponents move
 	// for _, ch := range tree.Children {
 	// 	for _, ch2 := range ch.Children {
 	// 		for _, ch3 := range ch2.Children {
-	// 			poss := getPossibleMoves(ch3)
-	// 			addNewLayerPrePrunning(poss, ch3, opponent)
+	// 			for _, ch4 := range ch3.Children {
+	// 				for _, ch5 := range ch4.Children {
+	// 					poss := getPossibleMoves(ch5)
+	// 					addNewLayerPrePrunning(poss, ch5, opponent)
+	// 				}
+	// 			}
 	// 		}
 	// 	}
 	// }
@@ -141,15 +165,19 @@ func SuggestMove() {
 	// 	for _, ch2 := range ch.Children {
 	// 		for _, ch3 := range ch2.Children {
 	// 			for _, ch4 := range ch3.Children {
-	// 				poss := getPossibleMoves(ch4)
-	// 				addNewLayerPrePrunning(poss, ch4, Game.CurrentPlayer.Id)
+	// 				for _, ch5 := range ch4.Children {
+	// 					for _, ch6 := range ch5.Children {
+	// 						poss := getPossibleMoves(ch6)
+	// 						addNewLayerPrePrunning(poss, ch6, Game.CurrentPlayer.Id)
+	// 					}
+	// 				}
 	// 			}
 	// 		}
 	// 	}
 	// }
 
 	// Launch algo
-	LaunchMinimaxPruning(&tree, 3)
+	LaunchMinimaxPruning(&tree, 5)
 
 	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)

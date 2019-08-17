@@ -45,7 +45,7 @@ func InitializeValues() {
 	Game.P1 = player.CreatePlayer(1, MAXPIECES)
 	Game.P2 = player.CreatePlayer(2, MAXPIECES)
 	Game.Goban = board.Board{}
-	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Tab = [board.TOT_SIZE]int{}
 	Game.Goban.Size = board.SIZE
 	Game.Turn = 0
 	Game.Status = NotStarted

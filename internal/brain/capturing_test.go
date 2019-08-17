@@ -9,7 +9,7 @@ import (
 
 func TestCheckCapture(t *testing.T) {
 	// Initialize
-	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Tab = [board.TOT_SIZE]int{}
 	Game.CurrentPlayer = Game.P1
 	center := (board.SIZE * board.SIZE) / 2
 	if board.SIZE%2 == 0 {
@@ -65,12 +65,12 @@ func TestCheckCapture(t *testing.T) {
 			t.Errorf("Wrong captureDirections for %d, expected %v, got %v", table.position, table.expectedCaptureDirections, captureDirections)
 
 		}
-		Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+		Game.Goban.Tab = [board.TOT_SIZE]int{}
 	}
 }
 
 func BenchmarkCheckCapture(b *testing.B) {
-	Game.Goban.Tab = make([]int, board.SIZE*board.SIZE)
+	Game.Goban.Tab = [board.TOT_SIZE]int{}
 	Game.CurrentPlayer = Game.P1
 	for i := 0; i < b.N; i++ {
 		checkCapture(i%(board.SIZE*board.SIZE), &Game.Goban.Tab, Game.CurrentPlayer.Id)

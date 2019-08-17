@@ -2,6 +2,7 @@ package brain
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -13,12 +14,13 @@ type Move struct {
 	Value    int
 }
 
+var tree tr.Node
+
 func getPossibleMoves(node *tr.Node) []Move {
 	poss := []Move{}
 	for i := 0; i < (board.SIZE * board.SIZE); i++ {
 		if node.Tab[i] == 0 {
 			if CheckValidMove(i, node.Tab) {
-				// Add move only if it is aligned in a range of 5 from other
 				affectsTab := false
 				lines := CheckNextN(i, node.Tab, 1)
 				for _, line := range lines {
@@ -38,9 +40,10 @@ func getPossibleMoves(node *tr.Node) []Move {
 	return poss
 }
 
-func addNewLayer(poss []Move, node *tr.Node, playerId int) {
+func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
+	newMovesToTest := []*tr.Node{}
 	for i, m := range poss {
-		newTab := append([]int{}, node.Tab...)
+		newTab := node.Tab
 		newTab[m.Position] = playerId
 		captureDirections := checkCapture(m.Position, &node.Tab, playerId)
 		// Virtual Capturing
@@ -52,40 +55,90 @@ func addNewLayer(poss []Move, node *tr.Node, playerId int) {
 			Position: m.Position,
 			Player:   playerId,
 		}
-		tr.AddChild(node, &new)
+		new.Value = getHeuristicValue(new.Position, playerId, &new.Tab)
+		newMovesToTest = append(newMovesToTest, &new)
+	}
+	sort.Slice(newMovesToTest, func(i int, j int) bool {
+		return newMovesToTest[i].Value > newMovesToTest[j].Value
+	})
+	i := 0
+	for i < 4 {
+		if i < len(newMovesToTest) {
+			newMovesToTest[i].Value = 0
+			tr.AddChild(node, newMovesToTest[i])
+		}
+		i++
 	}
 }
 
 func SuggestMove() {
 
+	if Game.CurrentPlayer.Id == 2 {
+		if Game.Turn == 1 {
+			center := (board.SIZE * board.SIZE) / 2
+			if board.SIZE%2 == 0 {
+				center += board.SIZE / 2
+			}
+			Game.SuggestedPosition = center + 1
+		} else {
+			Game.SuggestedPosition = tree.BestChild.BestChild.Position
+		}
+		return
+	}
 	startTime := time.Now()
 	//Create tree
-	tree := tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
+	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
 	poss := getPossibleMoves(&tree)
 	opponent := 1
 	if Game.CurrentPlayer.Id == 1 {
 		opponent = 2
 	}
+
+	// UGLY ----- test. Do it the smart way :)
 	// Players move
-	addNewLayer(poss, &tree, Game.CurrentPlayer.Id)
+	addNewLayerPrePrunning(poss, &tree, Game.CurrentPlayer.Id)
 	// opponents move
 	for _, ch := range tree.Children {
 		poss := getPossibleMoves(ch)
-		addNewLayer(poss, ch, opponent)
+		addNewLayerPrePrunning(poss, ch, opponent)
 	}
 	// Players move
 	for _, ch := range tree.Children {
 		for _, ch2 := range ch.Children {
 			poss := getPossibleMoves(ch2)
-			addNewLayer(poss, ch2, Game.CurrentPlayer.Id)
+			addNewLayerPrePrunning(poss, ch2, Game.CurrentPlayer.Id)
+		}
+	}
+	// opponents move
+	for _, ch := range tree.Children {
+		for _, ch2 := range ch.Children {
+			for _, ch3 := range ch2.Children {
+				poss := getPossibleMoves(ch3)
+				addNewLayerPrePrunning(poss, ch3, opponent)
+			}
+		}
+	}
+	// Players move
+	for _, ch := range tree.Children {
+		for _, ch2 := range ch.Children {
+			for _, ch3 := range ch2.Children {
+				for _, ch4 := range ch3.Children {
+					poss := getPossibleMoves(ch4)
+					addNewLayerPrePrunning(poss, ch4, Game.CurrentPlayer.Id)
+				}
+			}
 		}
 	}
 	// // opponents move
 	// for _, ch := range tree.Children {
 	// 	for _, ch2 := range ch.Children {
 	// 		for _, ch3 := range ch2.Children {
-	// 			poss := getPossibleMoves(ch3)
-	// 			addNewLayer(poss, ch3, opponent)
+	// 			for _, ch4 := range ch3.Children {
+	// 				for _, ch5 := range ch4.Children {
+	// 					poss := getPossibleMoves(ch5)
+	// 					addNewLayerPrePrunning(poss, ch5, opponent)
+	// 				}
+	// 			}
 	// 		}
 	// 	}
 	// }
@@ -94,15 +147,19 @@ func SuggestMove() {
 	// 	for _, ch2 := range ch.Children {
 	// 		for _, ch3 := range ch2.Children {
 	// 			for _, ch4 := range ch3.Children {
-	// 				poss := getPossibleMoves(ch4)
-	// 				addNewLayer(poss, ch4, Game.CurrentPlayer.Id)
+	// 				for _, ch5 := range ch4.Children {
+	// 					for _, ch6 := range ch5.Children {
+	// 						poss := getPossibleMoves(ch6)
+	// 						addNewLayerPrePrunning(poss, ch6, Game.CurrentPlayer.Id)
+	// 					}
+	// 				}
 	// 			}
 	// 		}
 	// 	}
 	// }
 
 	// Launch algo
-	LaunchMinimaxPruning(&tree, 3)
+	LaunchMinimaxPruning(&tree, 5)
 
 	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)

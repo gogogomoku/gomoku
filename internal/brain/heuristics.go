@@ -1,31 +1,46 @@
 package brain
 
 import (
+	"sync"
+
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
-func checkHorizontalSequences(playerId int, tab *[]int) int {
+func convertArrayToSlice(line [board.SIZE]int) []int {
+	new := make([]int, board.SIZE)
+	for i := 0; i < board.SIZE; i++ {
+		new[i] = line[i]
+	}
+	return new
+}
+
+func checkHorizontalSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for l := 0; l < board.SIZE; l++ {
-		line := (*tab)[l*board.SIZE : (l+1)*board.SIZE]
-		score += checkSequence(line, playerId)
+		line := [board.SIZE]int{}
+		for c := 0; c < board.SIZE; c++ {
+			line[c] = (*tab)[l*board.SIZE+c]
+		}
+		lineSlice := convertArrayToSlice(line)
+		score += checkSequence(lineSlice, playerId)
 	}
 	return score
 }
 
-func checkVerticalSequences(playerId int, tab *[]int) int {
+func checkVerticalSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for c := 0; c < board.SIZE; c++ {
-		line := []int{}
+		line := [board.SIZE]int{}
 		for l := 0; l < board.SIZE; l++ {
-			line = append(line, (*tab)[l*board.SIZE+c])
+			line[l] = (*tab)[l*board.SIZE+c]
 		}
-		score += checkSequence(line, playerId)
+		lineSlice := convertArrayToSlice(line)
+		score += checkSequence(lineSlice, playerId)
 	}
 	return score
 }
 
-func checkDiagonalNWSESequences(playerId int, tab *[]int) int {
+func checkDiagonalNWSESequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for d := 1; d < board.SIZE*2; d++ {
 		line := []int{}
@@ -45,7 +60,7 @@ func checkDiagonalNWSESequences(playerId int, tab *[]int) int {
 	return score
 }
 
-func checkDiagonalNESWSequences(playerId int, tab *[]int) int {
+func checkDiagonalNESWSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for d := 1; d < board.SIZE*2; d++ {
 		line := []int{}
@@ -65,25 +80,44 @@ func checkDiagonalNESWSequences(playerId int, tab *[]int) int {
 	return score
 }
 
-func getHeuristicValue(position int, playerId int, tab *[]int) int {
-	boardScore := 0
+func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int {
+	boardScorePlayerHV := 0
+	boardScorePlayerDI := 0
+	boardScoreOpponentHV := 0
+	boardScoreOpponentDI := 0
 	opponent := 1
 	if playerId == 1 {
 		opponent = 2
 	}
+	var waitgroup sync.WaitGroup
 	// Check sequences for player
-	boardScore += checkHorizontalSequences(playerId, tab)
-	boardScore += checkVerticalSequences(playerId, tab)
-	boardScore += checkDiagonalNWSESequences(playerId, tab)
-	boardScore += checkDiagonalNESWSequences(playerId, tab)
+	waitgroup.Add(4)
+	go func() {
+		defer waitgroup.Done()
+		boardScorePlayerHV += checkHorizontalSequences(playerId, tab)
+		boardScorePlayerHV += checkVerticalSequences(playerId, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScorePlayerDI += checkDiagonalNWSESequences(playerId, tab)
+		boardScorePlayerDI += checkDiagonalNESWSequences(playerId, tab)
+	}()
+
 	// Check sequences for opponent
-	boardScore -= checkHorizontalSequences(opponent, tab)
-	boardScore -= checkVerticalSequences(opponent, tab)
-	boardScore -= checkDiagonalNWSESequences(opponent, tab)
-	boardScore -= checkDiagonalNESWSequences(opponent, tab)
+	go func() {
+		defer waitgroup.Done()
+		boardScoreOpponentHV += checkHorizontalSequences(opponent, tab)
+		boardScoreOpponentHV += checkVerticalSequences(opponent, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScoreOpponentDI += checkDiagonalNWSESequences(opponent, tab)
+		boardScoreOpponentDI += checkDiagonalNESWSequences(opponent, tab)
+	}()
+	waitgroup.Wait()
 	// board.PrintBoard(*tab, board.SIZE)
 	// fmt.Println(boardScore)
-	return boardScore
+	return boardScorePlayerHV + boardScorePlayerDI - boardScoreOpponentHV - boardScoreOpponentDI
 }
 
 func checkSequence(line []int, playerId int) int {

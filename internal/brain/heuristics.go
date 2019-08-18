@@ -117,7 +117,17 @@ func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int
 	waitgroup.Wait()
 	// board.PrintBoard(*tab, board.SIZE)
 	// fmt.Println(boardScore)
-	return boardScorePlayerHV + boardScorePlayerDI - boardScoreOpponentHV - boardScoreOpponentDI
+	playerScore := boardScorePlayerDI + boardScorePlayerHV
+	opponentScore := boardScoreOpponentDI + boardScoreOpponentHV
+	if playerScore >= 100000 {
+		playerScore = 100000
+		opponentScore = -100000
+	}
+	if opponentScore >= 100000 {
+		opponentScore = 100000
+		playerScore = -100000
+	}
+	return playerScore - opponentScore
 }
 
 func checkSequence(line []int, playerId int) int {
@@ -155,7 +165,7 @@ func checkSequence(line []int, playerId int) int {
 				tmpScore = 0
 			}
 			if counter == 5 {
-				tmpScore = 50000
+				tmpScore = 100000
 			}
 			counter = 0
 			blocked = 0

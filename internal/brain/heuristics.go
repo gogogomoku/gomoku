@@ -82,16 +82,18 @@ func checkDiagonalNESWSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 
 func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int {
 	boardScorePlayerHV := 0
-	boardScorePlayerDI := 0
+	boardScorePlayerDINWSE := 0
+	boardScorePlayerDINESW := 0
 	boardScoreOpponentHV := 0
-	boardScoreOpponentDI := 0
+	boardScoreOpponentDINWSE := 0
+	boardScoreOpponentDINESW := 0
 	opponent := 1
 	if playerId == 1 {
 		opponent = 2
 	}
 	var waitgroup sync.WaitGroup
 	// Check sequences for player
-	waitgroup.Add(4)
+	waitgroup.Add(6)
 	go func() {
 		defer waitgroup.Done()
 		boardScorePlayerHV += checkHorizontalSequences(playerId, tab)
@@ -99,8 +101,11 @@ func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScorePlayerDI += checkDiagonalNWSESequences(playerId, tab)
-		boardScorePlayerDI += checkDiagonalNESWSequences(playerId, tab)
+		boardScorePlayerDINWSE += checkDiagonalNWSESequences(playerId, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScorePlayerDINESW += checkDiagonalNESWSequences(playerId, tab)
 	}()
 
 	// Check sequences for opponent
@@ -111,14 +116,17 @@ func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScoreOpponentDI += checkDiagonalNWSESequences(opponent, tab)
-		boardScoreOpponentDI += checkDiagonalNESWSequences(opponent, tab)
+		boardScoreOpponentDINWSE += checkDiagonalNWSESequences(opponent, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScoreOpponentDINESW += checkDiagonalNESWSequences(opponent, tab)
 	}()
 	waitgroup.Wait()
 	// board.PrintBoard(*tab, board.SIZE)
 	// fmt.Println(boardScore)
-	playerScore := boardScorePlayerDI + boardScorePlayerHV
-	opponentScore := boardScoreOpponentDI + boardScoreOpponentHV
+	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV
+	opponentScore := boardScoreOpponentDINWSE + boardScoreOpponentDINESW + boardScoreOpponentHV
 	if playerScore >= 100000 {
 		playerScore = 100000
 		opponentScore = -100000
@@ -130,15 +138,28 @@ func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int
 	return playerScore - opponentScore
 }
 
+func checkLineHasId(line *[]int, playerId int) bool {
+	for _, v := range *line {
+		if v == playerId {
+			return true
+		}
+	}
+	return false
+}
+
 func checkSequence(line []int, playerId int) int {
-	opponent := 1
-	if playerId == 1 {
-		opponent = 2
+	hasPlayer := checkLineHasId(&line, playerId)
+	if !hasPlayer {
+		return 0
 	}
 	i := 0
 	counter := 0
 	score := 0
 	blocked := 0
+	opponent := 1
+	if playerId == 1 {
+		opponent = 2
+	}
 	for i < len(line) {
 		tmpScore := 0
 		if line[i] == playerId {
@@ -157,11 +178,14 @@ func checkSequence(line []int, playerId int) int {
 			case 3:
 				tmpScore += 100
 			case 4:
-				tmpScore += 2000
+				if blocked == 0 {
+					tmpScore += 5000
+				} else {
+					tmpScore += 100
+				}
+
 			}
-			if blocked == 1 {
-				tmpScore = int(float64(tmpScore) * 0.7)
-			} else if blocked == 2 {
+			if blocked == 2 {
 				tmpScore = 0
 			}
 			if counter == 5 {
@@ -173,6 +197,7 @@ func checkSequence(line []int, playerId int) int {
 		score += tmpScore
 		i++
 	}
+	score += 100 * len(CheckSequenceForF3(line, playerId))
 	// 	fmt.Println(line)
 	// 	fmt.Println("Score;", score)
 	return score

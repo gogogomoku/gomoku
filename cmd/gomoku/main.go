@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bufio"
+	// "bufio"
 	"fmt"
 	"os"
-	"strconv"
+	// "strconv"
 
 	"github.com/gogogomoku/gomoku/internal/board"
 	"github.com/gogogomoku/gomoku/internal/server"
@@ -33,16 +33,17 @@ func main() {
 			brain.SuggestMove()
 			fmt.Println("Suggestion: ", brain.Game.SuggestedPosition)
 			fmt.Println("Player's turn: ", brain.Game.CurrentPlayer.Id)
-			if brain.Game.CurrentPlayer.Id == 1 {
-				brain.HandleMove(brain.Game.CurrentPlayer.Id, brain.Game.SuggestedPosition)
-			} else {
-				reader := bufio.NewReader(os.Stdin)
-				fmt.Print("Enter new move: ")
-				text, _ := reader.ReadString('\n')
-				choice, _ := strconv.Atoi(text[:len(text)-1])
-				fmt.Println(choice)
-				brain.HandleMove(brain.Game.CurrentPlayer.Id, choice)
-			}
+			// if brain.Game.CurrentPlayer.Id == 1 {
+			brain.HandleMove(brain.Game.CurrentPlayer.Id, brain.Game.SuggestedPosition)
+			// }
+			// } else {
+			// 	reader := bufio.NewReader(os.Stdin)
+			// 	fmt.Print("Enter new move: ")
+			// 	text, _ := reader.ReadString('\n')
+			// 	choice, _ := strconv.Atoi(text[:len(text)-1])
+			// 	fmt.Println(choice)
+			// 	brain.HandleMove(brain.Game.CurrentPlayer.Id, choice)
+			// }
 			board.PrintBoard(brain.Game.Goban.Tab, brain.Game.Goban.Size)
 		}
 	}

@@ -44,6 +44,9 @@ func TestCheckSequenceForF3(t *testing.T) {
 
 		// should find 3 overlapping
 		{[]int{0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0}, 1, []int{0, 3, 5}},
+
+		// Enemy inside
+		{[]int{0, 1, 1, 2, 1, 0}, 1, []int{}},
 	}
 
 	for _, table := range tables {

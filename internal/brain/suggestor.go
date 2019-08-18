@@ -62,7 +62,7 @@ func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
 		return newMovesToTest[i].Value > newMovesToTest[j].Value
 	})
 	i := 0
-	for i < 4 {
+	for i < 5 {
 		if i < len(newMovesToTest) {
 			newMovesToTest[i].Value = 0
 			tr.AddChild(node, newMovesToTest[i])
@@ -83,6 +83,7 @@ func SuggestMove() {
 		} else {
 			Game.SuggestedPosition = tree.BestChild.BestChild.Position
 		}
+		// Game.SuggestedPosition = board.TOT_SIZE + 1
 		return
 	}
 	startTime := time.Now()

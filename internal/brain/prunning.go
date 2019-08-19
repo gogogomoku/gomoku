@@ -60,15 +60,20 @@ func getMinChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 
 func MinimaxRecursivePruning(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 	nodeCounter++
-	if depth == 0 || len(node.Children) == 0 {
-		return getHeuristicValue(node.Position, node.Player, &node.Tab)
+	if depth == 0 || len(node.Children) == 0 || node.WinMove {
+		node.Value = getHeuristicValue(node.Position, node.Player, &node.Tab)
+		// fmt.Println("Position: ", node.Position, "Value: ", node.Value)
+		if node.Value >= 100000 {
+			node.WinMove = true
+		}
+		return node.Value
 	}
 	if max {
 		node.Value = getMaxChild(node, depth, max, alpha, beta)
-		return int(float64(node.Value) * float64(depth) / float64(totalDepth))
+		return int(float64(node.Value))
 	} else {
 		node.Value = getMinChild(node, depth, max, alpha, beta)
-		return int(float64(node.Value) * float64(depth) / float64(totalDepth))
+		return int(float64(node.Value))
 	}
 }
 

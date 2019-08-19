@@ -53,8 +53,6 @@ func TestCheckSequenceForF3(t *testing.T) {
 		actual := CheckSequenceForF3(table.sequence, table.playerId)
 		if !reflect.DeepEqual(actual, table.expected) {
 			t.Errorf("⛔️ F3 in sequence %v: got %v, expected %v\n", table.sequence, actual, table.expected)
-		} else {
-			t.Logf("✅ for sequence %v\n", table.sequence)
 		}
 	}
 }

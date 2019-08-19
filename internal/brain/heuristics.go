@@ -1,9 +1,19 @@
 package brain
 
 import (
+	// "fmt"
 	"sync"
 
 	"github.com/gogogomoku/gomoku/internal/board"
+)
+
+const (
+	SEQ2_FREE_SCORE     = 10
+	SEQ3_BLOCKED1_SCORE = 100
+	SEQ4_BLOCKED1_SCORE = 5000
+	SEQ4_FREE_SCORE     = 40000
+	F3_SCORE            = 1000
+	WIN_SCORE           = 100000
 )
 
 func convertArrayToSlice(line [board.SIZE]int) []int {
@@ -123,18 +133,9 @@ func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int
 		boardScoreOpponentDINESW += checkDiagonalNESWSequences(opponent, tab)
 	}()
 	waitgroup.Wait()
-	// board.PrintBoard(*tab, board.SIZE)
-	// fmt.Println(boardScore)
 	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV
 	opponentScore := boardScoreOpponentDINWSE + boardScoreOpponentDINESW + boardScoreOpponentHV
-	if playerScore >= 100000 {
-		playerScore = 100000
-		opponentScore = -100000
-	}
-	if opponentScore >= 100000 {
-		opponentScore = 100000
-		playerScore = -100000
-	}
+	opponentScore = int(float64(opponentScore) * 1.4)
 	return playerScore - opponentScore
 }
 
@@ -152,6 +153,7 @@ func checkSequence(line []int, playerId int) int {
 	if !hasPlayer {
 		return 0
 	}
+
 	i := 0
 	counter := 0
 	score := 0
@@ -164,6 +166,9 @@ func checkSequence(line []int, playerId int) int {
 		tmpScore := 0
 		if line[i] == playerId {
 			counter++
+			if counter >= 5 {
+				return WIN_SCORE
+			}
 			if i == 0 || line[i-1] == opponent {
 				blocked++
 			}
@@ -171,25 +176,22 @@ func checkSequence(line []int, playerId int) int {
 				blocked++
 			}
 		} else {
-
 			switch counter {
 			case 2:
-				tmpScore += 10
+				tmpScore += SEQ2_FREE_SCORE
 			case 3:
-				tmpScore += 100
+				if blocked == 1 {
+					tmpScore += SEQ3_BLOCKED1_SCORE
+				}
 			case 4:
 				if blocked == 0 {
-					tmpScore += 5000
+					tmpScore += SEQ4_FREE_SCORE
 				} else {
-					tmpScore += 100
+					tmpScore += SEQ4_BLOCKED1_SCORE
 				}
-
 			}
 			if blocked == 2 {
 				tmpScore = 0
-			}
-			if counter == 5 {
-				tmpScore = 100000
 			}
 			counter = 0
 			blocked = 0
@@ -197,8 +199,7 @@ func checkSequence(line []int, playerId int) int {
 		score += tmpScore
 		i++
 	}
-	score += 100 * len(CheckSequenceForF3(line, playerId))
-	// 	fmt.Println(line)
-	// 	fmt.Println("Score;", score)
+	f3 := len(CheckSequenceForF3(line, playerId))
+	score += F3_SCORE * f3
 	return score
 }

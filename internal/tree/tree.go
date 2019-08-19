@@ -13,6 +13,7 @@ type Node struct {
 	Position   int
 	Player     int
 	TotalDepth int
+	WinMove    bool
 }
 
 /*

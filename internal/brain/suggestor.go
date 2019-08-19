@@ -61,8 +61,9 @@ func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
 	sort.Slice(newMovesToTest, func(i int, j int) bool {
 		return newMovesToTest[i].Value > newMovesToTest[j].Value
 	})
+
 	i := 0
-	for i < 5 {
+	for i < 4 {
 		if i < len(newMovesToTest) {
 			newMovesToTest[i].Value = 0
 			tr.AddChild(node, newMovesToTest[i])
@@ -83,10 +84,11 @@ func SuggestMove() {
 		} else {
 			Game.SuggestedPosition = tree.BestChild.BestChild.Position
 		}
-		// Game.SuggestedPosition = board.TOT_SIZE + 1
+		Game.SuggestedPosition = board.TOT_SIZE + 1
 		return
 	}
 	startTime := time.Now()
+
 	//Create tree
 	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
 	poss := getPossibleMoves(&tree)
@@ -98,6 +100,7 @@ func SuggestMove() {
 	// UGLY ----- test. Do it the smart way :)
 	// Players move
 	addNewLayerPrePrunning(poss, &tree, Game.CurrentPlayer.Id)
+
 	// opponents move
 	for _, ch := range tree.Children {
 		poss := getPossibleMoves(ch)
@@ -165,4 +168,9 @@ func SuggestMove() {
 	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)
 	fmt.Println("Time spent on suggestion:", duration)
+	fmt.Println(tree.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
+		tree.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
+		tree.BestChild.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
+		tree.BestChild.BestChild.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")",
+	)
 }

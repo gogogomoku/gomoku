@@ -52,19 +52,23 @@ func checkVerticalSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 
 func checkDiagonalNWSESequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
-	for d := 1; d < board.SIZE*2; d++ {
-		line := []int{}
+	for d := 1; d < board.SIZE+board.SIZE/2; d++ {
+		line := [board.SIZE * 2]int{}
 		// First element of last row to start diagonals
 		x := board.SIZE * (board.SIZE - d)
 		// When transpassing board limit, start new diagonal
+		lineLen := 0
 		for x < board.SIZE*board.SIZE {
 			if x >= 0 && x < (board.SIZE*board.SIZE)-(board.SIZE*(d-board.SIZE)) {
-				line = append(line, (*tab)[x])
+				line[lineLen] = (*tab)[x]
+				lineLen++
 			}
 			x += board.SIZE + 1
 		}
-		if len(line) > 0 {
-			score += checkSequence(line, playerId)
+		line[lineLen] = -1
+		line2 := line[:lineLen]
+		if len(line2) > 0 {
+			score += checkSequence(line2, playerId)
 		}
 	}
 	return score
@@ -73,18 +77,22 @@ func checkDiagonalNWSESequences(playerId int, tab *[board.TOT_SIZE]int) int {
 func checkDiagonalNESWSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	score := 0
 	for d := 1; d < board.SIZE*2; d++ {
-		line := []int{}
+		line := [board.SIZE * 2]int{}
 		// Last element of first row to start diagonals
 		x := (d*board.SIZE - 1) - (board.SIZE-1)*board.SIZE
 		// When transpassing board limit, start new diagonal
+		lineLen := 0
 		for x < board.SIZE*board.SIZE {
 			if x >= 0 && x <= (d-1)*board.SIZE {
-				line = append(line, (*tab)[x])
+				line[lineLen] = (*tab)[x]
+				lineLen++
 			}
 			x += board.SIZE - 1
 		}
-		if len(line) > 0 {
-			score += checkSequence(line, playerId)
+		line[lineLen] = -1
+		line2 := line[:lineLen]
+		if len(line2) > 0 {
+			score += checkSequence(line2, playerId)
 		}
 	}
 	return score

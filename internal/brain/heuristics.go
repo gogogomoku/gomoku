@@ -202,7 +202,7 @@ func getSequenceScore(counter int, blocked int, line *[]int, i int) int {
 			}
 			// Check 2 sequence of 1(or more) and 3 separated by empty space
 			// BEFORE SEQ_3
-			if i > 2 && (*line)[i-4] == 0 {
+			if i > 4 && (*line)[i-4] == 0 {
 				if (*line)[i-5] == (*line)[i-3] {
 					tmpScore += SEQ4_BROKEN
 				}

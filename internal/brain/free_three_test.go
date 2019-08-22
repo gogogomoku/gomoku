@@ -15,7 +15,7 @@ func TestCheckSequenceForF3(t *testing.T) {
 		{[]int{0, 1, 1, 1, 0}, 1, []int{0}},
 		// Wrong player
 		{[]int{0, 1, 1, 1, 0}, 2, []int{}},
-		// Mixed players
+		// Mixed players (enemy in sequence)
 		{[]int{0, 1, 1, 2, 0}, 2, []int{}},
 		{[]int{0, 1, 1, 2, 1, 0}, 1, []int{}},
 
@@ -44,15 +44,14 @@ func TestCheckSequenceForF3(t *testing.T) {
 
 		// should find 3 overlapping
 		{[]int{0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0}, 1, []int{0, 3, 5}},
-
-		// Enemy inside
-		{[]int{0, 1, 1, 2, 1, 0}, 1, []int{}},
 	}
 
 	for _, table := range tables {
 		actual := CheckSequenceForF3(table.sequence, table.playerId)
 		if !reflect.DeepEqual(actual, table.expected) {
 			t.Errorf("⛔️ F3 in sequence %v: got %v, expected %v\n", table.sequence, actual, table.expected)
+		} else {
+			t.Logf("✅ for sequence %v\n", table.sequence)
 		}
 	}
 }

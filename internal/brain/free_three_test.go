@@ -17,6 +17,7 @@ func TestCheckSequenceForF3(t *testing.T) {
 		{[]int{0, 1, 1, 1, 0}, 2, []int{}},
 		// Mixed players
 		{[]int{0, 1, 1, 2, 0}, 2, []int{}},
+		{[]int{0, 1, 1, 2, 1, 0}, 1, []int{}},
 
 		// should find 1 at position 0
 		{[]int{0, 1, 1, 0, 1, 0}, 1, []int{0}},

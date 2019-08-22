@@ -1,9 +1,5 @@
 package brain
 
-import (
-	"reflect"
-)
-
 /*
 ** Takes arbitrary slice of Goban sequence values
 ** Return starting index of each F3 found
@@ -27,10 +23,12 @@ func CheckSequenceForF3(sequence []int, playerId int) []int {
 			continue
 		}
 
-		// check again for 5
+		// check for only f3 5-len sequence
 		subSeq5 := sequence[i : i+5]
-		if reflect.DeepEqual(subSeq5, []int{0, playerId, playerId, playerId, 0}) {
-			f3StartPoss = append(f3StartPoss, i)
+		if subSeq5[0] == 0 && subSeq5[4] == 0 {
+			if subSeq5[1] == playerId && subSeq5[1] == subSeq5[2] && subSeq5[2] == subSeq5[3] {
+				f3StartPoss = append(f3StartPoss, i)
+			}
 		}
 
 		// if only 5 in sequence and doesn't match above pattern, not an f3
@@ -50,11 +48,13 @@ func CheckSequenceForF3(sequence []int, playerId int) []int {
 		for k, val := range subSeq6[1:5] {
 			switch {
 			case val > 0 && val != playerId:
-				break // found enemy piece
+				totalMine = -10
 			case val == playerId:
 				totalMine++
 			case (k == 0 || k == 3) && val == 0:
 				totalMine = -10
+			}
+			if totalMine < 0 {
 				break
 			}
 		}

@@ -2,19 +2,27 @@ package brain
 
 import (
 	// "fmt"
+
 	"sync"
 
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
 const (
-	SEQ2_FREE_SCORE     = 10
+	SEQ2_BLOCKED1_SCORE = 10
+	SEQ2_FREE_SCORE     = 20
 	SEQ3_BLOCKED1_SCORE = 100
 	SEQ4_BLOCKED1_SCORE = 5000
 	SEQ4_FREE_SCORE     = 40000
+	SEQ4_BROKEN         = 10000
 	F3_SCORE            = 1000
 	WIN_SCORE           = 100000
 )
+
+//Add tests
+//Add tests
+//Add tests
+var CAPTURED_SCORE = [5]int{100, 200, 1000, 5000, WIN_SCORE}
 
 func convertArrayToSlice(line [board.SIZE]int) []int {
 	new := make([]int, board.SIZE)
@@ -98,7 +106,7 @@ func checkDiagonalNESWSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	return score
 }
 
-func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int {
+func getHeuristicValue(playerId int, tab *[board.TOT_SIZE]int, captured *[3]int) int {
 	boardScorePlayerHV := 0
 	boardScorePlayerDINWSE := 0
 	boardScorePlayerDINESW := 0
@@ -142,7 +150,13 @@ func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int
 	}()
 	waitgroup.Wait()
 	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV
+	if captured[playerId] > 0 {
+		playerScore += CAPTURED_SCORE[(captured[playerId]/2)-1]
+	}
 	opponentScore := boardScoreOpponentDINWSE + boardScoreOpponentDINESW + boardScoreOpponentHV
+	if captured[opponent] > 0 {
+		opponentScore += CAPTURED_SCORE[(captured[opponent]/2)-1]
+	}
 	opponentScore = int(float64(opponentScore) * 1.4)
 	return playerScore - opponentScore
 }
@@ -154,6 +168,57 @@ func checkLineHasId(line *[]int, playerId int) bool {
 		}
 	}
 	return false
+}
+
+func getSequenceScore(counter int, blocked int, line *[]int, i int) int {
+	tmpScore := 0
+
+	switch counter {
+	case 2:
+		if blocked == 0 {
+			tmpScore += SEQ2_FREE_SCORE
+		} else if blocked == 1 {
+			tmpScore += SEQ2_BLOCKED1_SCORE
+		}
+		// Check 2 sequence of 2 separated by empty space
+
+		if i < len(*line)-2 && (*line)[i] == 0 {
+			player := (*line)[i-1]
+			if (*line)[i+1] == (*line)[i+2] && (*line)[i+1] == player {
+				tmpScore += SEQ4_BROKEN
+			}
+		}
+	case 3:
+		if blocked == 1 {
+			tmpScore += SEQ3_BLOCKED1_SCORE
+		}
+		if blocked != 2 {
+			// Check 2 sequence of 1(or more) and 3 separated by empty space
+			// AFTER SEQ_3
+			if i < len(*line)-2 && (*line)[i] == 0 {
+				if (*line)[i+1] == (*line)[i-1] {
+					tmpScore += SEQ4_BROKEN
+				}
+			}
+			// Check 2 sequence of 1(or more) and 3 separated by empty space
+			// BEFORE SEQ_3
+			if i > 2 && (*line)[i-4] == 0 {
+				if (*line)[i-5] == (*line)[i-3] {
+					tmpScore += SEQ4_BROKEN
+				}
+			}
+		}
+	case 4:
+		if blocked == 0 {
+			tmpScore += SEQ4_FREE_SCORE
+		} else {
+			tmpScore += SEQ4_BLOCKED1_SCORE
+		}
+	}
+	if blocked == 2 {
+		tmpScore = 0
+	}
+	return tmpScore
 }
 
 func checkSequence(line []int, playerId int) int {
@@ -184,30 +249,13 @@ func checkSequence(line []int, playerId int) int {
 				blocked++
 			}
 		} else {
-			switch counter {
-			case 2:
-				tmpScore += SEQ2_FREE_SCORE
-			case 3:
-				if blocked == 1 {
-					tmpScore += SEQ3_BLOCKED1_SCORE
-				}
-			case 4:
-				if blocked == 0 {
-					tmpScore += SEQ4_FREE_SCORE
-				} else {
-					tmpScore += SEQ4_BLOCKED1_SCORE
-				}
-			}
-			if blocked == 2 {
-				tmpScore = 0
-			}
+			tmpScore += getSequenceScore(counter, blocked, &line, i)
 			counter = 0
 			blocked = 0
 		}
 		score += tmpScore
 		i++
 	}
-	f3 := len(CheckSequenceForF3(line, playerId))
-	score += F3_SCORE * f3
+	score += len(CheckSequenceForF3(line, playerId)) * F3_SCORE
 	return score
 }

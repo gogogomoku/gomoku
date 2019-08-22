@@ -5,15 +5,15 @@ import (
 )
 
 type Node struct {
-	Id         int
-	Value      int
-	Children   []*Node
-	BestChild  *Node
-	Tab        [board.TOT_SIZE]int
-	Position   int
-	Player     int
-	TotalDepth int
-	WinMove    bool
+	Id        int
+	Value     int
+	Children  []*Node
+	BestChild *Node
+	Tab       [board.TOT_SIZE]int
+	Position  int
+	Player    int
+	WinMove   bool
+	Captured  [3]int
 }
 
 /*

@@ -39,6 +39,22 @@ func TestLaunchCheckSequence(t *testing.T) {
 	if score != SEQ4_BLOCKED1_SCORE {
 		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BLOCKED1_SCORE, score)
 	}
+	score = checkSequence([]int{0, 1, 1, 0, 1, 1, 0}, 1)
+	if score != SEQ4_BROKEN+2*SEQ2_FREE_SCORE {
+		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN+2*SEQ2_FREE_SCORE, score)
+	}
+	score = checkSequence([]int{2, 1, 1, 0, 1, 1, 2}, 1)
+	if score != SEQ4_BROKEN+2*SEQ2_BLOCKED1_SCORE {
+		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN+2*SEQ2_BLOCKED1_SCORE, score)
+	}
+	score = checkSequence([]int{2, 1, 1, 1, 0, 1, 2}, 1)
+	if score != SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE {
+		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE, score)
+	}
+	score = checkSequence([]int{2, 1, 0, 1, 1, 1, 2}, 1)
+	if score != SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE {
+		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE, score)
+	}
 }
 
 func TestGetHeuristicValue(t *testing.T) {
@@ -51,7 +67,7 @@ func TestGetHeuristicValue(t *testing.T) {
 	tab[center-1] = 1
 	tab[center] = 1
 	tab[center+1] = 1
-	score := getHeuristicValue(0, 1, &tab)
+	score := getHeuristicValue(1, &tab, &[3]int{})
 	if score != SEQ4_FREE_SCORE {
 		t.Errorf("Error in getHeuristicValue. Expected: %d, got: %d", score, SEQ4_FREE_SCORE)
 	}

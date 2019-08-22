@@ -6,7 +6,8 @@ import (
 
 func checkCapture(position int, tab *[board.TOT_SIZE]int, playerId int) []int {
 	captureDirections := []int{}
-	for direction := 0; direction < 8; direction++ {
+	var direction int
+	for direction = 0; direction < 8; direction++ {
 		counter := 0
 		tmpPosition := position
 		for j := 0; j < 2; j++ {

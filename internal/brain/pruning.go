@@ -10,6 +10,7 @@ const MaxInt = int(^uint(0) >> 1)
 const MinInt = -MaxInt - 1
 
 var nodeCounter int
+var totalDepth int
 
 func minimum(a, b int) int {
 	if a < b {
@@ -59,21 +60,27 @@ func getMinChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 
 func MinimaxRecursivePruning(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 	nodeCounter++
-	if depth == 0 || len(node.Children) == 0 {
-		return getHeuristicValue(node.Position, node.Player, &node.Tab)
+	if depth == 0 || len(node.Children) == 0 || node.WinMove {
+		node.Value = getHeuristicValue(node.Position, node.Player, &node.Tab)
+		// fmt.Println("Position: ", node.Position, "Value: ", node.Value)
+		if node.Value >= 100000 {
+			node.WinMove = true
+		}
+		return node.Value
 	}
 	if max {
 		node.Value = getMaxChild(node, depth, max, alpha, beta)
-		return node.Value
+		return int(float64(node.Value))
 	} else {
 		node.Value = getMinChild(node, depth, max, alpha, beta)
-		return node.Value
+		return int(float64(node.Value))
 	}
 }
 
 func LaunchMinimaxPruning(graph *tr.Node, depth int) {
 	alpha := MinInt
 	beta := MaxInt
+	totalDepth = depth
 	nodeCounter = 0
 	fmt.Println("Launching Minimax with depth ", depth)
 	MinimaxRecursivePruning(graph, depth, true, alpha, beta)

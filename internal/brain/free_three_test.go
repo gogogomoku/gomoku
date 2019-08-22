@@ -15,7 +15,7 @@ func TestCheckSequenceForF3(t *testing.T) {
 		{[]int{0, 1, 1, 1, 0}, 1, []int{0}},
 		// Wrong player
 		{[]int{0, 1, 1, 1, 0}, 2, []int{}},
-		// Mixed players
+		// Mixed players (enemy in sequence)
 		{[]int{0, 1, 1, 2, 0}, 2, []int{}},
 		{[]int{0, 1, 1, 2, 1, 0}, 1, []int{}},
 

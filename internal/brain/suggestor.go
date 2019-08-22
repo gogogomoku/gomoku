@@ -9,15 +9,10 @@ import (
 	tr "github.com/gogogomoku/gomoku/internal/tree"
 )
 
-type Move struct {
-	Position int
-	Value    int
-}
-
 var tree tr.Node
 
-func getPossibleMoves(node *tr.Node) []Move {
-	poss := []Move{}
+func getPossibleMoves(node *tr.Node) []int {
+	poss := []int{}
 	for i := 0; i < (board.SIZE * board.SIZE); i++ {
 		if node.Tab[i] == 0 {
 			if CheckValidMove(i, node.Tab) {
@@ -32,7 +27,7 @@ func getPossibleMoves(node *tr.Node) []Move {
 					}
 				}
 				if affectsTab {
-					poss = append(poss, Move{Position: i, Value: 0})
+					poss = append(poss, i)
 				}
 			}
 		}
@@ -40,19 +35,19 @@ func getPossibleMoves(node *tr.Node) []Move {
 	return poss
 }
 
-func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
+func addNewLayerPrePrunning(poss []int, node *tr.Node, playerId int) {
 	newMovesToTest := []*tr.Node{}
 	for i, m := range poss {
 		newTab := node.Tab
-		newTab[m.Position] = playerId
-		captureDirections := checkCapture(m.Position, &node.Tab, playerId)
+		newTab[m] = playerId
+		captureDirections := checkCapture(m, &node.Tab, playerId)
 		// Virtual Capturing
-		capturePairs(m.Position, captureDirections, &newTab)
+		capturePairs(m, captureDirections, &newTab)
 		new := tr.Node{
 			Id:       i + node.Id,
 			Value:    0,
 			Tab:      newTab,
-			Position: m.Position,
+			Position: m,
 			Player:   playerId,
 		}
 		new.Value = getHeuristicValue(new.Position, playerId, &new.Tab)
@@ -73,6 +68,8 @@ func addNewLayerPrePrunning(poss []Move, node *tr.Node, playerId int) {
 }
 
 func SuggestMove() {
+
+	depth := 5
 
 	if Game.CurrentPlayer.Id == 2 {
 		if Game.Turn == 1 {
@@ -162,12 +159,16 @@ func SuggestMove() {
 	// 	}
 	// }
 
+	startTimeAlgo := time.Now()
+
 	// Launch algo
-	LaunchMinimaxPruning(&tree, 5)
+	LaunchMinimaxPruning(&tree, depth)
 
 	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)
+	durationAlgo := time.Since(startTimeAlgo)
 	fmt.Println("Time spent on suggestion:", duration)
+	fmt.Println("Time spent on minimax/prunning:", durationAlgo)
 	fmt.Println(tree.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
 		tree.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
 		tree.BestChild.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")", "->",

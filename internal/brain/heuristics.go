@@ -14,10 +14,15 @@ const (
 	SEQ3_BLOCKED1_SCORE = 100
 	SEQ4_BLOCKED1_SCORE = 5000
 	SEQ4_FREE_SCORE     = 40000
-	SEQ4_BROKEN         = 5000
+	SEQ4_BROKEN         = 10000
 	F3_SCORE            = 1000
 	WIN_SCORE           = 100000
 )
+
+//Add tests
+//Add tests
+//Add tests
+var CAPTURED_SCORE = [5]int{100, 200, 1000, 5000, WIN_SCORE}
 
 func convertArrayToSlice(line [board.SIZE]int) []int {
 	new := make([]int, board.SIZE)
@@ -101,7 +106,7 @@ func checkDiagonalNESWSequences(playerId int, tab *[board.TOT_SIZE]int) int {
 	return score
 }
 
-func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int {
+func getHeuristicValue(playerId int, tab *[board.TOT_SIZE]int, captured *[3]int) int {
 	boardScorePlayerHV := 0
 	boardScorePlayerDINWSE := 0
 	boardScorePlayerDINESW := 0
@@ -145,7 +150,13 @@ func getHeuristicValue(position int, playerId int, tab *[board.TOT_SIZE]int) int
 	}()
 	waitgroup.Wait()
 	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV
+	if captured[playerId] > 0 {
+		playerScore += CAPTURED_SCORE[(captured[playerId]/2)-1]
+	}
 	opponentScore := boardScoreOpponentDINWSE + boardScoreOpponentDINESW + boardScoreOpponentHV
+	if captured[opponent] > 0 {
+		opponentScore += CAPTURED_SCORE[(captured[opponent]/2)-1]
+	}
 	opponentScore = int(float64(opponentScore) * 1.4)
 	return playerScore - opponentScore
 }

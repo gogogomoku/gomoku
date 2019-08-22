@@ -67,7 +67,7 @@ func TestGetHeuristicValue(t *testing.T) {
 	tab[center-1] = 1
 	tab[center] = 1
 	tab[center+1] = 1
-	score := getHeuristicValue(0, 1, &tab)
+	score := getHeuristicValue(1, &tab, &[3]int{})
 	if score != SEQ4_FREE_SCORE {
 		t.Errorf("Error in getHeuristicValue. Expected: %d, got: %d", score, SEQ4_FREE_SCORE)
 	}

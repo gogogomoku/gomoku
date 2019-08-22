@@ -38,19 +38,22 @@ func getPossibleMoves(node *tr.Node) []int {
 func addNewLayerPrePruning(poss []int, node *tr.Node, playerId int) {
 	newMovesToTest := []*tr.Node{}
 	for i, m := range poss {
-		newTab := node.Tab
-		newTab[m] = playerId
-		captureDirections := checkCapture(m, &node.Tab, playerId)
-		// Virtual Capturing
-		capturePairs(m, captureDirections, &newTab)
 		new := tr.Node{
-			Id:       i + node.Id,
-			Value:    0,
-			Tab:      newTab,
+			Id:    i + node.Id,
+			Value: 0,
+			// Tab:      newTab,
 			Position: m,
 			Player:   playerId,
 		}
-		new.Value = getHeuristicValue(new.Position, playerId, &new.Tab)
+		new.Tab = node.Tab
+		new.Tab[m] = playerId
+		new.Captured[1] = node.Captured[1]
+		new.Captured[2] = node.Captured[2]
+		// Virtual Capturing
+		captureDirections := checkCapture(m, &node.Tab, playerId)
+		new.Captured[playerId] += 2 * len(captureDirections)
+		capturePairs(m, captureDirections, &new.Tab)
+		new.Value = getHeuristicValue(playerId, &new.Tab, &new.Captured)
 		newMovesToTest = append(newMovesToTest, &new)
 	}
 	sort.Slice(newMovesToTest, func(i int, j int) bool {
@@ -88,6 +91,8 @@ func SuggestMove() {
 
 	//Create tree
 	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
+	tree.Captured[1] = Game.P1.CapturedPieces
+	tree.Captured[2] = Game.P2.CapturedPieces
 	poss := getPossibleMoves(&tree)
 	opponent := 1
 	if Game.CurrentPlayer.Id == 1 {

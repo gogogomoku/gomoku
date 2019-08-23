@@ -17,9 +17,11 @@ func PositionInSubsequence(subsequence *[11]int, position int) (bool, int) {
 	return false, -1
 }
 
-func getDiagonalNWSESequence(tab *[TOT_SIZE]int, d int) *[SIZE * 2]int {
+func GetDiagonalNWSESequence(d int, tab *[TOT_SIZE]int) *[]int {
 	line := [SIZE * 2]int{}
+	// First element of last row to start diagonals
 	x := SIZE * (SIZE - d)
+	// When transpassing board limit, start new diagonal
 	lineLen := 0
 	for x < TOT_SIZE {
 		if x >= 0 && x < (TOT_SIZE)-(SIZE*(d-SIZE)) {
@@ -29,19 +31,65 @@ func getDiagonalNWSESequence(tab *[TOT_SIZE]int, d int) *[SIZE * 2]int {
 		x += SIZE + 1
 	}
 	line[lineLen] = -1
-	// line2 := line[:lineLen]
-	return &line
-
+	line2 := line[:lineLen]
+	return &line2
 }
 
-func GetDiagonalNWSESequences(playerId int, tab *[TOT_SIZE]int) [(SIZE + SIZE/2) - 1][SIZE * 2]int {
-	nwseSequences := [(SIZE + SIZE/2) - 1][SIZE * 2]int{}
-	for d := 1; d < SIZE+SIZE/2; d++ {
-		nwseSequences[d - 1] = *getDiagonalNWSESequence(tab, d)
+func GetDiagonalNESWSequence(d int, tab *[TOT_SIZE]int) *[]int {
+	line := [SIZE * 2]int{}
+	// Last element of first row to start diagonals
+	x := (d*SIZE - 1) - (SIZE-1)*SIZE
+	// When transpassing board limit, start new diagonal
+	lineLen := 0
+	for x < TOT_SIZE {
+		if x >= 0 && x <= (d-1)*SIZE {
+			line[lineLen] = (*tab)[x]
+			lineLen++
+		}
+		x += SIZE - 1
 	}
-	return nwseSequences
+	line[lineLen] = -1
+	line2 := line[:lineLen]
+	return &line2
 }
 
-func GetDiagonalNESWSequences(playerId int, tab *[TOT_SIZE]int) [][]int {
-	return nil
+func GetColSeqForCol(column int, tab *[TOT_SIZE]int) []int {
+	sequence := make([]int, SIZE)
+	for i := 0; i < SIZE; i++ {
+		sequence[i] = (*tab)[column+(SIZE*i)]
+	}
+	return sequence
+}
+
+func GetRowSeqForRow(row int, tab *[TOT_SIZE]int) []int {
+	sequence := make([]int, SIZE)
+	for i := 0; i < SIZE; i++ {
+		sequence[i] = (*tab)[(SIZE*row)+i]
+	}
+	return sequence
+}
+
+func GetColumnForPosition(position int, tab *[TOT_SIZE]int) int {
+	return position % SIZE
+}
+
+func GetRowForPosition(position int, tab *[TOT_SIZE]int) int {
+	return position / SIZE
+}
+
+func GetIndexNWSEForPosition(position int, tab *[TOT_SIZE]int) int {
+	column := position % SIZE
+	row := position / SIZE // TODO: Switch direction of row and starts with 1
+
+	d := (SIZE - row) + column
+	return d
+}
+
+func GetIndexNESWForPosition(position int, tab *[TOT_SIZE]int) int {
+	column := position % SIZE
+	row := position / SIZE
+
+	d := column + row + 1
+
+	return d
 }

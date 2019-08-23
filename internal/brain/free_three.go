@@ -1,5 +1,16 @@
 package brain
 
+import (
+	"github.com/gogogomoku/gomoku/internal/board"
+)
+
+const (
+	NS = iota
+	EW
+	NWSE
+	NESW
+)
+
 /*
 ** Takes arbitrary slice of Goban sequence values
 ** Return starting index of each F3 found
@@ -64,4 +75,33 @@ func CheckSequenceForF3(sequence []int, playerId int) []int {
 		}
 	}
 	return f3StartPoss
+}
+
+/*
+** For given board position,
+** checks for creation of 2 f3s
+ */
+
+ func GetDoubleF3StartPos(position int, tab [board.TOT_SIZE]int, playerId int) [4]int {
+	axes := [4]int{}
+	sequences := make([][]int, 4)
+
+	// axes[NS] = board.GetColumnForPosition(position, &tab)
+	// axes[EW] = board.GetRowForPosition(position, &tab)
+	// axes[NWSE] = board.GetIndexNWSEForPosition(position, &tab)
+	// axes[NESW] = board.GetIndexNESWForPosition(position, &tab)
+
+	// sequences[NS] = board.GetNSSequenceForColumn(axes[NS], &tab)
+	// sequences[EW] = board.GetEWSequenceForRow(axes[EW], &tab)
+	// sequences[NESW] = *(board.GetDiagonalNESWSequence(axes[NESW], &tab))
+	// sequences[NWSE] = *(board.GetDiagonalNWSESequence(axes[NWSE], &tab))
+
+	_ = axes
+	_ = sequences
+
+	return axes
+}
+
+func GetTooManyF3Created(position int, tab [board.TOT_SIZE]int, playerId int) bool {
+	return false
 }

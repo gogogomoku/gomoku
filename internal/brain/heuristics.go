@@ -150,15 +150,15 @@ func getHeuristicValue(playerId int, tab *[board.TOT_SIZE]int, captured *[3]int)
 	}()
 	waitgroup.Wait()
 	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV
-	if captured[playerId] > 0 && captured[playerId] <= 10 {
+	if captured[playerId] > 0 && captured[playerId] <= 8 {
 		playerScore += CAPTURED_SCORE[(captured[playerId]/2)-1]
-	} else if captured[playerId] > 10 {
+	} else if captured[playerId] > 8 {
 		playerScore += WIN_SCORE
 	}
 	opponentScore := boardScoreOpponentDINWSE + boardScoreOpponentDINESW + boardScoreOpponentHV
-	if captured[opponent] > 0 && captured[playerId] <= 10 {
+	if captured[opponent] > 0 && captured[opponent] <= 8 {
 		opponentScore += CAPTURED_SCORE[(captured[opponent]/2)-1]
-	} else if captured[playerId] > 10 {
+	} else if captured[opponent] > 8 {
 		playerScore += WIN_SCORE
 	}
 	opponentScore = int(float64(opponentScore) * 1.4)

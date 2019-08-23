@@ -37,6 +37,7 @@ func getPossibleMoves(node *tr.Node) []int {
 }
 
 func addNewLayerPrePruning(poss []int, node *tr.Node, playerId int) {
+	maxTestingMoves := 5
 	newMovesToTest := []*tr.Node{}
 	for i, m := range poss {
 		new := tr.Node{
@@ -56,17 +57,18 @@ func addNewLayerPrePruning(poss []int, node *tr.Node, playerId int) {
 		capturePairs(m, captureDirections, &new.Tab)
 		new.Value = getHeuristicValue(playerId, &new.Tab, &new.Captured)
 		newMovesToTest = append(newMovesToTest, &new)
+		if len(newMovesToTest) > maxTestingMoves {
+			sort.Slice(newMovesToTest, func(i int, j int) bool {
+				return newMovesToTest[i].Value > newMovesToTest[j].Value
+			})
+			newMovesToTest = newMovesToTest[:maxTestingMoves-1]
+		}
 	}
-	sort.Slice(newMovesToTest, func(i int, j int) bool {
-		return newMovesToTest[i].Value > newMovesToTest[j].Value
-	})
 
 	i := 0
-	for i < 4 {
-		if i < len(newMovesToTest) {
-			newMovesToTest[i].Value = 0
-			tr.AddChild(node, newMovesToTest[i])
-		}
+	for i < len(newMovesToTest) {
+		newMovesToTest[i].Value = 0
+		tr.AddChild(node, newMovesToTest[i])
 		i++
 	}
 }

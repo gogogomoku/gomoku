@@ -135,8 +135,8 @@ func TestGetRowSeqForRow(t *testing.T) {
 
 	for _, table := range tables {
 		actual := GetRowSeqForRow(table.row, &tab)
-		if !reflect.DeepEqual(actual, table.expectedRowSeq) {
-			t.Errorf("⛔️ Row: %v, expect column: %v, got %v", table.row, table.expectedRowSeq, actual)
+		if !reflect.DeepEqual(*actual, table.expectedRowSeq) {
+			t.Errorf("⛔️ Row: %v, expect column: %v, got %v", table.row, table.expectedRowSeq, *actual)
 		}
 	}
 }
@@ -157,8 +157,8 @@ func TestGetColSeqForCol(t *testing.T) {
 
 	for _, table := range tables {
 		actual := GetColSeqForCol(table.col, &tab)
-		if !reflect.DeepEqual(actual, table.expectedColSeq) {
-			t.Errorf("⛔️ Col: %v, expect column: %v, got %v", table.col, table.expectedColSeq, actual)
+		if !reflect.DeepEqual(*actual, table.expectedColSeq) {
+			t.Errorf("⛔️ Col: %v, expect column: %v, got %v", table.col, table.expectedColSeq, *actual)
 		}
 	}
 }
@@ -183,7 +183,7 @@ func TestGetDiagonalNESWSequence(t *testing.T) {
 	for _, table := range tables {
 		actual := GetDiagonalNESWSequence(table.d, &tab)
 		if !reflect.DeepEqual(*actual, table.expectedNESWSeq) {
-			t.Errorf("⛔️ d: %v, expect seq: %v, got %v", table.d, table.expectedNESWSeq, actual)
+			t.Errorf("⛔️ d: %v, expect seq: %v, got %v", table.d, table.expectedNESWSeq, *actual)
 		}
 	}
 }
@@ -208,7 +208,7 @@ func TestGetDiagonalNWSESequence(t *testing.T) {
 	for _, table := range tables {
 		actual := GetDiagonalNWSESequence(table.d, &tab)
 		if !reflect.DeepEqual(*actual, table.expectedNWSESeq) {
-			t.Errorf("⛔️ d: %v, expect seq: %v, got %v", table.d, table.expectedNWSESeq, actual)
+			t.Errorf("⛔️ d: %v, expect seq: %v, got %v", table.d, table.expectedNWSESeq, *actual)
 		}
 	}
 }

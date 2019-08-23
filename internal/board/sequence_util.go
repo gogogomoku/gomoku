@@ -53,20 +53,20 @@ func GetDiagonalNESWSequence(d int, tab *[TOT_SIZE]int) *[]int {
 	return &line2
 }
 
-func GetColSeqForCol(column int, tab *[TOT_SIZE]int) []int {
+func GetColSeqForCol(column int, tab *[TOT_SIZE]int) *[]int {
 	sequence := make([]int, SIZE)
 	for i := 0; i < SIZE; i++ {
 		sequence[i] = (*tab)[column+(SIZE*i)]
 	}
-	return sequence
+	return &sequence
 }
 
-func GetRowSeqForRow(row int, tab *[TOT_SIZE]int) []int {
+func GetRowSeqForRow(row int, tab *[TOT_SIZE]int) *[]int {
 	sequence := make([]int, SIZE)
 	for i := 0; i < SIZE; i++ {
 		sequence[i] = (*tab)[(SIZE*row)+i]
 	}
-	return sequence
+	return &sequence
 }
 
 func GetColumnForPosition(position int, tab *[TOT_SIZE]int) int {
@@ -92,4 +92,10 @@ func GetIndexNESWForPosition(position int, tab *[TOT_SIZE]int) int {
 	d := column + row + 1
 
 	return d
+}
+
+func GetSequence(position int, tab *[TOT_SIZE]int, getIndex func(int, *[TOT_SIZE]int) int, getSequence func(int, *[TOT_SIZE]int) *[]int) *[]int {
+	index := getIndex(position, tab)
+	sequence := getSequence(index, tab)
+	return sequence
 }

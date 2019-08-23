@@ -83,18 +83,17 @@ func CheckSequenceForF3(sequence []int, playerId int) []int {
  */
 
  func GetDoubleF3StartPos(position int, tab [board.TOT_SIZE]int, playerId int) [4]int {
-	axes := [4]int{}
+	// axes := [4]int{}
 	sequences := make([][]int, 4)
 
-	// axes[NS] = board.GetColumnForPosition(position, &tab)
-	// axes[EW] = board.GetRowForPosition(position, &tab)
-	// axes[NWSE] = board.GetIndexNWSEForPosition(position, &tab)
-	// axes[NESW] = board.GetIndexNESWForPosition(position, &tab)
+	tab[position] = playerId
 
-	// sequences[NS] = board.GetNSSequenceForColumn(axes[NS], &tab)
-	// sequences[EW] = board.GetEWSequenceForRow(axes[EW], &tab)
-	// sequences[NESW] = *(board.GetDiagonalNESWSequence(axes[NESW], &tab))
-	// sequences[NWSE] = *(board.GetDiagonalNWSESequence(axes[NWSE], &tab))
+	sequences[NS] = *(board.GetSequence(position, &tab, board.GetColumnForPosition, board.GetColSeqForCol))
+	sequences[EW] = *(board.GetSequence(position, &tab, board.GetRowForPosition, board.GetRowSeqForRow))
+	sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNESWForPosition, board.GetDiagonalNESWSequence))
+	sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNWSEForPosition, board.GetDiagonalNWSESequence))
+
+
 
 	_ = axes
 	_ = sequences

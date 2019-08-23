@@ -3,7 +3,7 @@ package brain
 import (
 	"fmt"
 	"sort"
-	// "sync"
+	"sync"
 	"time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -81,31 +81,31 @@ func build_tree(depth int) {
 	poss := getPossibleMoves(&tree)
 	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
 
-	//Create the rest of the tree
-	opponent := 1
-	if tree.Player == 1 {
-		opponent = 2
-	}
-	for _, ch := range tree.Children {
-		build_tree_recursive(ch, depth-1, opponent)
-	}
-
 	// //Create the rest of the tree
 	// opponent := 1
 	// if tree.Player == 1 {
 	// 	opponent = 2
 	// }
-	// var waitgroup sync.WaitGroup
-	// for i, ch := range tree.Children {
-	// 	waitgroup.Add(1)
-	// 	tmpCh := *ch
-	// 	go func(tmpCh *tr.Node, i int, tree *tr.Node) {
-	// 		defer waitgroup.Done()
-	// 		build_tree_recursive(tmpCh, depth-1, opponent)
-	// 		tree.Children[i] = tmpCh
-	// 	}(&tmpCh, i, &tree)
+	// for _, ch := range tree.Children {
+	// 	build_tree_recursive(ch, depth-1, opponent)
 	// }
-	// waitgroup.Wait()
+
+	//Create the rest of the tree
+	opponent := 1
+	if tree.Player == 1 {
+		opponent = 2
+	}
+	var waitgroup sync.WaitGroup
+	for i, ch := range tree.Children {
+		waitgroup.Add(1)
+		tmpCh := *ch
+		go func(tmpCh *tr.Node, i int, tree *tr.Node) {
+			defer waitgroup.Done()
+			build_tree_recursive(tmpCh, depth-1, opponent)
+			tree.Children[i] = tmpCh
+		}(&tmpCh, i, &tree)
+	}
+	waitgroup.Wait()
 }
 
 func build_tree_recursive(node *tr.Node, depth int, playerId int) {

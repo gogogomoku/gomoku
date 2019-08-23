@@ -3,6 +3,7 @@ package brain
 import (
 	"fmt"
 	"sort"
+	"sync"
 	"time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -70,6 +71,58 @@ func addNewLayerPrePruning(poss []int, node *tr.Node, playerId int) {
 	}
 }
 
+func build_tree(depth int) {
+	//Create tree root
+	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
+	tree.Captured[1] = Game.P1.CapturedPieces
+	tree.Captured[2] = Game.P2.CapturedPieces
+
+	//Create tree first layer
+	poss := getPossibleMoves(&tree)
+	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
+
+	// //Create the rest of the tree
+	// opponent := 1
+	// if tree.Player == 1 {
+	// 	opponent = 2
+	// }
+	// for _, ch := range tree.Children {
+	// 	build_tree_recursive(ch, depth-1, opponent)
+	// }
+
+	//Create the rest of the tree
+	opponent := 1
+	if tree.Player == 1 {
+		opponent = 2
+	}
+	var waitgroup sync.WaitGroup
+	for i, ch := range tree.Children {
+		waitgroup.Add(1)
+		tmpCh := *ch
+		go func(tmpCh *tr.Node, i int, tree *tr.Node) {
+			defer waitgroup.Done()
+			build_tree_recursive(tmpCh, depth-1, opponent)
+			tree.Children[i] = tmpCh
+		}(&tmpCh, i, &tree)
+	}
+	waitgroup.Wait()
+}
+
+func build_tree_recursive(node *tr.Node, depth int, playerId int) {
+	opponent := 1
+	if playerId == 1 {
+		opponent = 2
+	}
+	if depth > 0 {
+		currentDepth := depth - 1
+		poss := getPossibleMoves(node)
+		addNewLayerPrePruning(poss, node, playerId)
+		for _, ch := range node.Children {
+			build_tree_recursive(ch, currentDepth, opponent)
+		}
+	}
+}
+
 func SuggestMove() {
 
 	depth := 5
@@ -88,82 +141,7 @@ func SuggestMove() {
 		return
 	}
 	startTime := time.Now()
-
-	//Create tree
-	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
-	tree.Captured[1] = Game.P1.CapturedPieces
-	tree.Captured[2] = Game.P2.CapturedPieces
-	poss := getPossibleMoves(&tree)
-	opponent := 1
-	if Game.CurrentPlayer.Id == 1 {
-		opponent = 2
-	}
-
-	// UGLY ----- test. Do it the smart way :)
-	// Players move
-	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
-
-	// opponents move
-	for _, ch := range tree.Children {
-		poss := getPossibleMoves(ch)
-		addNewLayerPrePruning(poss, ch, opponent)
-	}
-	// Players move
-	for _, ch := range tree.Children {
-		for _, ch2 := range ch.Children {
-			poss := getPossibleMoves(ch2)
-			addNewLayerPrePruning(poss, ch2, Game.CurrentPlayer.Id)
-		}
-	}
-	// opponents move
-	for _, ch := range tree.Children {
-		for _, ch2 := range ch.Children {
-			for _, ch3 := range ch2.Children {
-				poss := getPossibleMoves(ch3)
-				addNewLayerPrePruning(poss, ch3, opponent)
-			}
-		}
-	}
-	// Players move
-	for _, ch := range tree.Children {
-		for _, ch2 := range ch.Children {
-			for _, ch3 := range ch2.Children {
-				for _, ch4 := range ch3.Children {
-					poss := getPossibleMoves(ch4)
-					addNewLayerPrePruning(poss, ch4, Game.CurrentPlayer.Id)
-				}
-			}
-		}
-	}
-	// // opponents move
-	// for _, ch := range tree.Children {
-	// 	for _, ch2 := range ch.Children {
-	// 		for _, ch3 := range ch2.Children {
-	// 			for _, ch4 := range ch3.Children {
-	// 				for _, ch5 := range ch4.Children {
-	// 					poss := getPossibleMoves(ch5)
-	// 					addNewLayerPrePruning(poss, ch5, opponent)
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// // Players move
-	// for _, ch := range tree.Children {
-	// 	for _, ch2 := range ch.Children {
-	// 		for _, ch3 := range ch2.Children {
-	// 			for _, ch4 := range ch3.Children {
-	// 				for _, ch5 := range ch4.Children {
-	// 					for _, ch6 := range ch5.Children {
-	// 						poss := getPossibleMoves(ch6)
-	// 						addNewLayerPrePruning(poss, ch6, Game.CurrentPlayer.Id)
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
-
+	build_tree(depth)
 	startTimeAlgo := time.Now()
 
 	// Launch algo

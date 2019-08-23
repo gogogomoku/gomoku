@@ -150,12 +150,16 @@ func getHeuristicValue(playerId int, tab *[board.TOT_SIZE]int, captured *[3]int)
 	}()
 	waitgroup.Wait()
 	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV
-	if captured[playerId] > 0 {
+	if captured[playerId] > 0 && captured[playerId] <= 8 {
 		playerScore += CAPTURED_SCORE[(captured[playerId]/2)-1]
+	} else if captured[playerId] > 8 {
+		playerScore += WIN_SCORE
 	}
 	opponentScore := boardScoreOpponentDINWSE + boardScoreOpponentDINESW + boardScoreOpponentHV
-	if captured[opponent] > 0 {
+	if captured[opponent] > 0 && captured[opponent] <= 8 {
 		opponentScore += CAPTURED_SCORE[(captured[opponent]/2)-1]
+	} else if captured[opponent] > 8 {
+		playerScore += WIN_SCORE
 	}
 	opponentScore = int(float64(opponentScore) * 1.4)
 	return playerScore - opponentScore
@@ -202,7 +206,7 @@ func getSequenceScore(counter int, blocked int, line *[]int, i int) int {
 			}
 			// Check 2 sequence of 1(or more) and 3 separated by empty space
 			// BEFORE SEQ_3
-			if i > 2 && (*line)[i-4] == 0 {
+			if i > 4 && (*line)[i-4] == 0 {
 				if (*line)[i-5] == (*line)[i-3] {
 					tmpScore += SEQ4_BROKEN
 				}

@@ -6,7 +6,7 @@ import (
 )
 
 func TestColumnForPosition(t *testing.T) {
-	tab := [TOT_SIZE]int{}
+	// tab := [TOT_SIZE]int{}
 
 	// 0-indexed columns
 	tables := []struct {
@@ -24,7 +24,7 @@ func TestColumnForPosition(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		actual := GetColumnForPosition(table.position, &tab)
+		actual := GetColumnForPosition(table.position)
 		if actual != table.expectedColumn {
 			t.Errorf("⛔️ Position: %v, expect column: %v, got %v", table.position, table.expectedColumn, actual)
 		}
@@ -32,7 +32,7 @@ func TestColumnForPosition(t *testing.T) {
 }
 
 func TestRowForPosition(t *testing.T) {
-	tab := [TOT_SIZE]int{}
+	// tab := [TOT_SIZE]int{}
 
 	// 0-indexed rows
 	tables := []struct {
@@ -50,7 +50,7 @@ func TestRowForPosition(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		actual := GetRowForPosition(table.position, &tab)
+		actual := GetRowForPosition(table.position)
 		if actual != table.expectedRow {
 			t.Errorf("⛔️ Position: %v, expect Row: %v, got %v", table.position, table.expectedRow, actual)
 		}
@@ -58,7 +58,7 @@ func TestRowForPosition(t *testing.T) {
 }
 
 func TestGetIndexNWSEForPosition(t *testing.T) {
-	tab := [TOT_SIZE]int{}
+	// tab := [TOT_SIZE]int{}
 
 	// 1-indexed diagonals
 	tables := []struct {
@@ -77,7 +77,7 @@ func TestGetIndexNWSEForPosition(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		actual := GetIndexNWSEForPosition(table.position, &tab)
+		actual := GetIndexNWSEForPosition(table.position)
 		if actual != table.expectedD {
 			t.Errorf("⛔️ Position: %v, expect d: %v, got %v", table.position, table.expectedD, actual)
 		}
@@ -85,7 +85,7 @@ func TestGetIndexNWSEForPosition(t *testing.T) {
 }
 
 func TestGetIndexNESWForPosition(t *testing.T) {
-	tab := [TOT_SIZE]int{}
+	// tab := [TOT_SIZE]int{}
 
 	// 1-indexed diagonals
 	tables := []struct {
@@ -105,7 +105,7 @@ func TestGetIndexNESWForPosition(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		actual := GetIndexNESWForPosition(table.position, &tab)
+		actual := GetIndexNESWForPosition(table.position)
 		if actual != table.expectedD {
 			t.Errorf("⛔️ Position: %v, expect d: %v, got %v", table.position, table.expectedD, actual)
 		}
@@ -202,6 +202,97 @@ func TestGetDiagonalNWSESequence(t *testing.T) {
 		actual := GetDiagonalNWSESequence(table.d, &tab)
 		if !reflect.DeepEqual(*actual, table.expectedNWSESeq) {
 			t.Errorf("⛔️ d: %v, expect seq: %v, got %v", table.d, table.expectedNWSESeq, *actual)
+		}
+	}
+}
+
+func TestGetDiagonalNWSESequenceIdxPos(t *testing.T) {
+	tab := [TOT_SIZE]int{}
+	for i := 0; i < TOT_SIZE; i++ {
+		tab[i] = 0
+		// tab[i] = i
+	}
+
+	tables := []struct {
+		d               int
+		position        int
+		expectedNWSESeq []int
+		expectedOffset  int
+	}{
+		{1, 342, []int{342}, 0},
+		{2, 323, []int{323, 343}, 0},
+		{2, 343, []int{323, 343}, 1},
+		{3, 304, []int{304, 324, 344}, 0},
+		{3, 324, []int{304, 324, 344}, 1},
+		{6, 287, []int{247, 267, 287, 307, 327, 347}, 2},
+		{6, 347, []int{247, 267, 287, 307, 327, 347}, 5},
+		// {37, []int{18}},
+	}
+
+	for _, table := range tables {
+		actualSequence, actualOffset := GetDiagonalNWSESequenceIdxPos(table.d, &tab, table.position)
+		if !reflect.DeepEqual(*actualSequence, table.expectedNWSESeq) {
+			t.Errorf("⛔️ d: %v, expect seq: %v, got %v", table.d, table.expectedNWSESeq, *actualSequence)
+		}
+		if table.expectedOffset != actualOffset {
+			t.Errorf("⛔️ sequence: %v, expect offset: %v, got offset %v", table.expectedNWSESeq, table.expectedOffset, actualOffset)
+		}
+	}
+}
+
+func TestGetOffsetAndIndexNWSEForPosition(t *testing.T) {
+	tables := []struct {
+		position       int
+		expectedD      int
+		expectedOffset int
+	}{
+		{342, 1, 0},
+		{323, 2, 0},
+		{343, 2, 1},
+		{304, 3, 0},
+		{324, 3, 1},
+		{287, 6, 2},
+		{347, 6, 5},
+		{0, 19, 0},
+		{1, 20, 0},
+		{2, 21, 0},
+	}
+
+	for i, table := range tables {
+		actualOffset, actualD := GetOffsetAndIndexNWSEForPosition(table.position)
+		if table.expectedD != actualD {
+			t.Errorf("⛔️ case [%d] position: %v, expect d: %v, got d %v", i, table.position, table.expectedD, actualD)
+		}
+		if table.expectedOffset != actualOffset {
+			t.Errorf("⛔️ case [%d] position: %v, expect offset: %v, got offset %v", i, table.position, table.expectedOffset, actualOffset)
+		}
+	}
+}
+
+func TestGetOffsetAndIndexNESWForPosition(t *testing.T) {
+	tables := []struct {
+		position       int
+		expectedD      int
+		expectedOffset int
+	}{
+		{0, 1, 0},
+		{1, 2, 0},
+		{3, 4, 0},
+		{19, 2, 1},
+		{38, 3, 2},
+		{20, 3, 1},
+		{18, 19, 0},
+		{37, 20, 0},
+		{22, 5, 1},
+	}
+
+	for i, table := range tables {
+		actualOffset, actualD := GetOffsetAndIndexNESWForPosition(table.position)
+		if table.expectedD != actualD {
+			t.Errorf("⛔️ case [%d] position: %v, expect d: %v, got d %v", i, table.position, table.expectedD, actualD)
+		}
+		if table.expectedOffset != actualOffset {
+			t.Errorf("⛔️ case [%d] position: %v, expect offset: %v, got offset %v", i, table.position, table.expectedOffset, actualOffset)
 		}
 	}
 }

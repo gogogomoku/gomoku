@@ -174,6 +174,11 @@ func GetIdxSequence(position int, tab *[TOT_SIZE]int, getIndex func(int) int, ge
 	return idxSequence
 }
 
+func GetIdxAndOffset(position int, getOffsetAndIdx func(int) (int, int)) (offset int, idx int) {
+	offset, index := getOffsetAndIdx(position)
+	return offset, index
+}
+
 /*
 ** GET INDEX SEQUENCES WITH PLAYER OFFSET
  */
@@ -248,10 +253,6 @@ func GetRowSeqForRowIdxPos(row int, tab *[TOT_SIZE]int, position int) (*[]int, i
 
 /*
 ** INDEX + OFFSET
- */
-
-/*
-** GET START INDICES
  */
 
 func GetOffsetAndColumnForPosition(position int) (int, int) {

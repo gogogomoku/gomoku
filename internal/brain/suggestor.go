@@ -58,7 +58,7 @@ func addNewLayerPrePruning(poss []int, node *tr.Node, playerId int) {
 		newMovesToTest = append(newMovesToTest, &new)
 	}
 	sort.Slice(newMovesToTest, func(i int, j int) bool {
-		return newMovesToTest[i].Value > newMovesToTest[j].Value
+		return newMovesToTest[i].Value < newMovesToTest[j].Value // Make stupid
 	})
 
 	i := 0
@@ -137,7 +137,7 @@ func SuggestMove() {
 		} else {
 			Game.SuggestedPosition = tree.BestChild.BestChild.Position
 		}
-		Game.SuggestedPosition = board.TOT_SIZE + 1
+		// Game.SuggestedPosition = board.TOT_SIZE + 1 // Suggestion not saved
 		return
 	}
 	startTime := time.Now()

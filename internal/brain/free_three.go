@@ -83,8 +83,8 @@ func CheckSequenceForF3(sequence []int, playerId int) []int {
  */
 
 func GetDoubleF3StartPos(position int, tab [board.TOT_SIZE]int, playerId int) [4]int {
-	axes := [4]int{}
-	sequences := make([][]int, 4)
+	// axes := [4]int{}
+	// sequences := make([][]int, 4)
 
 	// col := board.GetColumnForPosition(position)
 	// row := board.GetRowForPosition(position)
@@ -93,11 +93,39 @@ func GetDoubleF3StartPos(position int, tab [board.TOT_SIZE]int, playerId int) [4
 
 	tab[position] = playerId
 
+	axes := [4][2]int{}
+
+	axes[NS][0], axes[NS][1] = board.GetIdxAndOffset(position, board.GetOffsetAndColumnForPosition)
+	axes[EW][0], axes[EW][1] = board.GetIdxAndOffset(position, board.GetOffsetAndRowForPosition)
+	axes[NWSE][0], axes[NWSE][1] = board.GetIdxAndOffset(position, board.GetOffsetAndIndexNWSEForPosition)
+	axes[NESW][0], axes[NESW][1] = board.GetIdxAndOffset(position, board.GetOffsetAndIndexNESWForPosition)
+
 	// todo: Actually need indices, not values :P
-	sequences[NS] = *(board.GetSequence(position, &tab, board.GetColumnForPosition, board.GetColSeqForCol))
-	sequences[EW] = *(board.GetSequence(position, &tab, board.GetRowForPosition, board.GetRowSeqForRow))
-	sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNESWForPosition, board.GetDiagonalNESWSequence))
-	sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNWSEForPosition, board.GetDiagonalNWSESequence))
+	// sequences[NS] = *(board.GetSequence(position, &tab, board.GetColumnForPosition, board.GetColSeqForCol))
+	// sequences[EW] = *(board.GetSequence(position, &tab, board.GetRowForPosition, board.GetRowSeqForRow))
+	// sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNESWForPosition, board.GetDiagonalNESWSequence))
+	// sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNWSEForPosition, board.GetDiagonalNWSESequence))
+
+	// todo: Actually need indices, not values :P
+	// sequences[NS] = *(board.GetSequence(position, &tab, board.GetColumnForPosition, board.GetColSeqForCol))
+	// sequences[EW] = *(board.GetSequence(position, &tab, board.GetRowForPosition, board.GetRowSeqForRow))
+	// sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNESWForPosition, board.GetDiagonalNESWSequence))
+	// sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNWSEForPosition, board.GetDiagonalNWSESequence))
+
+	// sequences[NS] = *(board.GetIdxSequence(position, &tab, board.GetColumnForPosition, board.GetColSeqForColIdx))
+	// sequences[EW] = *(board.GetIdxSequence(position, &tab, board.GetRowForPosition, board.GetRowSeqForRowIdx))
+	// sequences[NESW] = *(board.GetIdxSequence(position, &tab, board.GetIndexNESWForPosition, board.GetDiagonalNESWSequenceIdx))
+	// sequences[NWSE] = *(board.GetIdxSequence(position, &tab, board.GetIndexNWSEForPosition, board.GetDiagonalNWSESequenceIdx))
+
+	// for axis, seq := range sequences {
+	// 	switch {
+	// 	case seq < 5:
+	// 		break
+	// 	}
+	// 	for i, idx := range seq {
+
+	// 	}
+	// }
 
 	_ = axes
 	_ = sequences

@@ -6,30 +6,30 @@ import (
 	tr "github.com/gogogomoku/gomoku/internal/tree"
 )
 
-const MaxInt = int(^uint(0) >> 1)
+const MaxInt = int16(^uint16(0) >> 1)
 const MinInt = -MaxInt - 1
 
 var nodeCounter int
-var totalDepth int
+var totalDepth int16
 
-func minimum(a, b int) int {
+func minimum(a, b int16) int16 {
 	if a < b {
 		return a
 	}
 	return b
 }
 
-func maximum(a, b int) int {
+func maximum(a, b int16) int16 {
 	if a > b {
 		return a
 	}
 	return b
 }
 
-func getMaxChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
+func getMaxChild(node *tr.Node, depth int16, max bool, alpha int16, beta int16) int16 {
 	bestValue := MinInt
 	for _, ch := range node.Children {
-		returnValue := MinimaxRecursivePruning(ch, depth-1, !max, alpha, beta)
+		returnValue := int16(MinimaxRecursivePruning(ch, depth-1, !max, alpha, beta))
 		alpha = maximum(alpha, returnValue)
 		bestValue = maximum(bestValue, returnValue)
 		if node.BestChild == nil || ch.Value > node.BestChild.Value {
@@ -42,10 +42,10 @@ func getMaxChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 	return bestValue
 }
 
-func getMinChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
+func getMinChild(node *tr.Node, depth int16, max bool, alpha int16, beta int16) int16 {
 	bestValue := MaxInt
 	for _, ch := range node.Children {
-		returnValue := MinimaxRecursivePruning(ch, depth-1, !max, alpha, beta)
+		returnValue := int16(MinimaxRecursivePruning(ch, depth-1, !max, alpha, beta))
 		beta = minimum(beta, returnValue)
 		bestValue = minimum(bestValue, returnValue)
 		if node.BestChild == nil || ch.Value < node.BestChild.Value {
@@ -58,30 +58,30 @@ func getMinChild(node *tr.Node, depth int, max bool, alpha int, beta int) int {
 	return bestValue
 }
 
-func MinimaxRecursivePruning(node *tr.Node, depth int, max bool, alpha int, beta int) int {
+func MinimaxRecursivePruning(node *tr.Node, depth int16, max bool, alpha int16, beta int16) int16 {
 	nodeCounter++
 	if depth == 0 || len(node.Children) == 0 || node.WinMove {
 		node.Value = getHeuristicValue(node.Player, &node.Tab, &node.Captured)
 		// fmt.Println("Position: ", node.Position, "Value: ", node.Value)
-		if node.Value >= 100000 {
+		if node.Value >= WIN_SCORE {
 			node.WinMove = true
 		}
 		return node.Value
 	}
 	if max {
 		node.Value = getMaxChild(node, depth, max, alpha, beta)
-		return int(float64(node.Value))
+		return int16(float64(node.Value))
 	} else {
 		node.Value = getMinChild(node, depth, max, alpha, beta)
-		return int(float64(node.Value))
+		return int16(float64(node.Value))
 	}
 }
 
-func LaunchMinimaxPruning(graph *tr.Node, depth int) {
+func LaunchMinimaxPruning(graph *tr.Node, depth int16) {
 	alpha := MinInt
 	beta := MaxInt
-	totalDepth = depth
 	nodeCounter = 0
+	totalDepth = depth
 	fmt.Println("Launching Minimax with depth ", depth)
 	MinimaxRecursivePruning(graph, depth, true, alpha, beta)
 	fmt.Println("==========================")

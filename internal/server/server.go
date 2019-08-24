@@ -67,13 +67,13 @@ func RestartGame(c echo.Context) error {
 }
 
 func MakeMove(c echo.Context) error {
-	id, err1 := strconv.Atoi(c.Param("id"))
+	id, err1 := (strconv.Atoi(c.Param("id")))
 	position, err2 := strconv.Atoi(c.Param("pos"))
 	if err1 != nil || err2 != nil {
 		txtErr := fmt.Sprint("Error in params", err1, err2)
 		return c.JSON(http.StatusOK, &SimpleResponse{-1, txtErr})
 	}
-	code, msg := brain.HandleMove(id, position)
+	code, msg := brain.HandleMove(int16(id), int16(position))
 	if code == 0 {
 		return c.JSON(http.StatusOK, brain.Game)
 	} else {

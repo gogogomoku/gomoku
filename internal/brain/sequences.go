@@ -5,10 +5,10 @@ import (
 )
 
 // For each direction in usual order, return how many contiguous pieces for playerId are present
-func CheckSequence(position int, playerId int, tab *[board.TOT_SIZE]int) []int {
-	sequenceLengths := []int{0, 0, 0, 0, 0, 0, 0, 0}
-	for direction := 0; direction < 8; direction++ {
-		counter := 0
+func CheckSequence(position int16, playerId int16, tab *[board.TOT_SIZE]int16) []int16 {
+	sequenceLengths := []int16{0, 0, 0, 0, 0, 0, 0, 0}
+	for direction := int16(0); direction < 8; direction++ {
+		counter := int16(0)
 		tmpPosition := position
 		for i := 0; i < 8; i++ {
 			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
@@ -28,44 +28,44 @@ func CheckSequence(position int, playerId int, tab *[board.TOT_SIZE]int) []int {
 	return sequenceLengths
 }
 
-func sequenceOpposingDirections(position int, playerId int, dir []int, increase int, tab *[board.TOT_SIZE]int) []int {
+func sequenceOpposingDirections(position int16, playerId int16, dir []int16, increase int16, tab *[board.TOT_SIZE]int16) []int16 {
 	partialSequences := CheckSequence(position, playerId, tab)
 	if partialSequences[dir[0]] != 0 || partialSequences[dir[1]] != 0 {
-		p := []int{position}
+		p := []int16{position}
 		// Add elements in dir[0]
 		current := position
-		for i := 0; i < partialSequences[dir[0]]; i++ {
+		for i := int16(0); i < partialSequences[dir[0]]; i++ {
 			current -= increase
 			p = append(p, current)
 		}
 		// Add elements in dir[1]
 		current = position
-		for i := 0; i < partialSequences[dir[1]]; i++ {
+		for i := int16(0); i < partialSequences[dir[1]]; i++ {
 			current += increase
 			p = append(p, current)
 		}
 		return p
 	}
-	return []int{}
+	return []int16{}
 }
 
-func CompleteSequenceForPosition(position int, playerId int, tab *[board.TOT_SIZE]int) [][]int {
-	sequences := [][]int{}
+func CompleteSequenceForPosition(position int16, playerId int16, tab *[board.TOT_SIZE]int16) [][]int16 {
+	sequences := [][]int16{}
 	sequenceDirections := []struct {
-		OpposingDirections []int
-		IncreaseValue      int
+		OpposingDirections []int16
+		IncreaseValue      int16
 	}{
 		{
-			OpposingDirections: []int{N, S},
+			OpposingDirections: []int16{N, S},
 			IncreaseValue:      board.SIZE,
 		}, {
-			OpposingDirections: []int{W, E},
+			OpposingDirections: []int16{W, E},
 			IncreaseValue:      1,
 		}, {
-			OpposingDirections: []int{NW, SE},
+			OpposingDirections: []int16{NW, SE},
 			IncreaseValue:      board.SIZE + 1,
 		}, {
-			OpposingDirections: []int{NE, SW},
+			OpposingDirections: []int16{NE, SW},
 			IncreaseValue:      board.SIZE - 1,
 		},
 	}
@@ -79,11 +79,11 @@ func CompleteSequenceForPosition(position int, playerId int, tab *[board.TOT_SIZ
 }
 
 // Return N next pieces for every directions
-func CheckNextN(position int, tab [board.TOT_SIZE]int, size int) [][]int {
-	lines := make([][]int, 8)
-	for direction := 0; direction < 8; direction++ {
+func CheckNextN(position int16, tab [board.TOT_SIZE]int16, size int16) [][]int16 {
+	lines := make([][]int16, 8)
+	for direction := int16(0); direction < 8; direction++ {
 		tmpPosition := position
-		for i := 0; i < size; i++ {
+		for i := int16(0); i < size; i++ {
 			nextIndex, edge := getNextIndexForDirection(tmpPosition, direction)
 
 			if edge {

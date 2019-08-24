@@ -5,15 +5,15 @@ import (
 )
 
 type Node struct {
-	Id        int
-	Value     int
+	Id        int16
+	Value     int16
 	Children  []*Node
 	BestChild *Node
-	Tab       [board.TOT_SIZE]int
-	Position  int
-	Player    int
+	Tab       [board.TOT_SIZE]int16
+	Position  int16
+	Player    int16
 	WinMove   bool
-	Captured  [3]int
+	Captured  [3]int16
 }
 
 /*
@@ -27,7 +27,7 @@ func AddChild(parent *Node, child *Node) {
 ** Add a new Node to the children list of a given parent id.
 ** root is the starting point of the tree to look for parent
  */
-func AddChildById(root *Node, child *Node, parentId int) int {
+func AddChildById(root *Node, child *Node, parentId int16) int {
 	if root.Id == parentId {
 		AddChild(root, child)
 		return 1

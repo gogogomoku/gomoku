@@ -28,11 +28,11 @@ type Round struct {
 	P1                *player.Player
 	P2                *player.Player
 	Goban             board.Board
-	Status            int
+	Status            int16
 	CurrentPlayer     *player.Player
-	Turn              int
-	SuggestedPosition int
-	Winner            int
+	Turn              int16
+	SuggestedPosition int16
+	Winner            int16
 }
 
 var Game Round = Round{}
@@ -45,7 +45,7 @@ func InitializeValues() {
 	Game.P1 = player.CreatePlayer(1, MAXPIECES)
 	Game.P2 = player.CreatePlayer(2, MAXPIECES)
 	Game.Goban = board.Board{}
-	Game.Goban.Tab = [board.TOT_SIZE]int{}
+	Game.Goban.Tab = [board.TOT_SIZE]int16{}
 	Game.Goban.Size = board.SIZE
 	Game.Turn = 0
 	Game.Status = NotStarted

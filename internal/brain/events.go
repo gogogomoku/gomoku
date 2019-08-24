@@ -11,14 +11,15 @@ func StartRound() {
 	Game.Status = Running
 	player.ResetPlayers(Game.P1, Game.P2, MAXPIECES)
 	Game.CurrentPlayer = Game.P1
-	center := (board.SIZE * board.SIZE) / 2
+	var center int16
+	center = (board.SIZE * board.SIZE) / 2
 	if board.SIZE%2 == 0 {
 		center += board.SIZE / 2
 	}
 	HandleMove(Game.CurrentPlayer.Id, center)
 }
 
-func CheckValidMove(position int, tab [board.TOT_SIZE]int) bool {
+func CheckValidMove(position int16, tab [board.TOT_SIZE]int16) bool {
 	if position >= 0 && position <= (board.SIZE*board.SIZE)-1 {
 		if tab[position] == 0 {
 			return true
@@ -27,7 +28,7 @@ func CheckValidMove(position int, tab [board.TOT_SIZE]int) bool {
 	return false
 }
 
-func getNextIndexForDirection(position int, direction int) (nextIndex int, edge bool) {
+func getNextIndexForDirection(position int16, direction int16) (nextIndex int16, edge bool) {
 	directions := [4]bool{true, true, true, true}
 	// First row
 	if position < board.SIZE {
@@ -66,7 +67,7 @@ func getNextIndexForDirection(position int, direction int) (nextIndex int, edge 
 	return -42, true
 }
 
-func ReturnNextPiece(position int, direction int, tab *[board.TOT_SIZE]int) (nextIndex int, edge bool) {
+func ReturnNextPiece(position int16, direction int16, tab *[board.TOT_SIZE]int16) (nextIndex int16, edge bool) {
 	nextIndex, edge = getNextIndexForDirection(position, direction)
 	if edge {
 		return -42, true
@@ -74,7 +75,7 @@ func ReturnNextPiece(position int, direction int, tab *[board.TOT_SIZE]int) (nex
 	return (*tab)[nextIndex], false
 }
 
-func checkWinningConditions(lastPosition int, sequences [][]int) bool {
+func checkWinningConditions(lastPosition int16, sequences [][]int16) bool {
 	if Game.CurrentPlayer.CapturedPieces == 10 {
 		return true
 	}
@@ -94,7 +95,7 @@ func updateWhoseTurn() {
 	}
 }
 
-func HandleMove(id int, position int) (code int, msg string) {
+func HandleMove(id int16, position int16) (code int16, msg string) {
 	fmt.Println("making move at...", position,
 		"for Player...", Game.CurrentPlayer.Id)
 	if Game.Winner != 0 {
@@ -109,7 +110,7 @@ func HandleMove(id int, position int) (code int, msg string) {
 	if Game.CurrentPlayer.PiecesLeft == 0 {
 		return 1, "You have no pieces left"
 	}
-	Game.Goban.Tab[position] = int(id)
+	Game.Goban.Tab[position] = int16(id)
 	Game.CurrentPlayer.PiecesLeft--
 	captureDirections := checkCapture(position, &Game.Goban.Tab, Game.CurrentPlayer.Id)
 	capturePairs(position, captureDirections, &Game.Goban.Tab)

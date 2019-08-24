@@ -27,7 +27,7 @@ func TestLaunchMinimaxPruning(t *testing.T) {
 	// 	center += board.SIZE / 2
 	// }
 	// // Actual state
-	// tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int{}, Player: 2}
+	// tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int16{}, Player: 2}
 	// // Player 1
 	// tree2 := tr.Node{Id: 2, Value: 0, Tab: tree1.Tab, Player: 1}
 	// tr.AddChildById(&tree1, &tree2, 1)
@@ -84,10 +84,10 @@ func TestLaunchMinimaxPruning(t *testing.T) {
 	//
 	// LaunchMinimaxPruning(&tree1, 20)
 	//
-	// expectedValues := []int{
+	// expectedValues := []int16{
 	// 	12,
 	// }
-	// actualValues := []int{
+	// actualValues := []int16{
 	// 	tree5.BestChild.Id,
 	// }
 	// if !reflect.DeepEqual(actualValues, expectedValues) {
@@ -107,7 +107,7 @@ func minimaxTest1(t *testing.T) {
 		center += board.SIZE / 2
 	}
 	// Actual state
-	tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int{}, Player: 2}
+	tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int16{}, Player: 2}
 	// Player 1
 	tree2 := tr.Node{Id: 2, Value: 0, Tab: tree1.Tab, Player: 1}
 	tr.AddChildById(&tree1, &tree2, 1)
@@ -144,10 +144,10 @@ func minimaxTest1(t *testing.T) {
 		board.PrintBoard(tree4.Tab, board.SIZE)
 		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", tree4.Value, SEQ4_FREE_SCORE)
 	}
-	expectedValues := []int{
+	expectedValues := []int16{
 		4,
 	}
-	actualValues := []int{
+	actualValues := []int16{
 		tree1.BestChild.Id,
 	}
 	if !reflect.DeepEqual(actualValues, expectedValues) {
@@ -167,7 +167,7 @@ func minimaxTest2(t *testing.T) {
 		center += board.SIZE / 2
 	}
 	// Actual state
-	tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int{}, Player: 2}
+	tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int16{}, Player: 2}
 	// Player 1
 	tree2 := tr.Node{Id: 2, Value: 0, Tab: tree1.Tab, Player: 1}
 	tr.AddChildById(&tree1, &tree2, 1)
@@ -256,11 +256,11 @@ func minimaxTest2(t *testing.T) {
 		t.Errorf("Error in Minimax Pruning (Didn't PRUNE!!!!). Expected: %d, got: %d", 9, tree4.BestChild.Id)
 	}
 
-	expectedValues := []int{
+	expectedValues := []int16{
 		2,
 		6,
 	}
-	actualValues := []int{
+	actualValues := []int16{
 		tree1.BestChild.Id,
 		tree1.BestChild.BestChild.Id,
 	}

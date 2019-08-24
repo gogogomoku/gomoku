@@ -1,6 +1,7 @@
 package brain
 
 import (
+	"math"
 	"reflect"
 	"testing"
 )
@@ -53,6 +54,26 @@ func TestCheckSequenceForF3(t *testing.T) {
 		} else {
 			// t.Logf("✅ for sequence %v\n", table.sequence)
 		}
+	}
+}
+
+func BenchmarkCheckSequenceForF3(b *testing.B) {
+	b.StopTimer()
+	playerId := 1
+	seq := make([]int, math.MaxInt16*8)
+	for i, _ := range seq {
+		switch {
+		case i%4 == 0:
+			seq[i] = 1
+		case i%5 == 0:
+			seq[i] = 2
+		case i > INT_MAX-20:
+			seq[i] = 1
+		}
+	}
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		CheckSequenceForF3(seq, playerId)
 	}
 }
 

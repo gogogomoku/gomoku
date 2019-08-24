@@ -86,8 +86,14 @@ func GetDoubleF3StartPos(position int, tab [board.TOT_SIZE]int, playerId int) [4
 	axes := [4]int{}
 	sequences := make([][]int, 4)
 
+	// col := board.GetColumnForPosition(position)
+	// row := board.GetRowForPosition(position)
+	// nesw := board.GetIndexNESWForPosition(position)
+	// nwse := board.GetIndexNWSEForPosition(position)
+
 	tab[position] = playerId
 
+	// todo: Actually need indices, not values :P
 	sequences[NS] = *(board.GetSequence(position, &tab, board.GetColumnForPosition, board.GetColSeqForCol))
 	sequences[EW] = *(board.GetSequence(position, &tab, board.GetRowForPosition, board.GetRowSeqForRow))
 	sequences[NESW] = *(board.GetSequence(position, &tab, board.GetIndexNESWForPosition, board.GetDiagonalNESWSequence))

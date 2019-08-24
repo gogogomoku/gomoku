@@ -60,14 +60,15 @@ func TestCheckSequenceForF3(t *testing.T) {
 func BenchmarkCheckSequenceForF3(b *testing.B) {
 	b.StopTimer()
 	playerId := 1
-	seq := make([]int, math.MaxInt16*8)
+	length := math.MaxInt16 * 16
+	seq := make([]int, length)
 	for i, _ := range seq {
 		switch {
 		case i%4 == 0:
 			seq[i] = 1
 		case i%5 == 0:
 			seq[i] = 2
-		case i > INT_MAX-20:
+		case i > length-100:
 			seq[i] = 1
 		}
 	}

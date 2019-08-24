@@ -100,6 +100,11 @@ func GetDoubleF3StartPos(position int, tab [board.TOT_SIZE]int, playerId int) [4
 	axes[NWSE][0], axes[NWSE][1] = board.GetIdxAndOffset(position, board.GetOffsetAndIndexNWSEForPosition)
 	axes[NESW][0], axes[NESW][1] = board.GetIdxAndOffset(position, board.GetOffsetAndIndexNESWForPosition)
 
+	for i, axis := range axes {
+		start := maximum(0, axis[0]-5)
+		end := axis[0]
+	}
+
 	// todo: Actually need indices, not values :P
 	// sequences[NS] = *(board.GetSequence(position, &tab, board.GetColumnForPosition, board.GetColSeqForCol))
 	// sequences[EW] = *(board.GetSequence(position, &tab, board.GetRowForPosition, board.GetRowSeqForRow))

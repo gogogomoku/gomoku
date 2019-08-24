@@ -37,7 +37,7 @@ func getPossibleMoves(node *tr.Node) []int {
 }
 
 func addNewLayerPrePruning(poss []int, node *tr.Node, playerId int) {
-	maxTestingMoves := 5
+	maxTestingMoves := 7
 	newMovesToTest := []*tr.Node{}
 	for i, m := range poss {
 		new := tr.Node{

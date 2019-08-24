@@ -12,7 +12,7 @@ const (
 	SEQ2_BLOCKED1_SCORE = 10
 	SEQ2_FREE_SCORE     = 20
 	SEQ3_BLOCKED1_SCORE = 100
-	SEQ4_BLOCKED1_SCORE = 5000
+	SEQ4_BLOCKED1_SCORE = 8000
 	SEQ4_FREE_SCORE     = 40000
 	SEQ4_BROKEN         = 10000
 	F3_SCORE            = 1000
@@ -161,7 +161,14 @@ func getHeuristicValue(playerId int, tab *[board.TOT_SIZE]int, captured *[3]int)
 	} else if captured[opponent] > 8 {
 		playerScore += WIN_SCORE
 	}
-	opponentScore = int(float64(opponentScore) * 1.4)
+	if playerScore >= 100000 {
+		playerScore = 100000
+	} else if opponentScore >= 100000 {
+		opponentScore = 100000
+		playerScore = 0
+	} else {
+		opponentScore *= 2
+	}
 	return playerScore - opponentScore
 }
 

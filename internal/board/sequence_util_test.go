@@ -110,13 +110,6 @@ func TestGetIndexNESWForPosition(t *testing.T) {
 			t.Errorf("⛔️ Position: %v, expect d: %v, got %v", table.position, table.expectedD, actual)
 		}
 	}
-	// tab := [TOT_SIZE]int{}
-	// for i := 0; i < TOT_SIZE; i++ {
-	// 	tab[i] = i
-	// }
-	// for i := 0; i < TOT_SIZE; i += SIZE {
-	// 	t.Logf("%4d\n", tab[i:i+19])
-	// }
 }
 
 func TestGetRowSeqForRow(t *testing.T) {

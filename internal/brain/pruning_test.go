@@ -107,7 +107,7 @@ func minimaxTest1(t *testing.T) {
 		center += board.SIZE / 2
 	}
 	// Actual state
-	tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int16{}, Player: 2}
+	tree1 := tr.Node{Id: 1, Value: 0, Tab: &[board.TOT_SIZE]int16{}, Player: 2}
 	// Player 1
 	tree2 := tr.Node{Id: 2, Value: 0, Tab: tree1.Tab, Player: 1}
 	tr.AddChildById(&tree1, &tree2, 1)
@@ -116,15 +116,21 @@ func minimaxTest1(t *testing.T) {
 	tree4 := tr.Node{Id: 4, Value: 0, Tab: tree1.Tab, Player: 1}
 	tr.AddChildById(&tree1, &tree4, 1)
 
+	newTree2 := *tree1.Tab
+	tree2.Tab = &newTree2
 	tree2.Tab[center-1] = 1
 	tree2.Tab[center] = 1
 	tree2.Tab[center+1] = 0
 	tree2.Tab[center+2] = 1
 
+	newTree3 := *tree1.Tab
+	tree3.Tab = &newTree3
 	tree3.Tab[center-1] = 1
 	tree3.Tab[center] = 1
 	tree3.Tab[center+1] = 1
 
+	newTree4 := *tree1.Tab
+	tree4.Tab = &newTree4
 	tree4.Tab[center-1] = 1
 	tree4.Tab[center] = 1
 	tree4.Tab[center+1] = 1
@@ -133,16 +139,16 @@ func minimaxTest1(t *testing.T) {
 	LaunchMinimaxPruning(&tree1, 1)
 
 	if tree2.Value != F3_SCORE+SEQ2_FREE_SCORE {
-		board.PrintBoard(tree2.Tab, board.SIZE)
-		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", tree2.Value, F3_SCORE+SEQ2_FREE_SCORE)
+		board.PrintBoard(*tree2.Tab, board.SIZE)
+		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", F3_SCORE+SEQ2_FREE_SCORE, tree2.Value)
 	}
 	if tree3.Value != F3_SCORE {
-		board.PrintBoard(tree3.Tab, board.SIZE)
-		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", tree3.Value, F3_SCORE)
+		board.PrintBoard(*tree3.Tab, board.SIZE)
+		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", F3_SCORE, tree3.Value)
 	}
 	if tree4.Value != SEQ4_FREE_SCORE {
-		board.PrintBoard(tree4.Tab, board.SIZE)
-		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", tree4.Value, SEQ4_FREE_SCORE)
+		board.PrintBoard(*tree4.Tab, board.SIZE)
+		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", SEQ4_FREE_SCORE, tree4.Value)
 	}
 	expectedValues := []int16{
 		4,
@@ -167,7 +173,7 @@ func minimaxTest2(t *testing.T) {
 		center += board.SIZE / 2
 	}
 	// Actual state
-	tree1 := tr.Node{Id: 1, Value: 0, Tab: [board.TOT_SIZE]int16{}, Player: 2}
+	tree1 := tr.Node{Id: 1, Value: 0, Tab: &[board.TOT_SIZE]int16{}, Player: 2}
 	// Player 1
 	tree2 := tr.Node{Id: 2, Value: 0, Tab: tree1.Tab, Player: 1}
 	tr.AddChildById(&tree1, &tree2, 1)
@@ -189,60 +195,72 @@ func minimaxTest2(t *testing.T) {
 	tree10 := tr.Node{Id: 10, Value: 0, Tab: tree1.Tab, Player: 2}
 	tr.AddChildById(&tree1, &tree10, 4)
 
+	newTree5 := *tree1.Tab
+	tree5.Tab = &newTree5
 	tree5.Tab[center-2] = 2
 	tree5.Tab[center-1] = 2
 	tree5.Tab[center] = 2
 	tree5.Tab[center+1] = 2
 	tree5.Tab[center+2] = 2
 
+	newTree6 := *tree1.Tab
+	tree6.Tab = &newTree6
 	tree6.Tab[center-1] = 2
 	tree6.Tab[center] = 2
 	tree6.Tab[center+1] = 2
 	tree6.Tab[center+2] = 2
 
+	newTree7 := *tree1.Tab
+	tree7.Tab = &newTree7
 	tree7.Tab[center-1] = 2
 	tree7.Tab[center+1] = 2
 	tree7.Tab[center+2] = 2
 
 	// Gets pruned
+	newTree8 := *tree1.Tab
+	tree8.Tab = &newTree8
 	tree8.Tab[center] = 2
 	tree8.Tab[center+1] = 2
 	tree8.Tab[center+2] = 2
 
+	newTree9 := *tree1.Tab
+	tree9.Tab = &newTree9
 	tree9.Tab[center] = 2
 	tree9.Tab[center+1] = 2
 	tree9.Tab[center+2] = 2
 
 	// Gets pruned
+	newTree10 := *tree1.Tab
+	tree10.Tab = &newTree10
 	tree10.Tab[center] = 2
 	tree10.Tab[center+1] = 2
 
 	LaunchMinimaxPruning(&tree1, 2)
 
 	if tree5.Value != WIN_SCORE {
-		board.PrintBoard(tree5.Tab, board.SIZE)
+		board.PrintBoard(*tree5.Tab, board.SIZE)
 		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", WIN_SCORE, tree5.Value)
 	}
 	if tree6.Value != SEQ4_FREE_SCORE {
-		board.PrintBoard(tree6.Tab, board.SIZE)
+		board.PrintBoard(*tree6.Tab, board.SIZE)
 		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", SEQ4_FREE_SCORE, tree6.Value)
 	}
 	if tree7.Value != F3_SCORE+SEQ2_FREE_SCORE {
-		board.PrintBoard(tree7.Tab, board.SIZE)
+		board.PrintBoard(*tree7.Tab, board.SIZE)
 		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", F3_SCORE+SEQ2_FREE_SCORE, tree7.Value)
 	}
 	if tree8.Value != 0 {
 		// Gets pruned
-		board.PrintBoard(tree8.Tab, board.SIZE)
+		board.PrintBoard(*tree8.Tab, board.SIZE)
 		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", 0, tree8.Value)
 	}
 	if tree9.Value != F3_SCORE {
-		board.PrintBoard(tree9.Tab, board.SIZE)
+		board.PrintBoard(*tree9.Tab, board.SIZE)
 		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", F3_SCORE, tree9.Value)
 	}
 	if tree10.Value != 0 {
 		// Gets pruned
-		board.PrintBoard(tree10.Tab, board.SIZE)
+		board.PrintBoard(*tree10.Tab, board.SIZE)
 		t.Errorf("Error in Minimax: Heuristic. Expected: %d, got: %d", 0, tree10.Value)
 	}
 

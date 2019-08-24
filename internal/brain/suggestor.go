@@ -12,13 +12,22 @@ import (
 
 var tree tr.Node
 
-func getPossibleMoves(node *tr.Node) []int16 {
+func getPossibleMoves(node *tr.Node, captured [3]int16) []int16 {
 	poss := []int16{}
+	virtualTab := *node.Tab
+	for _, move := range node.Moves {
+		// Apply Moves
+		virtualTab[move.Position] = move.Player
+		// Virtual Capturing
+		captureDirections := checkCapture(move.Position, &virtualTab, move.Player)
+		// captured[move.Player] += 2 * int16(len(captureDirections))
+		capturePairs(move.Position, captureDirections, &virtualTab)
+	}
 	for i := int16(0); i < (board.SIZE * board.SIZE); i++ {
-		if node.Tab[i] == 0 {
-			if CheckValidMove(i, node.Tab) {
+		if virtualTab[i] == 0 {
+			if CheckValidMove(i, &virtualTab) {
 				affectsTab := false
-				lines := CheckNextN(i, node.Tab, 1)
+				lines := CheckNextN(i, &virtualTab, 1)
 				for _, line := range lines {
 					for _, piece := range line {
 						if piece != 0 {
@@ -41,21 +50,15 @@ func addNewLayerPrePruning(poss []int16, node *tr.Node, playerId int16) {
 	newMovesToTest := []*tr.Node{}
 	for i, m := range poss {
 		new := tr.Node{
-			Id:    int16(i) + node.Id,
-			Value: 0,
-			// Tab:      newTab,
+			Id:       int16(i) + node.Id,
+			Value:    0,
 			Position: m,
 			Player:   playerId,
 		}
 		new.Tab = node.Tab
-		new.Tab[m] = playerId
-		new.Captured[1] = node.Captured[1]
-		new.Captured[2] = node.Captured[2]
-		// Virtual Capturing
-		captureDirections := checkCapture(m, &node.Tab, playerId)
-		new.Captured[playerId] += 2 * int16(len(captureDirections))
-		capturePairs(m, captureDirections, &new.Tab)
-		new.Value = getHeuristicValue(playerId, &new.Tab, &new.Captured)
+		new.Moves = append(node.Moves, tr.Move{Position: new.Position, Player: playerId})
+
+		new.Value = getHeuristicValue(playerId, new.Tab, &new.Captured, new.Moves)
 		newMovesToTest = append(newMovesToTest, &new)
 		if len(newMovesToTest) > maxTestingMoves {
 			sort.Slice(newMovesToTest, func(i int, j int) bool {
@@ -75,12 +78,12 @@ func addNewLayerPrePruning(poss []int16, node *tr.Node, playerId int16) {
 
 func build_tree(depth int16) {
 	//Create tree root
-	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
+	tree = tr.Node{Id: 1, Value: 0, Tab: &Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
 	tree.Captured[1] = Game.P1.CapturedPieces
 	tree.Captured[2] = Game.P2.CapturedPieces
 
 	//Create tree first layer
-	poss := getPossibleMoves(&tree)
+	poss := getPossibleMoves(&tree, tree.Captured)
 	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
 
 	// //Create the rest of the tree
@@ -117,7 +120,7 @@ func build_tree_recursive(node *tr.Node, depth int16, playerId int16) {
 	}
 	if depth > 0 {
 		currentDepth := depth - 1
-		poss := getPossibleMoves(node)
+		poss := getPossibleMoves(node, node.Captured)
 		addNewLayerPrePruning(poss, node, playerId)
 		for _, ch := range node.Children {
 			build_tree_recursive(ch, currentDepth, opponent)

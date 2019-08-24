@@ -79,7 +79,7 @@ func CompleteSequenceForPosition(position int16, playerId int16, tab *[board.TOT
 }
 
 // Return N next pieces for every directions
-func CheckNextN(position int16, tab [board.TOT_SIZE]int16, size int16) [][]int16 {
+func CheckNextN(position int16, tab *[board.TOT_SIZE]int16, size int16) [][]int16 {
 	lines := make([][]int16, 8)
 	for direction := int16(0); direction < 8; direction++ {
 		tmpPosition := position

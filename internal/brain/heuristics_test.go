@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gogogomoku/gomoku/internal/board"
+	tr "github.com/gogogomoku/gomoku/internal/tree"
 )
 
 func TestLaunchCheckSequence(t *testing.T) {
@@ -67,7 +68,7 @@ func TestGetHeuristicValue(t *testing.T) {
 	tab[center-1] = 1
 	tab[center] = 1
 	tab[center+1] = 1
-	score := getHeuristicValue(1, &tab, &[3]int16{})
+	score := getHeuristicValue(1, &tab, &[3]int16{}, []tr.Move{})
 	if score != SEQ4_FREE_SCORE {
 		t.Errorf("Error in getHeuristicValue. Expected: %d, got: %d", score, SEQ4_FREE_SCORE)
 	}

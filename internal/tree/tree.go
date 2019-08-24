@@ -4,16 +4,22 @@ import (
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
+type Move struct {
+	Position int16
+	Player   int16
+}
+
 type Node struct {
 	Id        int16
 	Value     int16
 	Children  []*Node
 	BestChild *Node
-	Tab       [board.TOT_SIZE]int16
+	Tab       *[board.TOT_SIZE]int16
 	Position  int16
 	Player    int16
 	WinMove   bool
 	Captured  [3]int16
+	Moves     []Move
 }
 
 /*

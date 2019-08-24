@@ -19,7 +19,7 @@ func StartRound() {
 	HandleMove(Game.CurrentPlayer.Id, center)
 }
 
-func CheckValidMove(position int16, tab [board.TOT_SIZE]int16) bool {
+func CheckValidMove(position int16, tab *[board.TOT_SIZE]int16) bool {
 	if position >= 0 && position <= (board.SIZE*board.SIZE)-1 {
 		if tab[position] == 0 {
 			return true
@@ -104,7 +104,7 @@ func HandleMove(id int16, position int16) (code int16, msg string) {
 	if Game.CurrentPlayer.Id != id {
 		return 1, "It is not your turn"
 	}
-	if !CheckValidMove(position, Game.Goban.Tab) {
+	if !CheckValidMove(position, &Game.Goban.Tab) {
 		return 1, "Move isn't valid"
 	}
 	if Game.CurrentPlayer.PiecesLeft == 0 {

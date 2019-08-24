@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gogogomoku/gomoku/internal/board"
+	tr "github.com/gogogomoku/gomoku/internal/tree"
 )
 
 const (
@@ -106,7 +107,25 @@ func checkDiagonalNESWSequences(playerId int16, tab *[board.TOT_SIZE]int16) int1
 	return score
 }
 
-func getHeuristicValue(playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]int16) int16 {
+func getHeuristicValue(playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]int16, moves []tr.Move) int16 {
+
+	virtualTab := *tab
+
+	// fmt.Println("START")
+	//
+	// fmt.Println(virtualTab)
+	// fmt.Println(moves)
+	for _, move := range moves {
+		// Apply Moves
+		virtualTab[move.Position] = move.Player
+		// Virtual Capturing
+		captureDirections := checkCapture(move.Position, &virtualTab, move.Player)
+		captured[playerId] += 2 * int16(len(captureDirections))
+		capturePairs(move.Position, captureDirections, &virtualTab)
+	}
+	// fmt.Println(virtualTab)
+	// fmt.Println("END")
+
 	boardScorePlayerHV := int16(0)
 	boardScorePlayerDINWSE := int16(0)
 	boardScorePlayerDINESW := int16(0)
@@ -122,31 +141,31 @@ func getHeuristicValue(playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]
 	waitgroup.Add(6)
 	go func() {
 		defer waitgroup.Done()
-		boardScorePlayerHV += checkHorizontalSequences(playerId, tab)
-		boardScorePlayerHV += checkVerticalSequences(playerId, tab)
+		boardScorePlayerHV += checkHorizontalSequences(playerId, &virtualTab)
+		boardScorePlayerHV += checkVerticalSequences(playerId, &virtualTab)
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScorePlayerDINWSE += checkDiagonalNWSESequences(playerId, tab)
+		boardScorePlayerDINWSE += checkDiagonalNWSESequences(playerId, &virtualTab)
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScorePlayerDINESW += checkDiagonalNESWSequences(playerId, tab)
+		boardScorePlayerDINESW += checkDiagonalNESWSequences(playerId, &virtualTab)
 	}()
 
 	// Check sequences for opponent
 	go func() {
 		defer waitgroup.Done()
-		boardScoreOpponentHV += checkHorizontalSequences(opponent, tab)
-		boardScoreOpponentHV += checkVerticalSequences(opponent, tab)
+		boardScoreOpponentHV += checkHorizontalSequences(opponent, &virtualTab)
+		boardScoreOpponentHV += checkVerticalSequences(opponent, &virtualTab)
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScoreOpponentDINWSE += checkDiagonalNWSESequences(opponent, tab)
+		boardScoreOpponentDINWSE += checkDiagonalNWSESequences(opponent, &virtualTab)
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScoreOpponentDINESW += checkDiagonalNESWSequences(opponent, tab)
+		boardScoreOpponentDINESW += checkDiagonalNESWSequences(opponent, &virtualTab)
 	}()
 	waitgroup.Wait()
 	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV

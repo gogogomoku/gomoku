@@ -60,11 +60,13 @@ export default {
     components: {
     },
     props: [
+        "currentPlayer",
+        "gameStatus",
         "size",
+        "suggestedPosition",
+        "suggestorOn",
         "tab",
         "turn",
-        "currentPlayer",
-        "suggestedPosition",
     ],
     methods: {
         mouseOver: function(tileId, currentPlayer){
@@ -80,6 +82,7 @@ export default {
             document.getElementById(tileId).opacity=0.5;
         },
         clickTile: function(tileId, currentPlayer){
+            // eslint-disable-next-line 
             console.log("Make move: \nID: " + tileId + " currentPlayer" + currentPlayer);
             this.$parent.$parent.makeMove(tileId, currentPlayer)
         }
@@ -89,22 +92,28 @@ export default {
 
 <style scoped>
     #gobanContainer {
-        background-color:  #444477;
-        padding: 16px;
+        background-color:#454649;
         display: flex;
-        flex-basis: 100%;
-        background-color:  	#99C;
+        flex-basis: 700px;
+        margin: 0;
+        padding: 0;
+        flex-grow: 0;
+        flex-shrink: 0;
+
+        border: 1px solid #76767a;
+        border-radius: 10px 0px 0px 10px;
+        box-sizing: border-box;
+        border-right-width: 0px;
     }
 
     #goban {
-        padding: 20px;
-        border-radius: 10px;
         padding: 10px;
         margin: 0 auto;
-        width: 100%;
+        flex-basis: 700px;
+        flex-grow: 0;
         display: flex;
         flex-wrap: wrap;
-        /* border: solid #DAC 2px; */
+        box-sizing: border-box;
     }
 
     .row {
@@ -112,21 +121,6 @@ export default {
         display: flex;
         align-items: stretch;
         justify-content: center;
-    }
-
-    @media (min-width: 800px) {
-        #gobanContainer {
-            /* border: solid #FFF 2px; */
-            padding: 15px;
-            flex-grow: 3;
-        }
-        #goban {
-            width: 90%;
-        }
-    }
-
-    .row {
-        display: flex;
     }
 
     .tile {

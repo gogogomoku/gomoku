@@ -34,6 +34,8 @@ $ npm run serve
 ## Docker
 Get a build up. You will need `docker` and `docker-compose`.
 
+#### Reminder
 ```
-docker-compose up
+docker-compose build --no-cache
+docker-compose up --force-recreate
 ```

@@ -12,6 +12,8 @@ services:
   ui:
     container_name: ui
     build: ./ui/
+    environment:
+      - VUE_APP_SERVER_HTTP=http://localhost:4242
     ports: 
       - "8080:8080"
     depends_on: 

@@ -1,8 +1,9 @@
 <template>
   <div class="home">
     <div class="header">
-      <img src="noun_go_181275_duygu_ozkan.png" />
+      <!-- <img src="noun_go_181275_duygu_ozkan.png" /> -->
       <h1>gogogomoku</h1>
+      <div id="author"><div id="authorImgWrapper"><img src="github-logo.svg" width=15 height=15 /></div><div id="authorTxtWrapper"><a href="https://github.com/gogogomoku/gomoku">@eskombro + @ekelen</a></div></div>
     </div>
   </div>
 </template>
@@ -17,45 +18,32 @@ export default {
 </script>
 
 <style scoped>
-  .home {
-      background-color: #000033;
-      width: 100%;
-      min-width: fit-content;
-      padding: 0;
-      margin: 0 auto;
-      color: #CDE;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-  }
   
-  .header {
-    height: auto;
-    width: 100%;
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    justify-content: center;
-  }
+    .header {
+      height: auto;
+      width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: baseline;
+      justify-content: space-between;
 
-      .header img {
-        display: initial;
-        object-fit: contain;
-        height: 50px;
-        padding-right: 20px;
-      }
+      color: #ece2d0;
+    }
 
-    @media (min-width: 800px) {
-      .home {
-        width: 60%;
-        min-width: 800px;
-      }
+    #author {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+    }
 
-      .header img {
-        display: initial;
-        object-fit: contain;
-        height: 50px;
-        padding-right: 20px;
-      }
+    #author img {
+      margin-right: 15px;
+    }
+
+    #author a {
+      color: #9f998e;
+      text-decoration: none;
+      vertical-align: center;
     }
 </style>

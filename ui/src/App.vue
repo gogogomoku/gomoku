@@ -8,6 +8,7 @@
         v-bind:currentPlayer="currentPlayer"
         v-bind:playerInfo="playerInfo"
         v-bind:suggestedPosition="suggestedPosition"
+        v-bind:suggestorOn="suggestorOn"
         v-bind:buttonMessage="buttonMessage"
         v-bind:gameStatus="gameStatus"
     />
@@ -19,6 +20,8 @@ import GomokuHome from './components/GomokuHome.vue'
 import GameContainer from './components/gameContainer/GameContainer.vue'
 import axios from "axios"
 
+const TAB = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+
 export default {
     name: 'app',
     components: {
@@ -29,11 +32,12 @@ export default {
         return {
             turn: 0,
             size: 19,
-            tab: [[]],
+            tab: TAB,
             currentPlayer: 1,
             buttonMessage: "Start Game",
             gameStatus: 0,
             suggestedPosition: -1,
+            suggestorOn: true,
             playerInfo: {
                 p1: {
                     Id: 1,
@@ -50,11 +54,10 @@ export default {
     },
     methods: {
         getTab() {
-            axios.get("http://localhost:4242")
+            axios.get(process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242")
             .then(response => this.updateTab(response))
         },
         updateTab(response) {
-            console.log(response.data);
             var res = response.data
             if (res.Goban != undefined) {
                 var size = res.Goban.Size
@@ -76,7 +79,7 @@ export default {
                 }
                 this._data.currentPlayer = res.CurrentPlayer.Id
                 this._data.gameStatus = res.Status
-                this._data.suggestedPosition = res.SuggestedPosition
+                this._data.suggestedPosition = res.SuggestedPosition // TODO: Server-side optional suppress suggestor
                 this._data.Winner = res.Winner
                 if (res.Winner != 0) {
                     alert("Winner: Player " + res.Winner)
@@ -84,24 +87,27 @@ export default {
             }
         },
         makeMove(tileId, currentPlayer) {
-            if (this._data.Winner == 0) {
-                axios.get("http://localhost:4242/move/" + tileId +"/id/" + currentPlayer)
+            if (this._data.gameStatus > 0 && this._data.Winner == 0) {
+                axios.get(process.env.VUE_APP_SERVER_HTTP + "/move/" + tileId +"/id/" + currentPlayer)
                 .then(response => this.updateTab(response))
             }
         },
         startGame() {
-            axios.get("http://localhost:4242")
+            axios.get(process.env.VUE_APP_SERVER_HTTP)
             .then(response => this.updateTab(response))
             if (typeof(this._data.status) == "undefined") {
-                axios.get("http://localhost:4242/start")
+                axios.get(process.env.VUE_APP_SERVER_HTTP + "/start")
                 .then(response => this.updateTab(response))
                 this._data.buttonMessage = "Restart Game"
             }
         },
         restartGame() {
-            axios.get("http://localhost:4242/restart")
+            axios.get(process.env.VUE_APP_SERVER_HTTP + "/restart")
             .then(response => this.updateTab(response))
         },
+        toggleSuggestor(suggestorOn) {
+            this._data.suggestorOn = suggestorOn
+        }
     }
 
 }
@@ -109,14 +115,13 @@ export default {
 
 <style>
     #app {
-      font-family: 'Avenir', Helvetica, Arial, sans-serif;
+      font-family: 'Share Tech Mono', 'Avenir', Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-align: center;
-      color: #2c3e50;
       margin-top: 20px;
     }
     body {
-        background-color: #111144;
+        background-color: #121315;
     }
 </style>

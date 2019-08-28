@@ -27,12 +27,12 @@ func TestAddChild(t *testing.T) {
 	AddChild(root.Children[0], &Node{Id: 5, Value: 5})
 	AddChild(root.Children[2], &Node{Id: 6, Value: 6})
 	AddChild(root.Children[0].Children[0], &Node{Id: 7, Value: 7})
-	expectedValues := []int{
+	expectedValues := []int16{
 		5,
 		6,
 		7,
 	}
-	actualValues := []int{
+	actualValues := []int16{
 		root.Children[0].Children[0].Id,
 		root.Children[2].Children[0].Id,
 		root.Children[0].Children[0].Children[0].Id,
@@ -68,12 +68,12 @@ func TestAddChildById(t *testing.T) {
 	AddChildById(&root, &Node{Id: 9, Value: 9}, 7)
 	AddChildById(&root, &Node{Id: 10, Value: 10}, 7)
 	AddChildById(&root, &Node{Id: 11, Value: 11}, 7)
-	expectedValues := []int{
+	expectedValues := []int16{
 		8,
 		6,
 		11,
 	}
-	actualValues := []int{
+	actualValues := []int16{
 		root.Children[0].Children[0].Children[0].Id,
 		root.Children[0].Children[1].Id,
 		root.Children[1].Children[0].Children[2].Id,

@@ -4,9 +4,9 @@ import (
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
-func checkCapture(position int, tab *[board.TOT_SIZE]int, playerId int) []int {
-	captureDirections := []int{}
-	var direction int
+func checkCapture(position int16, tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
+	captureDirections := []int16{}
+	var direction int16
 	for direction = 0; direction < 8; direction++ {
 		counter := 0
 		tmpPosition := position
@@ -29,7 +29,7 @@ func checkCapture(position int, tab *[board.TOT_SIZE]int, playerId int) []int {
 	return captureDirections
 }
 
-func capturePairs(position int, captureDirections []int, tab *[board.TOT_SIZE]int) {
+func capturePairs(position int16, captureDirections []int16, tab *[board.TOT_SIZE]int16) {
 	for _, captureDirection := range captureDirections {
 		tmpPosition := position
 		for j := 0; j < 2; j++ {

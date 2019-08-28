@@ -5,10 +5,10 @@ import "testing"
 func TestCreatePlayer(t *testing.T) {
 	tables := []struct {
 		player                 *Player
-		expectedId             int
-		expectedPiecesLeft     int
-		expectedCapturedPieces int
-		expectedStatus         int
+		expectedId             int16
+		expectedPiecesLeft     int16
+		expectedCapturedPieces int16
+		expectedStatus         int16
 	}{
 		{CreatePlayer(1, 50), 1, 50, 0, 0},
 		{CreatePlayer(2, 1000), 2, 1000, 0, 0},

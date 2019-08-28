@@ -5,17 +5,18 @@ package brain
 ** Return starting index of each F3 found
  */
 
-func CheckSequenceForF3(sequence []int, playerId int) []int {
+func CheckSequenceForF3(sequence []int16, playerId int16) []int16 {
 	seqLen := len(sequence)
 	if seqLen < 5 {
 		return nil
 	}
 
-	nSubSeq := seqLen - 4 // how many sub sequences to evaluate
-	f3StartPoss := []int{}
+	nSubSeq := int16(seqLen - 4) // how many sub sequences to evaluate
+	f3StartPoss := []int16{}
 
-	for i := 0; i < nSubSeq; i++ {
-		maxSubSeqLen := maximum(minimum(len(sequence[i:]), 5), minimum(len(sequence[i:]), 6))
+	var i int16
+	for i = 0; i < nSubSeq; i++ {
+		maxSubSeqLen := (maximum(int16(minimum(int16(len(sequence[i:])), int16(5))), int16(minimum(int16(len(sequence[i:])), int16(6)))))
 
 		// length is < 5: no sequence
 		// sequence must have no value at west extreme

@@ -18,7 +18,7 @@
 <script>
 export default {
     name: 'Scoreboard',
-    props: ["aiStatus", "turn", "currentPlayer", "playerInfo"],
+    props: ["turn", "currentPlayer", "playerInfo"],
     methods: {
     }
 }

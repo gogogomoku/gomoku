@@ -6,11 +6,9 @@
             v-bind:gameStatus="gameStatus"
         />
         <PlayerScoreBoard id="player1Sb" class="playerSb"
-            v-bind:aiStatus="aiStatus"
             v-bind:playerInfo="playerInfo.p1"
         />
         <PlayerScoreBoard id="player2Sb" class="playerSb"
-            v-bind:aiStatus="aiStatus"
             v-bind:playerInfo="playerInfo.p2"
         />
         <div id="generalSb">
@@ -24,8 +22,9 @@
         </div>
 
         <Timer
-            v-if="suggestorOn && gameStatus > 0"
+            v-if="suggestorOn && gameStatus == 1 && currentPlayer == 2 && playerInfo.p2.AiStatus == 0"
             v-bind:turn="turn"
+            :msElapsedServer="1"
         />
 
     </div>
@@ -44,12 +43,12 @@ export default {
         Timer,
     },
     props: [
-        "aiStatus",
         "buttonMessage",
         "currentPlayer",
         "gameStatus",
         "playerInfo",
         "suggestorOn",
+        "suggestedPosition",
         "turn",
     ],
     data() {

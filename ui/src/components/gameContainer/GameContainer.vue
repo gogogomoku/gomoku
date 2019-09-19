@@ -1,7 +1,6 @@
 <template>
     <div id="gameContainer">
         <Goban
-            v-bind:aiStatus="aiStatus"
             v-bind:currentPlayer="currentPlayer"
             v-bind:size="size"
             v-bind:suggestedPosition="suggestedPosition"
@@ -10,12 +9,12 @@
             v-bind:turn="turn"
         />
         <ControlPanel
-            v-bind:aiStatus="aiStatus"
             v-bind:buttonMessage="buttonMessage"
             v-bind:currentPlayer="currentPlayer"
             v-bind:gameStatus="gameStatus"
             v-bind:playerInfo="playerInfo"
             v-bind:suggestorOn="suggestorOn"
+            v-bind:suggestedPosition="suggestedPosition"
             v-bind:turn="turn"
         />
     </div>
@@ -32,7 +31,6 @@ export default {
         ControlPanel,
     },
     props: [
-        "aiStatus",
         "buttonMessage",
         "currentPlayer",
         "gameStatus",

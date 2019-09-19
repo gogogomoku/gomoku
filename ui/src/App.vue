@@ -43,11 +43,13 @@ export default {
                     Id: 1,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
+                    AiStatus: -1,
                 },
                 p2: {
                     Id: 2,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
+                    AiStatus: -1,
                 },
             },
         }
@@ -77,6 +79,8 @@ export default {
                     p1: res.P1,
                     p2: res.P2,
                 }
+                this._data.playerInfo.p1.AiStatus = 1 // tmp until we have from server
+                this._data.playerInfo.p2.AiStatus = 0 // tmp until have from server
                 this._data.currentPlayer = res.CurrentPlayer.Id
                 this._data.gameStatus = res.Status
                 this._data.suggestedPosition = res.SuggestedPosition // TODO: Server-side optional suppress suggestor

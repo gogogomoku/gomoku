@@ -16,6 +16,11 @@ type SimpleResponse struct {
 	Message string `json:"message" xml:"message"`
 }
 
+type StartGameParams struct {
+	AiStatus1 int16 `json:"AiStatus1" xml:"AiStatus1"`
+	AiStatus2 int16 `json:"AiStatus2" xml:"AiStatus2"`
+}
+
 func StartServer() {
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -38,15 +43,15 @@ func StartServer() {
 		StackSize: 1 << 10, // 1 KB
 	}))
 	e.GET("/", home)
-	e.GET("/start", StartGame)
-	e.GET("/restart", RestartGame)
+	e.POST("/start", StartGame)
+	e.POST("/restart", RestartGame)
 	e.GET("/move/:pos/id/:id", MakeMove)
 	e.Debug = true
 	e.Start(":4242")
 
 }
 
-func home(c echo.Context) error {
+func returnGameInfo(c echo.Context) error {
 	if brain.Game.Status == brain.NotStarted {
 		return c.JSON(http.StatusOK, &SimpleResponse{1, "Game hasn't started yet"})
 	} else if brain.Game.Status == brain.Running {
@@ -56,15 +61,27 @@ func home(c echo.Context) error {
 	}
 }
 
+func home(c echo.Context) error {
+	return returnGameInfo(c)
+}
+
 func StartGame(c echo.Context) error {
-	brain.StartRound()
-	return c.Redirect(http.StatusTemporaryRedirect, "/")
+	m := StartGameParams{}
+	if err := c.Bind(&m); err != nil {
+		return err
+	}
+	brain.StartRound(m.AiStatus1, m.AiStatus2)
+	return returnGameInfo(c)
 }
 
 func RestartGame(c echo.Context) error {
-	brain.InitializeValues()
-	brain.StartRound()
-	return c.Redirect(http.StatusTemporaryRedirect, "/")
+	brain.InitializeValues(0, 0)
+	m := StartGameParams{}
+	if err := c.Bind(&m); err != nil {
+		return err
+	}
+	brain.StartRound(m.AiStatus1, m.AiStatus2)
+	return returnGameInfo(c)
 }
 
 func MakeMove(c echo.Context) error {
@@ -81,86 +98,3 @@ func MakeMove(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, &SimpleResponse{-1, msg})
 	}
 }
-
-// #################### NON-ECHO SERVER
-// import (
-// 	"encoding/json"
-// 	"fmt"
-// 	"log"
-// 	"net/http"
-// 	"strconv"
-// 	"time"
-
-// 	"github.com/gogogomoku/gomoku/internal/brain"
-// 	"github.com/gorilla/mux"
-// )
-
-// type SimpleResponse struct {
-// 	ResCode int    `json:"code" xml:"code"`
-// 	Message string `json:"message" xml:"message"`
-// }
-
-// func home(w http.ResponseWriter, r *http.Request) {
-// 	brain.StartRound()
-// 	if brain.Game.Status == brain.NotStarted {
-// 		json.NewEncoder(w).Encode(SimpleResponse{ResCode: 1, Message: "Game hasn't started yet"})
-// 	} else if brain.Game.Status == brain.Running {
-// 		json.NewEncoder(w).Encode(brain.Game)
-// 	} else {
-// 		json.NewEncoder(w).Encode(SimpleResponse{3, "Game finished"})
-// 	}
-// }
-
-// func startGame(w http.ResponseWriter, r *http.Request) {
-// 	brain.StartRound()
-// 	json.NewEncoder(w).Encode(brain.Game)
-// }
-
-// func restartGame(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println(r)
-// 	brain.InitializeValues()
-// 	brain.StartRound()
-// 	json.NewEncoder(w).Encode(brain.Game)
-// }
-
-// func MakeMove(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println(r)
-// 	vars := mux.Vars(r)
-// 	id, err1 := strconv.Atoi(vars["id"])
-// 	position, err2 := strconv.Atoi(vars["pos"])
-// 	if err1 != nil || err2 != nil {
-// 		txtErr := fmt.Sprint("Error in params", err1, err2)
-// 		json.NewEncoder(w).Encode(SimpleResponse{-1, txtErr})
-// 	}
-// 	code, msg := brain.HandleMove(id, position)
-// 	if code == 0 {
-// 		json.NewEncoder(w).Encode(brain.Game)
-// 	} else {
-// 		json.NewEncoder(w).Encode(SimpleResponse{-1, msg})
-// 	}
-// }
-
-// func StartServer() {
-// 	router := mux.NewRouter().StrictSlash(true)
-// 	router.Use(commonMiddleware)
-// 	router.HandleFunc("/", home)
-// 	router.HandleFunc("/start", startGame)
-// 	router.HandleFunc("/restart", restartGame)
-// 	router.HandleFunc("/move/{pos}/id/{id}", MakeMove)
-// 	srv := &http.Server{
-// 		Handler:      router,
-// 		Addr:         "127.0.0.1:4242",
-// 		WriteTimeout: 5 * time.Second,
-// 		ReadTimeout:  5 * time.Second,
-// 	}
-// 	log.Printf("Server setting up on %s\n", srv.Addr)
-// 	log.Fatal(srv.ListenAndServe())
-// }
-
-// func commonMiddleware(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		w.Header().Set("Access-Control-Allow-Origin", "*")
-// 		w.Header().Add("Content-Type", "application/json")
-// 		next.ServeHTTP(w, r)
-// 	})
-// }

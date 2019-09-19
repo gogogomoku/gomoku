@@ -5,12 +5,14 @@
             v-bind:buttonMessage="buttonMessage"
             v-bind:gameStatus="gameStatus"
         />
-        <PlayerScoreBoard id="player1Sb" class="playerSb"
+        <PlayerScoreBoard id="player1Sb"
             v-bind:aiStatus="aiStatus"
+            v-bind:currentPlayer="currentPlayer"
             v-bind:playerInfo="playerInfo.p1"
         />
-        <PlayerScoreBoard id="player2Sb" class="playerSb"
+        <PlayerScoreBoard id="player2Sb"
             v-bind:aiStatus="aiStatus"
+            v-bind:currentPlayer="currentPlayer"
             v-bind:playerInfo="playerInfo.p2"
         />
         <div id="generalSb">
@@ -133,16 +135,4 @@ export default {
         margin: 0px 5px 10px;
     }
 
-    .playerSb {
-        border: 1px solid #000000;
-        border-radius: 8px;
-
-        margin: 5px 15px;
-        padding: 10px 5px 12px;
-
-        background-color:#24252a;
-
-        flex-grow: 0;
-        box-sizing: border-box;
-    }
 </style>

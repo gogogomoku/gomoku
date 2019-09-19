@@ -33,7 +33,7 @@ export default {
             turn: 0,
             size: 19,
             tab: TAB,
-            currentPlayer: 1,
+            currentPlayer: -1,
             buttonMessage: "Start Game",
             gameStatus: 0,
             suggestedPosition: -1,

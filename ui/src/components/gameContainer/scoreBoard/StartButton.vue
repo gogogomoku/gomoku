@@ -21,21 +21,17 @@ export default {
 <style scoped>
     button {
         padding: 9px 18px 12px;
-        background-color: rgb(255, 173, 79);
+        background-color: #3cadad;
         border: none;
         font-size: 16px;
         font-weight: bolder;
+        letter-spacing:normal;
+        border-radius: 3px;
     }
     button:hover {
-        background-color: rgb(255, 145, 1);
+        background-color: #48cece;
     }
-
-    @media (min-width: 800px) {
-        button {
-            padding: 9px 18px 12px;
-            font-size: 16px;
-            width: 74%;
-            border-radius: 3px;
-        }
+    button:active {
+        background-color: #2b7c7c;
     }
 </style>

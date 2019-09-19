@@ -1,41 +1,47 @@
 <template>
     <div id="gameContainer">
         <Goban
+            v-bind:aiStatus="aiStatus"
+            v-bind:currentPlayer="currentPlayer"
             v-bind:size="size"
+            v-bind:suggestedPosition="suggestedPosition"
+            v-bind:suggestorOn="suggestorOn"
             v-bind:tab="tab"
             v-bind:turn="turn"
-            v-bind:currentPlayer="currentPlayer"
-            v-bind:suggestedPosition="suggestedPosition"
         />
-        <Scoreboard
-            v-bind:turn="turn"
-            v-bind:currentPlayer="currentPlayer"
-            v-bind:playerInfo="playerInfo"
+        <ControlPanel
+            v-bind:aiStatus="aiStatus"
             v-bind:buttonMessage="buttonMessage"
+            v-bind:currentPlayer="currentPlayer"
             v-bind:gameStatus="gameStatus"
+            v-bind:playerInfo="playerInfo"
+            v-bind:suggestorOn="suggestorOn"
+            v-bind:turn="turn"
         />
     </div>
 </template>
 
 <script>
 import Goban from './Goban.vue'
-import Scoreboard from './scoreBoard/Scoreboard.vue'
+import ControlPanel from './scoreBoard/ControlPanel.vue'
 
 export default {
     name: 'GameContainer',
     components: {
         Goban,
-        Scoreboard,
+        ControlPanel,
     },
     props: [
+        "aiStatus",
+        "buttonMessage",
+        "currentPlayer",
+        "gameStatus",
+        "playerInfo",
         "size",
+        "suggestedPosition",
+        "suggestorOn",
         "tab",
         "turn",
-        "currentPlayer",
-        "playerInfo",
-        "suggestedPosition",
-        "buttonMessage",
-        "gameStatus",
     ],
     methods: {
     }
@@ -46,18 +52,10 @@ export default {
     #gameContainer {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: space-around;
-        align-items: stretch;
-        width: 100%;
-    }
 
-    @media (min-width: 800px) {
-        #gameContainer {
-            margin: 0px auto;
-            width: 60%;
-            min-width: 800px;
-            flex-wrap: nowrap;
-        }
+        margin: 0px auto;
+        width: 900px;
     }
 </style>

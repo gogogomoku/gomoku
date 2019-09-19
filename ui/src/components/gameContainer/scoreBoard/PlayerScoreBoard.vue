@@ -42,7 +42,9 @@ export default {
     }
 
     .playerSb.active {
-        border-color: #d84040;
+        border-color: #f3a5a5;
+        border-width: 2px;
+        background-color: #35363f;
     }
 
     .playerPieceImgWrapper {

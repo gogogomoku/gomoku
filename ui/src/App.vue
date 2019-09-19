@@ -96,13 +96,19 @@ export default {
             axios.get(process.env.VUE_APP_SERVER_HTTP)
             .then(response => this.updateTab(response))
             if (typeof(this._data.status) == "undefined") {
-                axios.get(process.env.VUE_APP_SERVER_HTTP + "/start")
+                axios.post(process.env.VUE_APP_SERVER_HTTP + "/start", {
+                    AiStatus1: 1,
+                    AiStatus2: 0
+                })
                 .then(response => this.updateTab(response))
                 this._data.buttonMessage = "Restart Game"
             }
         },
         restartGame() {
-            axios.get(process.env.VUE_APP_SERVER_HTTP + "/restart")
+            axios.post(process.env.VUE_APP_SERVER_HTTP + "/restart", {
+                AiStatus1: 1,
+                AiStatus2: 0
+            })
             .then(response => this.updateTab(response))
         },
         toggleSuggestor(suggestorOn) {

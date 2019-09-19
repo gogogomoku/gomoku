@@ -7,9 +7,9 @@ import (
 	"github.com/gogogomoku/gomoku/internal/player"
 )
 
-func StartRound() {
+func StartRound(AiStatus1 int16, AiStatus2 int16) {
 	Game.Status = Running
-	player.ResetPlayers(Game.P1, Game.P2, MAXPIECES)
+	player.ResetPlayers(Game.P1, Game.P2, MAXPIECES, AiStatus1, AiStatus2)
 	Game.CurrentPlayer = Game.P1
 	var center int16
 	center = (board.SIZE * board.SIZE) / 2
@@ -122,7 +122,7 @@ func HandleMove(id int16, position int16) (code int16, msg string) {
 		Game.Turn++
 		updateWhoseTurn()
 		SuggestMove()
-		if Game.CurrentPlayer.Id == 1 {
+		if Game.CurrentPlayer.AiStatus == 1 {
 			HandleMove(Game.CurrentPlayer.Id, Game.SuggestedPosition)
 		}
 	}

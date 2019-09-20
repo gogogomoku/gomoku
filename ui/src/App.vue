@@ -36,6 +36,7 @@ export default {
             currentPlayer: -1,
             buttonMessage: "Start Game",
             gameStatus: 0,
+            http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
             suggestedPosition: -1,
             suggestorOn: true,
             playerInfo: {
@@ -54,7 +55,7 @@ export default {
     },
     methods: {
         getTab() {
-            axios.get(process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242")
+            axios.get(this._data.http_endpoint)
             .then(response => this.updateTab(response))
         },
         updateTab(response) {
@@ -88,15 +89,15 @@ export default {
         },
         makeMove(tileId, currentPlayer) {
             if (this._data.gameStatus > 0 && this._data.Winner == 0) {
-                axios.get(process.env.VUE_APP_SERVER_HTTP + "/move/" + tileId +"/id/" + currentPlayer)
+                axios.get(this._data.http_endpoint + "/move/" + tileId +"/id/" + currentPlayer)
                 .then(response => this.updateTab(response))
             }
         },
         startGame() {
-            axios.get(process.env.VUE_APP_SERVER_HTTP)
+            axios.get(this._data.http_endpoint)
             .then(response => this.updateTab(response))
             if (typeof(this._data.status) == "undefined") {
-                axios.post(process.env.VUE_APP_SERVER_HTTP + "/start", {
+                axios.post(this._data.http_endpoint + "/start", {
                     AiStatus1: 1,
                     AiStatus2: 0
                 })
@@ -105,7 +106,7 @@ export default {
             }
         },
         restartGame() {
-            axios.post(process.env.VUE_APP_SERVER_HTTP + "/restart", {
+            axios.post(this._data.http_endpoint + "/restart", {
                 AiStatus1: 1,
                 AiStatus2: 0
             })

@@ -19,3 +19,5 @@
 /*.pdf
 .env
 .env.local
+*sandbox*
+.vscode

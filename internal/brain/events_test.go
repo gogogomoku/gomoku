@@ -11,12 +11,8 @@ func TestStartRound(t *testing.T) {
 }
 
 func TestCheckValidMove(t *testing.T) {
-	Game.Goban.Tab = [board.TOT_SIZE]int16{}
 	Game.CurrentPlayer = Game.P1
 	center := int16((board.SIZE * board.SIZE) / 2)
-	if board.SIZE%2 == 0 {
-		center += board.SIZE / 2
-	}
 
 	tables := []struct {
 		position               int16
@@ -29,21 +25,22 @@ func TestCheckValidMove(t *testing.T) {
 		{1, []int16{0, 2}, []int16{3}, true},
 		{center, []int16{center - 1}, []int16{center + 1}, true},
 		{center, []int16{}, []int16{}, true},
+		{20, []int16{21, 22}, []int16{}, true},
 
 		// Invalid
 		{0, []int16{0}, []int16{}, false},
 		{0, []int16{}, []int16{0}, false},
 		{-1, []int16{}, []int16{}, false},
 		{board.SIZE * board.SIZE, []int16{}, []int16{}, false},
+
+		// Invalid because 2+ F3
+		{20, []int16{21, 22, 39, 58}, []int16{}, false},
+		{20, []int16{21, 22, 39, 58, 40, 41}, []int16{}, false},
+		{20, []int16{21, 22, 39, 58, 40, 41}, []int16{24, 96, 81}, false},
 	}
 
 	for _, table := range tables {
-		for _, v := range table.opponentPositions {
-			Game.Goban.Tab[v] = 2
-		}
-		for _, v := range table.currentPlayerPositions {
-			Game.Goban.Tab[v] = 1
-		}
+		Game.Goban.Tab = *board.MakeTab(table.currentPlayerPositions, table.opponentPositions)
 
 		isValidMove := CheckValidMove(table.position, Game.Goban.Tab)
 		if table.expectedIsValid != isValidMove {

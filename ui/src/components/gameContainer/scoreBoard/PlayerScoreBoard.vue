@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <div class="playerSb">
+        <div class="playerSb" v-bind:class="{active: currentPlayer === playerInfo.Id }">
             <div v-if="playerInfo.Id === 1" class="playerPieceImgWrapper">
                 <img class="playerPieceImg" src="1.png" />
             </div>
@@ -12,7 +11,6 @@
             Pieces left: {{ playerInfo.PiecesLeft }} <br>
             </div>
         </div>
-    </div>
 </template>
 
 <script>
@@ -25,11 +23,28 @@ export default {
 </script>
 
 <style scoped>
+
     .playerSb {
+        border: 1px solid #000000;
+        border-radius: 8px;
+
+        margin: 5px 15px;
+        padding: 10px 5px 12px;
+
+        background-color:#24252a;
+
+        flex-grow: 0;
+        box-sizing: border-box;
         display: flex;
         width: 100%;
         justify-content: space-evenly;
         align-items: center;
+    }
+
+    .playerSb.active {
+        border-color: #f3a5a5;
+        border-width: 2px;
+        background-color: #35363f;
     }
 
     .playerPieceImgWrapper {

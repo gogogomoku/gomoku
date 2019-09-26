@@ -69,10 +69,11 @@ func TestCheckCapture(t *testing.T) {
 	}
 }
 
-func BenchmarkCheckCapture(b *testing.B) {
-	Game.Goban.Tab = [board.TOT_SIZE]int16{}
-	Game.CurrentPlayer = Game.P1
-	for i := 0; i < b.N; i++ {
-		checkCapture(int16(i)%(board.SIZE*board.SIZE), &Game.Goban.Tab, Game.CurrentPlayer.Id)
-	}
-}
+// Broken, can probably delete
+// func BenchmarkCheckCapture(b *testing.B) {
+// 	Game.Goban.Tab = [board.TOT_SIZE]int16{}
+// 	Game.CurrentPlayer = Game.P1
+// 	for i := 0; i < b.N; i++ {
+// 		checkCapture(int16(i)%(board.SIZE*board.SIZE), &Game.Goban.Tab, Game.CurrentPlayer.Id)
+// 	}
+// }

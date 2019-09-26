@@ -22,6 +22,9 @@ func StartRound(AiStatus1 int16, AiStatus2 int16) {
 func CheckValidMove(position int16, tab [board.TOT_SIZE]int16) bool {
 	if position >= 0 && position <= (board.SIZE*board.SIZE)-1 {
 		if tab[position] == 0 {
+			if Check2F3s(Game.CurrentPlayer.Id, position, &tab) {
+				return false
+			}
 			return true
 		}
 	}

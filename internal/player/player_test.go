@@ -10,8 +10,8 @@ func TestCreatePlayer(t *testing.T) {
 		expectedCapturedPieces int16
 		expectedStatus         int16
 	}{
-		{CreatePlayer(1, 50), 1, 50, 0, 0},
-		{CreatePlayer(2, 1000), 2, 1000, 0, 0},
+		{CreatePlayer(1, 50, 1), 1, 50, 0, 0},
+		{CreatePlayer(2, 1000, 1), 2, 1000, 0, 0},
 	}
 	for _, table := range tables {
 		if table.player.Id != table.expectedId {

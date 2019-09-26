@@ -71,14 +71,6 @@ func TestCheckSequence(t *testing.T) {
 	}
 }
 
-func BenchmarkCheckSequence(b *testing.B) {
-	Game.Goban.Tab = [board.TOT_SIZE]int16{}
-	Game.CurrentPlayer = Game.P1
-	for i := 0; i < b.N; i++ {
-		CheckSequence(int16(i)%(board.SIZE*board.SIZE), 1, &Game.Goban.Tab)
-	}
-}
-
 func TestCompleteSequenceForPosition(t *testing.T) {
 	// Initialize
 	Game.Goban.Tab = [board.TOT_SIZE]int16{}

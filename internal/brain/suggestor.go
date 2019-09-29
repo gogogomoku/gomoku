@@ -139,7 +139,7 @@ func SuggestMove() {
 		} else {
 			Game.SuggestedPosition = tree.BestChild.BestChild.Position
 		}
-		// Game.SuggestedPosition = board.TOT_SIZE + 1
+		Game.SuggestedPosition = board.TOT_SIZE + 1
 		return
 	}
 	startTime := time.Now()

@@ -196,7 +196,11 @@ func getSequenceScore(counter int16, blocked int16, line *[]int16, i int16) int1
 		if i < int16(len(*line)-2) && (*line)[i] == 0 {
 			player := (*line)[i-1]
 			if (*line)[i+1] == (*line)[i+2] && (*line)[i+1] == player {
-				tmpScore += SEQ4_BROKEN
+				if i < int16(len(*line)-3) && (*line)[i+3] == 0 {
+					tmpScore += SEQ2_FREE_SCORE
+				} else {
+					tmpScore += SEQ4_BROKEN
+				}
 			}
 		}
 	case 3:

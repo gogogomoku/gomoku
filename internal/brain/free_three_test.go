@@ -21,6 +21,106 @@ func BenchmarkTestCheckSequenceForF3(b *testing.B) {
 	}
 }
 
+func TestGetNESWSeqIndex(t *testing.T) {
+	tables := []struct {
+		positions   []int16
+		expectedSeq int16
+	}{
+		{
+			positions:   []int16{360},
+			expectedSeq: 0,
+		},
+		{
+			positions:   []int16{341, 359},
+			expectedSeq: 1,
+		},
+		{
+			positions:   []int16{322, 340, 358},
+			expectedSeq: 2,
+		},
+		{
+			positions:   []int16{303, 321, 339, 357},
+			expectedSeq: 3,
+		},
+		{
+			positions:   []int16{284, 302, 320, 338},
+			expectedSeq: 4,
+		},
+		{
+			positions:   []int16{37, 55, 73, 127, 91, 163, 199, 235},
+			expectedSeq: 17,
+		},
+		{
+			positions:   []int16{15, 33, 51, 69, 87, 105, 123, 141, 159, 177, 195, 213, 231, 249, 267, 285},
+			expectedSeq: 21,
+		},
+		{
+			positions:   []int16{16, 34, 52, 88, 106, 124, 178, 232, 286},
+			expectedSeq: 20,
+		},
+		{
+			positions:   []int16{14, 32, 50, 68, 86, 104, 122, 140, 158, 176, 194, 212, 230, 248, 266},
+			expectedSeq: 22,
+		},
+		{
+			positions:   []int16{13, 31, 49, 67, 85, 103, 121, 139, 157, 175, 193, 211, 229, 247},
+			expectedSeq: 23,
+		},
+		{
+			positions:   []int16{12, 30, 48, 66, 84, 102, 120, 138, 156, 174, 192, 210, 228},
+			expectedSeq: 24,
+		},
+		{
+			positions:   []int16{208, 226, 244, 262, 280, 298, 316, 334, 352},
+			expectedSeq: 8,
+		},
+		{
+			positions:   []int16{75, 93, 111, 129, 147, 165, 183, 201, 219, 237, 255, 273, 291, 309, 327, 345},
+			expectedSeq: 15,
+		},
+	}
+	for _, tb := range tables {
+		for _, pos := range tb.positions {
+			actual := getNESWSeqIndex(pos)
+			if actual != tb.expectedSeq {
+				t.Errorf("🛑 Wrong NESW sequence for position %d, expect: %d, got: %d\n", pos, tb.expectedSeq, actual)
+			} else {
+				print("✓")
+			}
+		}
+	}
+}
+
+func TestGetNWSESeqIndex(t *testing.T) {
+	tables := []struct {
+		positions   []int16
+		expectedSeq int16
+	}{
+		{
+			positions:   []int16{0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360},
+			expectedSeq: 18,
+		},
+		{
+			positions:   []int16{342},
+			expectedSeq: 0,
+		},
+		{
+			positions:   []int16{18},
+			expectedSeq: 36,
+		},
+	}
+	for _, tb := range tables {
+		for _, pos := range tb.positions {
+			actual := getNWSESeqIndex(pos)
+			if actual != tb.expectedSeq {
+				t.Errorf("🛑 Wrong NWSE sequence for position %d, expect: %d, got: %d\n", pos, tb.expectedSeq, actual)
+			} else {
+				print("✓")
+			}
+		}
+	}
+}
+
 func TestCheckSequenceForF3(t *testing.T) {
 
 	tables := []struct {
@@ -199,12 +299,107 @@ func TestCheck2F3s(t *testing.T) {
 			tab:      board.MakeTab([]int16{280, 260, 220, 281, 262}, []int16{}),
 			expected: true,
 		},
+		{
+			// Create NWSE and EW F3s -> true
+			playerId: 1,
+			posGoban: 157,
+			tab:      board.MakeTab([]int16{159, 160, 177, 197}, []int16{}),
+			expected: true,
+		},
+		{
+			// Create NESW and EW F3s -> true
+			playerId: 1,
+			posGoban: 157,
+			tab:      board.MakeTab([]int16{159, 160, 139, 121}, []int16{}),
+			expected: true,
+		},
+		{
+			// Create NESW and EW F3s again -> true
+			playerId: 1,
+			posGoban: 157,
+			tab:      board.MakeTab([]int16{158, 159, 139, 121}, []int16{}),
+			expected: true,
+		},
+		{
+			// Create NESW and EW F3s again, again -> true
+			playerId: 1,
+			posGoban: 157,
+			tab:      board.MakeTab([]int16{158, 159, 121, 103}, []int16{}),
+			expected: true,
+		},
+		{
+			// Create NS and EW F3s -> true
+			playerId: 1,
+			posGoban: 157,
+			tab:      board.MakeTab([]int16{176, 214, 156, 158}, []int16{}),
+			expected: true,
+		},
+		{
+			// Create NS and EW F3s -> true
+			playerId: 1,
+			posGoban: 100,
+			tab:      board.MakeTab([]int16{119, 138, 82, 118}, []int16{}),
+			expected: true,
+		},
+		{
+			// Create two NS -> false (not illegal)
+			playerId: 1,
+			posGoban: 100,
+			tab:      board.MakeTab([]int16{43, 62, 138, 157}, []int16{}),
+			expected: false,
+		},
 	}
 
 	for _, table := range tables {
 		actual := Check2F3s(table.playerId, table.posGoban, table.tab)
 		if !reflect.DeepEqual(actual, table.expected) {
 			t.Errorf("⛔️ F3 in F3s at position %v.\nActual: %v; Expected: %v\n", table.posGoban, actual, table.expected)
+		} else {
+			print("✓")
+		}
+	}
+}
+
+func TestCheckAxisForF3(t *testing.T) {
+	tables := []struct {
+		axis        int16
+		len         int16
+		playerId    int16
+		seqOffset   int16
+		startGobanI int16
+		step        int16
+		tab         *[board.TOT_SIZE]int16
+		whichSeq    int16
+		expectedF3  bool
+	}{
+		{
+			axis:        NESW,
+			len:         19,
+			playerId:    1,
+			seqOffset:   8,
+			startGobanI: 18,
+			step:        18,
+			tab:         board.MakeTab([]int16{108, 126, 144}, []int16{}),
+			whichSeq:    18,
+			expectedF3:  true,
+		},
+		{
+			axis:        EW,
+			len:         19,
+			playerId:    1,
+			seqOffset:   3,
+			startGobanI: 95,
+			step:        1,
+			tab:         board.MakeTab([]int16{98, 100, 101}, []int16{}),
+			whichSeq:    5,
+			expectedF3:  true,
+		},
+	}
+
+	for _, tb := range tables {
+		actual := checkAxisForF3(tb.axis, tb.len, tb.playerId, tb.seqOffset, tb.startGobanI, tb.step, tb.tab, tb.whichSeq)
+		if actual != tb.expectedF3 {
+			t.Errorf("⛔️ Expected to find F3: %v, actual: %v\n", tb.expectedF3, actual)
 		} else {
 			print("✓")
 		}

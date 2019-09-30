@@ -11,21 +11,17 @@ func StartRound(AiStatus1 int16, AiStatus2 int16) {
 	Game.Status = Running
 	player.ResetPlayers(Game.P1, Game.P2, MAXPIECES, AiStatus1, AiStatus2)
 	Game.CurrentPlayer = Game.P1
-	var center int16
-	center = (board.SIZE * board.SIZE) / 2
+	center := int16((board.TOT_SIZE) / 2)
 	if board.SIZE%2 == 0 {
 		center += board.SIZE / 2
 	}
 	HandleMove(Game.CurrentPlayer.Id, center)
 }
 
-func CheckValidMove(position int16, tab [board.TOT_SIZE]int16) bool {
-	if position >= 0 && position <= (board.SIZE*board.SIZE)-1 {
+func CheckValidMove(position int16, tab [board.TOT_SIZE]int16, playerId int16) bool {
+	if position >= 0 && position <= (board.TOT_SIZE)-1 {
 		if tab[position] == 0 {
-			if Check2F3s(Game.CurrentPlayer.Id, position, &tab) {
-				return false
-			}
-			return true
+			return !Check2F3s(playerId, position, &tab)
 		}
 	}
 	return false
@@ -98,34 +94,34 @@ func updateWhoseTurn() {
 	}
 }
 
-func HandleMove(id int16, position int16) (code int16, msg string) {
+func HandleMove(playerId int16, position int16) (code int16, msg string) {
 	fmt.Println("making move at...", position,
 		"for Player...", Game.CurrentPlayer.Id)
 	if Game.Winner != 0 {
 		return 1, "Game is over"
 	}
-	if Game.CurrentPlayer.Id != id {
+	if Game.CurrentPlayer.Id != playerId {
 		return 1, "It is not your turn"
 	}
-	if !CheckValidMove(position, Game.Goban.Tab) {
+	if !CheckValidMove(position, Game.Goban.Tab, playerId) {
 		return 1, "Move isn't valid"
 	}
 	if Game.CurrentPlayer.PiecesLeft == 0 {
 		return 1, "You have no pieces left"
 	}
-	Game.Goban.Tab[position] = int16(id)
+	Game.Goban.Tab[position] = int16(playerId)
 	Game.CurrentPlayer.PiecesLeft--
 	captureDirections := checkCapture(position, &Game.Goban.Tab, Game.CurrentPlayer.Id)
 	capturePairs(position, captureDirections, &Game.Goban.Tab)
-	sequences := CompleteSequenceForPosition(position, id, &Game.Goban.Tab)
+	sequences := CompleteSequenceForPosition(position, playerId, &Game.Goban.Tab)
 	win := checkWinningConditions(position, sequences)
 	if win {
-		Game.Winner = id
 		Game.SuggestedPosition = board.TOT_SIZE + 1
+		Game.Winner = playerId
 	} else {
 		Game.Turn++
 		updateWhoseTurn()
-		SuggestMove()
+		SuggestMove(Game.CurrentPlayer.Id)
 		if Game.CurrentPlayer.AiStatus == 1 {
 			HandleMove(Game.CurrentPlayer.Id, Game.SuggestedPosition)
 		}

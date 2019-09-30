@@ -2,6 +2,7 @@ package brain
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"sync"
 	"time"
@@ -12,11 +13,11 @@ import (
 
 var tree tr.Node
 
-func getPossibleMoves(node *tr.Node) []int16 {
+func getPossibleMoves(node *tr.Node, playerId int16) []int16 {
 	poss := []int16{}
 	for i := int16(0); i < (board.SIZE * board.SIZE); i++ {
 		if node.Tab[i] == 0 {
-			if CheckValidMove(i, node.Tab) {
+			if CheckValidMove(i, node.Tab, playerId) {
 				affectsTab := false
 				lines := CheckNextN(i, node.Tab, 1)
 				for _, line := range lines {
@@ -73,14 +74,14 @@ func addNewLayerPrePruning(poss []int16, node *tr.Node, playerId int16) {
 	}
 }
 
-func build_tree(depth int16) {
+func build_tree(depth int16, playerId int16) {
 	//Create tree root
 	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
 	tree.Captured[1] = Game.P1.CapturedPieces
 	tree.Captured[2] = Game.P2.CapturedPieces
 
 	//Create tree first layer
-	poss := getPossibleMoves(&tree)
+	poss := getPossibleMoves(&tree, playerId)
 	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
 
 	// //Create the rest of the tree
@@ -117,7 +118,7 @@ func build_tree_recursive(node *tr.Node, depth int16, playerId int16) {
 	}
 	if depth > 0 {
 		currentDepth := depth - 1
-		poss := getPossibleMoves(node)
+		poss := getPossibleMoves(node, playerId)
 		addNewLayerPrePruning(poss, node, playerId)
 		for _, ch := range node.Children {
 			build_tree_recursive(ch, currentDepth, opponent)
@@ -125,7 +126,7 @@ func build_tree_recursive(node *tr.Node, depth int16, playerId int16) {
 	}
 }
 
-func SuggestMove() {
+func SuggestMove(playerId int16) {
 
 	depth := int16(5)
 
@@ -135,14 +136,20 @@ func SuggestMove() {
 			if board.SIZE%2 == 0 {
 				center += board.SIZE / 2
 			}
+			CheckValidMove(center+1, Game.Goban.Tab, playerId)
 			Game.SuggestedPosition = center + 1
 		} else {
-			Game.SuggestedPosition = tree.BestChild.BestChild.Position
+			if CheckValidMove(tree.BestChild.BestChild.Position, Game.Goban.Tab, playerId) {
+				Game.SuggestedPosition = tree.BestChild.BestChild.Position
+			} else {
+				// TODO: Delete when we have tests :D
+				log.Fatalf("Invalid suggested move :: %d", tree.BestChild.BestChild.Position)
+			}
 		}
 		return
 	}
 	startTime := time.Now()
-	build_tree(depth)
+	build_tree(depth, playerId)
 	startTimeAlgo := time.Now()
 
 	// Launch algo

@@ -15,6 +15,8 @@ var AXES = [4]int16{NS, EW, NWSE, NESW}
 
 const N_DIAG_SEQ_DIV_2 = 18
 const NWSE_FIRST_SEQ_GOBAN_POS = 342
+const MAX_ROW = 18
+const MAX_COL = 18
 
 /*
 ** Takes arbitrary slice of Goban sequence values
@@ -159,6 +161,20 @@ func checkAxisForF3(
 		}
 	}
 	return false
+}
+
+func getNESWSeqIndex(pos int16) int16 {
+	row := int16(pos / board.SIZE)
+	col := int16(pos % board.SIZE)
+	seqIndex := int16((MAX_COL - row) + (MAX_ROW - col))
+	return seqIndex
+}
+
+func getNWSESeqIndex(pos int16) int16 {
+	row := int16(pos / board.SIZE)
+	col := int16(pos % board.SIZE)
+	seqIndex := board.SIZE - row + col - 1
+	return seqIndex
 }
 
 /*

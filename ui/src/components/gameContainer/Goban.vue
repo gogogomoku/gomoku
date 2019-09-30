@@ -4,8 +4,8 @@
             <div class="row" v-for="(line, posY) in tab">
                 <div class="tile" v-for="(tile, posX) in line">
                     <!-- {{posX + (posY * size)}} -->
-                    <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition">
-                        <div class="tileSuggested1" v-if="currentPlayer == 1">
+                    <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition && suggestorOn">
+                        <div v-if="currentPlayer == 1">
                             <img
                                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
@@ -14,7 +14,7 @@
                                 class="tileSuggested"
                                 src="1.png" />
                         </div>
-                        <div class="tileSuggested1" v-else-if="currentPlayer == 2">
+                        <div v-else-if="currentPlayer == 2">
                             <img
                                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
@@ -82,7 +82,7 @@ export default {
             document.getElementById(tileId).opacity=0.5;
         },
         clickTile: function(tileId, currentPlayer){
-            // eslint-disable-next-line 
+            // eslint-disable-next-line
             console.log("Make move: \nID: " + tileId + " currentPlayer" + currentPlayer);
             this.$parent.$parent.makeMove(tileId, currentPlayer)
         }
@@ -137,7 +137,7 @@ export default {
     }
     .tileSuggested {
         filter: contrast(70%);
-        filter: blur(1px);
+        /* filter: blur(1px); */
         opacity: 0.3;
     }
 </style>

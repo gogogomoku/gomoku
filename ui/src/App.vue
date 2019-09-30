@@ -112,8 +112,8 @@ export default {
             })
             .then(response => this.updateTab(response))
         },
-        toggleSuggestor(suggestorOn) {
-            this._data.suggestorOn = suggestorOn
+        toggleSuggestor() {
+            this._data.suggestorOn = !this._data.suggestorOn
         }
     }
 

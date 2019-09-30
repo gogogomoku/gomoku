@@ -129,7 +129,7 @@ func SuggestMove() {
 
 	depth := int16(5)
 
-	if Game.CurrentPlayer.Id == 2 {
+	if Game.CurrentPlayer.AiStatus == 0 && Game.P1.AiStatus != Game.P2.AiStatus {
 		if Game.Turn == 1 {
 			center := int16((board.SIZE * board.SIZE) / 2)
 			if board.SIZE%2 == 0 {
@@ -139,7 +139,6 @@ func SuggestMove() {
 		} else {
 			Game.SuggestedPosition = tree.BestChild.BestChild.Position
 		}
-		// Game.SuggestedPosition = board.TOT_SIZE + 1
 		return
 	}
 	startTime := time.Now()

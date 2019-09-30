@@ -121,6 +121,7 @@ func HandleMove(id int16, position int16) (code int16, msg string) {
 	win := checkWinningConditions(position, sequences)
 	if win {
 		Game.Winner = id
+		Game.SuggestedPosition = board.TOT_SIZE + 1
 	} else {
 		Game.Turn++
 		updateWhoseTurn()

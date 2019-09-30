@@ -21,7 +21,7 @@
 
         <div id="gameOptions">
             <h2>Settings</h2>
-            <input type="checkbox" id="checkbox" v-model="checked" @change="onToggleSuggestor($event)" disabled>
+            <input type="checkbox" id="checkbox" v-model="checked" @change="onToggleSuggestor($event)">
             <label for="checkbox">enable suggestor</label>
         </div>
 
@@ -61,7 +61,7 @@ export default {
     },
     methods: {
         onToggleSuggestor: function($event) {
-            this.$parent.$parent.toggleSuggestor($event.returnValue)
+            this.$parent.$parent.toggleSuggestor()
         }
     }
 }

@@ -37,14 +37,15 @@ func TestCheckValidMove(t *testing.T) {
 		{20, []int16{21, 22, 39, 58}, []int16{}, false},
 		{20, []int16{21, 22, 39, 58, 40, 41}, []int16{}, false},
 		{20, []int16{21, 22, 39, 58, 40, 41}, []int16{24, 96, 81}, false},
+		{100, []int16{119, 138, 82, 118}, []int16{}, false},
 	}
 
 	for _, table := range tables {
 		Game.Goban.Tab = *board.MakeTab(table.currentPlayerPositions, table.opponentPositions)
 
-		isValidMove := CheckValidMove(table.position, Game.Goban.Tab)
+		isValidMove := CheckValidMove(table.position, Game.Goban.Tab, Game.CurrentPlayer.Id)
 		if table.expectedIsValid != isValidMove {
-			t.Errorf("position %d, valid: %t, expected: %t", table.position, isValidMove, table.expectedIsValid)
+			t.Errorf("🛑 position %d, valid: %t, expected: %t", table.position, isValidMove, table.expectedIsValid)
 		}
 		Game.Goban.Tab = [board.TOT_SIZE]int16{}
 	}
@@ -52,7 +53,7 @@ func TestCheckValidMove(t *testing.T) {
 
 func BenchmarkCheckValidMove(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		CheckValidMove(int16(i)%(board.SIZE*board.SIZE), Game.Goban.Tab)
+		CheckValidMove(int16(i)%(board.SIZE*board.SIZE), Game.Goban.Tab, Game.CurrentPlayer.Id)
 	}
 }
 

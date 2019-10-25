@@ -3,7 +3,7 @@
     <!-- <div v-if="suggestedPosition && !msElapsedServer"... -->
     <!-- <div v-if-else="msElapsedServer"...> -->
     <div id="time-up">Suggestion computed in </div>
-    <div>xyz ms</div>
+    <div>{{ suggestionTimer }} ms</div>
   </div>
 </template>
 
@@ -11,10 +11,8 @@
 export default {
   name: "Timer",
   props: {
-    msElapsedServer: Number, // Get official computation time from server
-    suggestedPosition: Number,
     turn: Number,
-
+    "suggestionTimer": Number,
   },
 };
 </script>

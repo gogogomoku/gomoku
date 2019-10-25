@@ -158,6 +158,7 @@ func SuggestMove(playerId int16) {
 	Game.SuggestedPosition = tree.BestChild.Position
 	duration := time.Since(startTime)
 	durationAlgo := time.Since(startTimeAlgo)
+	Game.SuggestionTimer = int16(duration.Nanoseconds() / 1000000)
 	fmt.Println("Time spent on suggestion:", duration)
 	fmt.Println("Time spent on minimax/pruning:", durationAlgo)
 	fmt.Println(tree.BestChild.Position, "(", tree.BestChild.Value, ")", "->",

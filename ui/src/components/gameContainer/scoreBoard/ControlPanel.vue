@@ -28,6 +28,7 @@
         <Timer
             v-if="suggestorOn && gameStatus > 0"
             v-bind:turn="turn"
+            v-bind:suggestionTimer="suggestionTimer"
         />
 
     </div>
@@ -52,6 +53,7 @@ export default {
         "gameStatus",
         "playerInfo",
         "suggestorOn",
+        "suggestionTimer",
         "turn",
     ],
     data() {

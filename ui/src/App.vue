@@ -8,6 +8,7 @@
         v-bind:currentPlayer="currentPlayer"
         v-bind:playerInfo="playerInfo"
         v-bind:suggestedPosition="suggestedPosition"
+        v-bind:suggestionTimer="suggestionTimer"
         v-bind:suggestorOn="suggestorOn"
         v-bind:buttonMessage="buttonMessage"
         v-bind:gameStatus="gameStatus"
@@ -38,6 +39,7 @@ export default {
             gameStatus: 0,
             http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
             suggestedPosition: -1,
+            suggestionTimer: 0,
             suggestorOn: true,
             playerInfo: {
                 p1: {
@@ -80,7 +82,8 @@ export default {
                 }
                 this._data.currentPlayer = res.CurrentPlayer.Id
                 this._data.gameStatus = res.Status
-                this._data.suggestedPosition = res.SuggestedPosition // TODO: Server-side optional suppress suggestor
+                this._data.suggestedPosition = res.SuggestedPosition
+                this._data.suggestionTimer = res.SuggestionTimer
                 this._data.Winner = res.Winner
                 if (res.Winner != 0) {
                     alert("Winner: Player " + res.Winner)

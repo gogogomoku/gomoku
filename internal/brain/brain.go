@@ -32,6 +32,7 @@ type Round struct {
 	CurrentPlayer     *player.Player
 	Turn              int16
 	SuggestedPosition int16
+	SuggestionTimer   int16
 	Winner            int16
 }
 
@@ -50,4 +51,6 @@ func InitializeValues(aiStatus1 int16, aiStatus2 int16) {
 	Game.Turn = 0
 	Game.Status = NotStarted
 	Game.Winner = 0
+	Game.SuggestionTimer = 0
+	Game.SuggestedPosition = 0
 }

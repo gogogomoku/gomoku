@@ -13,13 +13,13 @@ import (
 
 var tree tr.Node
 
-func getPossibleMoves(node *tr.Node, playerId int16) []int16 {
+func getPossibleMoves(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
 	poss := []int16{}
 	for i := int16(0); i < (board.SIZE * board.SIZE); i++ {
-		if node.Tab[i] == 0 {
-			if CheckValidMove(i, node.Tab, playerId) {
+		if tab[i] == 0 {
+			if CheckValidMove(i, *tab, playerId) {
 				affectsTab := false
-				lines := CheckNextN(i, node.Tab, 1)
+				lines := CheckNextN(i, *tab, 1)
 				for _, line := range lines {
 					for _, piece := range line {
 						if piece != 0 {
@@ -81,7 +81,7 @@ func build_tree(depth int16, playerId int16) {
 	tree.Captured[2] = Game.P2.CapturedPieces
 
 	//Create tree first layer
-	poss := getPossibleMoves(&tree, playerId)
+	poss := getPossibleMoves(&(tree.Tab), playerId)
 	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
 
 	// //Create the rest of the tree
@@ -118,7 +118,7 @@ func build_tree_recursive(node *tr.Node, depth int16, playerId int16) {
 	}
 	if depth > 0 {
 		currentDepth := depth - 1
-		poss := getPossibleMoves(node, playerId)
+		poss := getPossibleMoves(&(node.Tab), playerId)
 		addNewLayerPrePruning(poss, node, playerId)
 		for _, ch := range node.Children {
 			build_tree_recursive(ch, currentDepth, opponent)

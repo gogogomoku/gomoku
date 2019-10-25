@@ -101,7 +101,7 @@ export default {
             .then(response => this.updateTab(response))
             if (typeof(this._data.status) == "undefined") {
                 axios.post(this._data.http_endpoint + "/start", {
-                    AiStatus1: 1,
+                    AiStatus1: 0,
                     AiStatus2: 0
                 })
                 .then(response => this.updateTab(response))
@@ -110,7 +110,7 @@ export default {
         },
         restartGame() {
             axios.post(this._data.http_endpoint + "/restart", {
-                AiStatus1: 1,
+                AiStatus1: 0,
                 AiStatus2: 0
             })
             .then(response => this.updateTab(response))

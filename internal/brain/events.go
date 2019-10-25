@@ -95,6 +95,7 @@ func updateWhoseTurn() {
 }
 
 func HandleMove(playerId int16, position int16) (code int16, msg string) {
+
 	fmt.Println("making move at...", position,
 		"for Player...", Game.CurrentPlayer.Id)
 	if Game.Winner != 0 {

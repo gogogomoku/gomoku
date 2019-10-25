@@ -16,6 +16,7 @@
             v-bind:gameStatus="gameStatus"
             v-bind:playerInfo="playerInfo"
             v-bind:suggestorOn="suggestorOn"
+            v-bind:suggestionTimer="suggestionTimer"
             v-bind:turn="turn"
         />
     </div>
@@ -39,6 +40,7 @@ export default {
         "playerInfo",
         "size",
         "suggestedPosition",
+        "suggestionTimer",
         "suggestorOn",
         "tab",
         "turn",

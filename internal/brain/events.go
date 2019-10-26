@@ -74,13 +74,39 @@ func ReturnNextPiece(position int16, direction int16, tab *[board.TOT_SIZE]int16
 	return (*tab)[nextIndex], false
 }
 
-func checkWinningConditions(lastPosition int16, sequences [][]int16) bool {
-	if Game.CurrentPlayer.CapturedPieces == 10 {
-		return true
+func checkOpponentCancelMyWin(lastPosition int16, tab *[board.TOT_SIZE]int16, opponent *player.Player, currentPlayer *player.Player) bool {
+	opponentPossibleMoves := getPossibleMoves(tab, opponent.Id)
+	for _, pos := range opponentPossibleMoves {
+		captureDirections := checkCapture(pos, &(Game.Goban.Tab), opponent.Id)
+		nCaptures := int16(2 * len(captureDirections))
+		if opponent.CapturedPieces+nCaptures >= 10 {
+			return true
+		} else {
+			tabCopy := *tab
+			capturePairs(pos, captureDirections, &tabCopy)
+			sequences := CompleteSequenceForPosition(lastPosition, currentPlayer.Id, &tabCopy)
+			foundWinSeq := false
+			for _, v := range sequences {
+				if len(v) >= 5 {
+					foundWinSeq = true
+				}
+			}
+			if !foundWinSeq {
+				return true
+			}
+		}
 	}
+	return false
+}
+
+func checkWinBySeq(lastPosition int16, sequences [][]int16) bool {
+	hasWinLengthSeq := false
 	for _, v := range sequences {
 		if len(v) >= 5 {
-			return true
+			hasWinLengthSeq = !checkOpponentCancelMyWin(lastPosition, &Game.Goban.Tab, Game.GetCurrentOpponent(), Game.CurrentPlayer)
+			if hasWinLengthSeq {
+				return true
+			}
 		}
 	}
 	return false
@@ -115,8 +141,12 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 	captureDirections := checkCapture(position, &Game.Goban.Tab, Game.CurrentPlayer.Id)
 	capturePairs(position, captureDirections, &Game.Goban.Tab)
 	sequences := CompleteSequenceForPosition(position, playerId, &Game.Goban.Tab)
-	win := checkWinningConditions(position, sequences)
-	if win {
+	winByCaptures := Game.CurrentPlayer.CapturedPieces >= 10
+	winBySeq := false
+	if !winByCaptures {
+		winBySeq = checkWinBySeq(position, sequences)
+	}
+	if winBySeq || winByCaptures {
 		Game.SuggestedPosition = board.TOT_SIZE + 1
 		Game.Winner = playerId
 	} else {

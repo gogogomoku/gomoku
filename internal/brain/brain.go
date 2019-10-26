@@ -36,6 +36,13 @@ type Round struct {
 	Winner            int16
 }
 
+func (round Round) GetCurrentOpponent() *player.Player {
+	if round.CurrentPlayer.Id == round.P1.Id {
+		return round.P2
+	}
+	return round.P1
+}
+
 var Game Round = Round{}
 
 func init() {

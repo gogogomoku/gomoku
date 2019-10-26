@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gogogomoku/gomoku/internal/board"
+	"github.com/gogogomoku/gomoku/internal/player"
 )
 
 func TestStartRound(t *testing.T) {
@@ -48,6 +49,45 @@ func TestCheckValidMove(t *testing.T) {
 			t.Errorf("🛑 position %d, valid: %t, expected: %t", table.position, isValidMove, table.expectedIsValid)
 		}
 		Game.Goban.Tab = [board.TOT_SIZE]int16{}
+	}
+}
+
+func TestCheckOpponentCancelMyWin(t *testing.T) {
+	tables := []struct {
+		currentPlayer          *player.Player
+		lastPosition           int16
+		currentPlayerPositions []int16
+		opponentPositions      []int16
+		nOpponentCaptures      int16
+		expectWinCancelled     bool
+		expectedReason         string
+	}{
+		// Win for P1
+		{Game.P1, 0, []int16{0, 1, 2, 3, 4}, []int16{}, 0, false, "Win OK"},
+		{Game.P1, 20, []int16{20, 21, 22, 23, 24}, []int16{}, 0, false, "Win OK"},
+		{Game.P1, 21, []int16{20, 21, 22, 23, 24}, []int16{}, 0, false, "Win OK"},
+		{Game.P1, 24, []int16{20, 21, 22, 23, 24, 25, 26, 45}, []int16{64}, 0, false, "Win OK"},
+
+		// Break P1 win by breaking sequence on next move
+		{Game.P1, 22, []int16{20, 21, 22, 23, 24, 43}, []int16{5}, 0, true, "Opponent can break sequence."},
+		{Game.P1, 22, []int16{20, 21, 22, 23, 24, 43}, []int16{62}, 0, true, "Opponent can break sequence."},
+		{Game.P1, 23, []int16{23, 24, 25, 26, 27, 45}, []int16{64}, 0, true, "Opponent can break sequence."},
+		{Game.P1, 27, []int16{20, 21, 22, 23, 24, 25, 26, 42}, []int16{4}, 0, true, "Opponent can break sequence."},
+
+		// Break P1 win by capturing 10 stones on next move
+		{Game.P1, 21, []int16{20, 21, 22, 23, 24, 1, 2}, []int16{0}, 8, true, "Opponent will capture >= 10 stones."},
+	}
+
+	for _, table := range tables {
+		InitializeValues(0, 0)
+		Game.CurrentPlayer = table.currentPlayer
+		Game.Goban.Tab = *board.MakeTab(table.currentPlayerPositions, table.opponentPositions)
+		opponent := Game.GetCurrentOpponent()
+		opponent.CapturedPieces = table.nOpponentCaptures
+		opponentCancelsMyWin := checkOpponentCancelMyWin(table.lastPosition, &Game.Goban.Tab, opponent, Game.CurrentPlayer)
+		if table.expectWinCancelled != opponentCancelsMyWin {
+			t.Errorf("🛑 lastPosition %d, expected win cancelled: %t, actual: %t, expected outcome: %s", table.lastPosition, table.expectWinCancelled, opponentCancelsMyWin, table.expectedReason)
+		}
 	}
 }
 

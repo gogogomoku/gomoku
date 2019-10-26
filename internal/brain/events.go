@@ -74,21 +74,12 @@ func ReturnNextPiece(position int16, direction int16, tab *[board.TOT_SIZE]int16
 	return (*tab)[nextIndex], false
 }
 
-// ugh
-func getOtherPlayer(playerId int16) *player.Player {
-	if playerId == 2 {
-		return Game.P1
-	}
-	return Game.P2
-}
-
 func checkOpponentCancelMyWin(lastPosition int16, tab *[board.TOT_SIZE]int16, opponent *player.Player, currentPlayer *player.Player) bool {
 	opponentPossibleMoves := getPossibleMoves(tab, opponent.Id)
 	for _, pos := range opponentPossibleMoves {
 		captureDirections := checkCapture(pos, &(Game.Goban.Tab), opponent.Id)
 		nCaptures := int16(2 * len(captureDirections))
 		if opponent.CapturedPieces+nCaptures >= 10 {
-			fmt.Println("WOOOOOOOOOOOOO")
 			return true
 		} else {
 			tabCopy := *tab
@@ -112,7 +103,7 @@ func checkWinBySeq(lastPosition int16, sequences [][]int16) bool {
 	hasWinLengthSeq := false
 	for _, v := range sequences {
 		if len(v) >= 5 {
-			hasWinLengthSeq = !checkOpponentCancelMyWin(lastPosition, &Game.Goban.Tab, getOtherPlayer(Game.CurrentPlayer.Id), Game.CurrentPlayer)
+			hasWinLengthSeq = !checkOpponentCancelMyWin(lastPosition, &Game.Goban.Tab, Game.GetCurrentOpponent(), Game.CurrentPlayer)
 			if hasWinLengthSeq {
 				return true
 			}

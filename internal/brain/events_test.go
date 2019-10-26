@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gogogomoku/gomoku/internal/board"
+	"github.com/gogogomoku/gomoku/internal/player"
 )
 
 func TestStartRound(t *testing.T) {

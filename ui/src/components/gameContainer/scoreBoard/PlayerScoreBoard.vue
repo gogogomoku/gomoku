@@ -7,7 +7,7 @@
                 <img class="playerPieceImg" src="2.png" />
             </div>
             <div class="sbText">
-                <font-awesome-icon v-bind:icon="!playerInfo.AiStatus ? 'user' : 'robot'" class="aiStatusIndicator" /> Player {{ playerInfo.Id }} <br>
+                <font-awesome-icon v-bind:icon="!playerInfo.AiStatus ? 'user' : 'robot'" class="aiStatusIndicator" v-bind:class="{interactive: gameStatus === 0}" @click="onToggleAiStatus()"/> Player {{ playerInfo.Id }} <br>
             captures: {{ playerInfo.CapturedPieces }} <br>
             Pieces left: {{ playerInfo.PiecesLeft }} <br>
             </div>
@@ -18,8 +18,12 @@
 
 export default {
     name: 'Scoreboard',
-    props: ["turn", "currentPlayer", "playerInfo"],
+    props: ["gameStatus", "currentPlayer", "playerInfo"],
     methods: {
+        onToggleAiStatus: function() {
+            if (this.gameStatus === 0)
+                this.$parent.$parent.$parent.toggleAiStatus(this.playerInfo.Id)
+        }
     }
 }
 </script>
@@ -68,6 +72,14 @@ export default {
 
     .aiStatusIndicator {
         margin-right: 3px;
+    }
+
+    .aiStatusIndicator.interactive {
+        color: orange;
+    }
+
+    .aiStatusIndicator.interactive:hover {
+        cursor: pointer;
     }
 
 </style>

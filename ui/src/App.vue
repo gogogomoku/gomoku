@@ -12,6 +12,7 @@
         v-bind:suggestorOn="suggestorOn"
         v-bind:buttonMessage="buttonMessage"
         v-bind:gameStatus="gameStatus"
+        v-bind:winner="Winner"
     />
   </div>
 </template>
@@ -49,15 +50,19 @@ export default {
                     PiecesLeft: 0,
                 },
                 p2: {
-                    AiStatus: 0,
+                    AiStatus: 1,
                     Id: 2,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
                 },
             },
+            Winner: 0,
         }
     },
     methods: {
+        playerById(playerId) {
+            return this._data.playerInfo[`p${playerId}`] || null
+        },
         getTab() {
             axios.get(this._data.http_endpoint)
             .then(response => this.updateTab(response))
@@ -106,8 +111,8 @@ export default {
             .then(response => this.updateTab(response))
             if (typeof(this._data.status) == "undefined") {
                 axios.post(this._data.http_endpoint + "/start", {
-                    AiStatus1: 0,
-                    AiStatus2: 1
+                    AiStatus1: this.playerById(1).AiStatus,
+                    AiStatus2: this.playerById(2).AiStatus
                 })
                 .then(response => this.updateTab(response))
                 this._data.buttonMessage = "Restart Game"
@@ -115,13 +120,20 @@ export default {
         },
         restartGame() {
             axios.post(this._data.http_endpoint + "/restart", {
-                AiStatus1: 0,
-                AiStatus2: 1
+                AiStatus1: this.playerById(1).AiStatus,
+                AiStatus2: this.playerById(2).AiStatus
             })
             .then(response => this.updateTab(response))
         },
         toggleSuggestor() {
             this._data.suggestorOn = !this._data.suggestorOn
+        },
+        toggleAiStatus(playerId) {
+            const player = this.playerById(playerId)
+            console.info("Toggling ai status for player ", playerId)
+            if (player && this._data.gameStatus === 0) {
+                player.AiStatus = !player.AiStatus | 0
+            }
         }
     }
 

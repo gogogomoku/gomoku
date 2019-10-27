@@ -6,7 +6,8 @@
             <div v-else-if="playerInfo.Id === 2" class="playerPieceImgWrapper">
                 <img class="playerPieceImg" src="2.png" />
             </div>
-            <div class="sbText">Player: {{ playerInfo.Id }} <br>
+            <div class="sbText">
+                <font-awesome-icon v-bind:icon="!playerInfo.AiStatus ? 'user' : 'robot'" class="aiStatusIndicator" /> Player {{ playerInfo.Id }} <br>
             captures: {{ playerInfo.CapturedPieces }} <br>
             Pieces left: {{ playerInfo.PiecesLeft }} <br>
             </div>
@@ -14,9 +15,10 @@
 </template>
 
 <script>
+
 export default {
     name: 'Scoreboard',
-    props: ["aiStatus", "turn", "currentPlayer", "playerInfo"],
+    props: ["turn", "currentPlayer", "playerInfo"],
     methods: {
     }
 }
@@ -63,4 +65,9 @@ export default {
         flex-basis: 70%;
         line-height: 1.5em;
     }
+
+    .aiStatusIndicator {
+        margin-right: 3px;
+    }
+
 </style>

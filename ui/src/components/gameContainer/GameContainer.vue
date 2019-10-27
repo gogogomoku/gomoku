@@ -33,7 +33,6 @@ export default {
         ControlPanel,
     },
     props: [
-        "aiStatus",
         "buttonMessage",
         "currentPlayer",
         "gameStatus",

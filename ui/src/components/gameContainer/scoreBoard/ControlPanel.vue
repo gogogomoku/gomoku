@@ -6,12 +6,12 @@
             v-bind:gameStatus="gameStatus"
         />
         <PlayerScoreBoard id="player1Sb"
-            v-bind:aiStatus="aiStatus"
+            v-bind:gameStatus="gameStatus"
             v-bind:currentPlayer="currentPlayer"
             v-bind:playerInfo="playerInfo.p1"
         />
         <PlayerScoreBoard id="player2Sb"
-            v-bind:aiStatus="aiStatus"
+            v-bind:gameStatus="gameStatus"
             v-bind:currentPlayer="currentPlayer"
             v-bind:playerInfo="playerInfo.p2"
         />
@@ -54,6 +54,7 @@ export default {
         "suggestorOn",
         "suggestionTimer",
         "turn",
+        "winner"
     ],
     data() {
         return {

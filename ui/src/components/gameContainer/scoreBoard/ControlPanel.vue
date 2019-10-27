@@ -47,7 +47,6 @@ export default {
         Timer,
     },
     props: [
-        "aiStatus",
         "buttonMessage",
         "currentPlayer",
         "gameStatus",
@@ -62,7 +61,7 @@ export default {
         }
     },
     methods: {
-        onToggleSuggestor: function($event) {
+        onToggleSuggestor: function() {
             this.$parent.$parent.toggleSuggestor()
         }
     }

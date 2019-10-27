@@ -43,11 +43,13 @@ export default {
             suggestorOn: true,
             playerInfo: {
                 p1: {
+                    AiStatus: 0,
                     Id: 1,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
                 },
                 p2: {
+                    AiStatus: 0,
                     Id: 2,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
@@ -102,7 +104,7 @@ export default {
             if (typeof(this._data.status) == "undefined") {
                 axios.post(this._data.http_endpoint + "/start", {
                     AiStatus1: 0,
-                    AiStatus2: 0
+                    AiStatus2: 1
                 })
                 .then(response => this.updateTab(response))
                 this._data.buttonMessage = "Restart Game"
@@ -111,7 +113,7 @@ export default {
         restartGame() {
             axios.post(this._data.http_endpoint + "/restart", {
                 AiStatus1: 0,
-                AiStatus2: 0
+                AiStatus2: 1
             })
             .then(response => this.updateTab(response))
         },

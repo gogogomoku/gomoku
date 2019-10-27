@@ -41,16 +41,16 @@ export default {
             http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
             suggestedPosition: -1,
             suggestionTimer: 0,
-            suggestorOn: true,
+            suggestorOn: false,
             playerInfo: {
                 p1: {
-                    AiStatus: 0,
+                    AiStatus: 1,
                     Id: 1,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
                 },
                 p2: {
-                    AiStatus: 1,
+                    AiStatus: 0,
                     Id: 2,
                     CapturedPieces: 0,
                     PiecesLeft: 0,
@@ -129,8 +129,8 @@ export default {
             this._data.suggestorOn = !this._data.suggestorOn
         },
         toggleAiStatus(playerId) {
+            // Not used yet
             const player = this.playerById(playerId)
-            console.info("Toggling ai status for player ", playerId)
             if (player && this._data.gameStatus === 0) {
                 player.AiStatus = !player.AiStatus | 0
             }

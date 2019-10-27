@@ -1,11 +1,11 @@
 <template>
-    <button v-on:click="buttonAction">{{ buttonMessage }}</button>
+    <button v-on:click="buttonAction" v-bind:disabled="disabled">{{ buttonMessage }}</button>
 </template>
 
 <script>
 export default {
     name: "StartButton",
-    props: ["buttonMessage", "gameStatus"],
+    props: ["buttonMessage", "disabled", "gameStatus"],
     methods: {
         buttonAction: function () {
             if (this.gameStatus == 0){
@@ -34,4 +34,5 @@ export default {
     button:active {
         background-color: #2b7c7c;
     }
+
 </style>

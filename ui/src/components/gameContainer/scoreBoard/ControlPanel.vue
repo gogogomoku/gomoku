@@ -4,6 +4,7 @@
             id="startButton"
             v-bind:buttonMessage="buttonMessage"
             v-bind:gameStatus="gameStatus"
+            v-bind:disabled="gameStatus > 0 && playerInfo.p1.AiStatus > 0 && playerInfo.p2.AiStatus > 0"
         />
         <PlayerScoreBoard id="player1Sb"
             v-bind:gameStatus="gameStatus"

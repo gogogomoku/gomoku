@@ -60,7 +60,7 @@ export default {
             axios.get(this._data.http_endpoint)
             .then(response => this.updateTab(response))
         },
-        updateTab(response) {
+        async updateTab(response) {
             var res = response.data
             if (res.Goban != undefined) {
                 var size = res.Goban.Size
@@ -87,6 +87,9 @@ export default {
                 this._data.Winner = res.Winner
                 if (res.Winner != 0) {
                     alert("Winner: Player " + res.Winner)
+                } else if (res.CurrentPlayer.AiStatus === 1){
+                    await sleep(100)
+                    this.makeMove(res.SuggestedPosition, res.CurrentPlayer.Id)
                 }
             }
         },
@@ -101,7 +104,7 @@ export default {
             .then(response => this.updateTab(response))
             if (typeof(this._data.status) == "undefined") {
                 axios.post(this._data.http_endpoint + "/start", {
-                    AiStatus1: 0,
+                    AiStatus1: 1,
                     AiStatus2: 0
                 })
                 .then(response => this.updateTab(response))
@@ -110,7 +113,7 @@ export default {
         },
         restartGame() {
             axios.post(this._data.http_endpoint + "/restart", {
-                AiStatus1: 0,
+                AiStatus1: 1,
                 AiStatus2: 0
             })
             .then(response => this.updateTab(response))
@@ -120,6 +123,10 @@ export default {
         }
     }
 
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 </script>
 

@@ -15,7 +15,7 @@ func StartRound(AiStatus1 int16, AiStatus2 int16) {
 	if board.SIZE%2 == 0 {
 		center += board.SIZE / 2
 	}
-	HandleMove(Game.CurrentPlayer.Id, center)
+	SuggestMove(Game.CurrentPlayer.Id)
 }
 
 func CheckValidMove(position int16, tab [board.TOT_SIZE]int16, playerId int16) bool {
@@ -153,9 +153,6 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 		Game.Turn++
 		updateWhoseTurn()
 		SuggestMove(Game.CurrentPlayer.Id)
-		if Game.CurrentPlayer.AiStatus == 1 {
-			HandleMove(Game.CurrentPlayer.Id, Game.SuggestedPosition)
-		}
 	}
 	return 0, "Move done"
 }

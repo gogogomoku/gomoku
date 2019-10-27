@@ -2,7 +2,6 @@ package brain
 
 import (
 	"fmt"
-	"log"
 	"sort"
 	"sync"
 	"time"
@@ -84,15 +83,6 @@ func build_tree(depth int16, playerId int16) {
 	poss := getPossibleMoves(&(tree.Tab), playerId)
 	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
 
-	// //Create the rest of the tree
-	// opponent := 1
-	// if tree.Player == 1 {
-	// 	opponent = 2
-	// }
-	// for _, ch := range tree.Children {
-	// 	build_tree_recursive(ch, depth-1, opponent)
-	// }
-
 	//Create the rest of the tree
 	opponent := int16(1)
 	if tree.Player == 1 {
@@ -130,22 +120,12 @@ func SuggestMove(playerId int16) {
 
 	depth := int16(5)
 
-	if Game.CurrentPlayer.AiStatus == 0 && Game.P1.AiStatus != Game.P2.AiStatus {
-		if Game.Turn == 1 {
-			center := int16((board.SIZE * board.SIZE) / 2)
-			if board.SIZE%2 == 0 {
-				center += board.SIZE / 2
-			}
-			CheckValidMove(center+1, Game.Goban.Tab, playerId)
-			Game.SuggestedPosition = center + 1
-		} else {
-			if CheckValidMove(tree.BestChild.BestChild.Position, Game.Goban.Tab, playerId) {
-				Game.SuggestedPosition = tree.BestChild.BestChild.Position
-			} else {
-				// TODO: Delete when we have tests :D
-				log.Fatalf("Invalid suggested move :: %d", tree.BestChild.BestChild.Position)
-			}
+	if Game.Turn == 0 {
+		center := int16((board.SIZE * board.SIZE) / 2)
+		if board.SIZE%2 == 0 {
+			center += board.SIZE / 2
 		}
+		Game.SuggestedPosition = center
 		return
 	}
 	startTime := time.Now()

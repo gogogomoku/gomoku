@@ -22,7 +22,7 @@
 
         <div id="gameOptions">
             <h2>Settings</h2>
-            <input type="checkbox" id="checkbox" v-model="checked" @change="onToggleSuggestor($event)">
+            <input type="checkbox" id="checkbox" v-model="checked" v-bind:disabled="gameStatus > 0 || winner === 0" @change="onToggleSuggestor($event)">
             <label for="checkbox">enable suggestor</label>
         </div>
 
@@ -59,12 +59,13 @@ export default {
     ],
     data() {
         return {
-            checked: true
+            checked: false
         }
     },
     methods: {
         onToggleSuggestor: function() {
-            this.$parent.$parent.toggleSuggestor()
+            if (this.gameStatus === 0 || this.winner)
+                this.$parent.$parent.toggleSuggestor()
         }
     }
 }

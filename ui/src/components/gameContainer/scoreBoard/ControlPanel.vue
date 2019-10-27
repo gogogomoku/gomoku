@@ -4,14 +4,15 @@
             id="startButton"
             v-bind:buttonMessage="buttonMessage"
             v-bind:gameStatus="gameStatus"
+            v-bind:disabled="gameStatus > 0 && playerInfo.p1.AiStatus > 0 && playerInfo.p2.AiStatus > 0"
         />
         <PlayerScoreBoard id="player1Sb"
-            v-bind:aiStatus="aiStatus"
+            v-bind:gameStatus="gameStatus"
             v-bind:currentPlayer="currentPlayer"
             v-bind:playerInfo="playerInfo.p1"
         />
         <PlayerScoreBoard id="player2Sb"
-            v-bind:aiStatus="aiStatus"
+            v-bind:gameStatus="gameStatus"
             v-bind:currentPlayer="currentPlayer"
             v-bind:playerInfo="playerInfo.p2"
         />
@@ -21,7 +22,7 @@
 
         <div id="gameOptions">
             <h2>Settings</h2>
-            <input type="checkbox" id="checkbox" v-model="checked" @change="onToggleSuggestor($event)">
+            <input type="checkbox" id="checkbox" v-model="checked" v-bind:disabled="gameStatus > 0 || winner === 0" @change="onToggleSuggestor($event)">
             <label for="checkbox">enable suggestor</label>
         </div>
 
@@ -47,7 +48,6 @@ export default {
         Timer,
     },
     props: [
-        "aiStatus",
         "buttonMessage",
         "currentPlayer",
         "gameStatus",
@@ -55,15 +55,17 @@ export default {
         "suggestorOn",
         "suggestionTimer",
         "turn",
+        "winner"
     ],
     data() {
         return {
-            checked: true
+            checked: false
         }
     },
     methods: {
-        onToggleSuggestor: function($event) {
-            this.$parent.$parent.toggleSuggestor()
+        onToggleSuggestor: function() {
+            if (this.gameStatus === 0 || this.winner)
+                this.$parent.$parent.toggleSuggestor()
         }
     }
 }

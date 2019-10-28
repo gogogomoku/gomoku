@@ -106,6 +106,8 @@ func checkWinBySeq(lastPosition int16, sequences [][]int16) bool {
 			hasWinLengthSeq = !checkOpponentCancelMyWin(lastPosition, &Game.Goban.Tab, Game.GetCurrentOpponent(), Game.CurrentPlayer)
 			if hasWinLengthSeq {
 				return true
+			} else {
+				Game.CurrentPlayer.WinningSequences = append(Game.CurrentPlayer.WinningSequences, v)
 			}
 		}
 	}
@@ -118,6 +120,32 @@ func updateWhoseTurn() {
 	} else {
 		Game.CurrentPlayer = Game.P1
 	}
+}
+
+func checkWinSequenceWasBroken() bool {
+	stillWinning := false
+	opponentId := Game.GetCurrentOpponent().Id
+	winningSequences := Game.GetCurrentOpponent().WinningSequences
+	if len(winningSequences) != 0 {
+		for _, seq := range winningSequences {
+			for _, v := range seq {
+				if Game.Goban.Tab[v] == opponentId {
+					sequencesOpponent := CompleteSequenceForPosition(v, opponentId, &Game.Goban.Tab)
+					for _, s := range sequencesOpponent {
+						if len(s) >= 5 {
+							stillWinning = true
+							break
+						}
+					}
+					if stillWinning {
+						break
+					}
+				}
+			}
+		}
+	}
+	Game.GetCurrentOpponent().WinningSequences = [][]int16{}
+	return stillWinning
 }
 
 func HandleMove(playerId int16, position int16) (code int16, msg string) {
@@ -140,6 +168,12 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 	Game.CurrentPlayer.PiecesLeft--
 	captureDirections := checkCapture(position, &Game.Goban.Tab, Game.CurrentPlayer.Id)
 	capturePairs(position, captureDirections, &Game.Goban.Tab)
+	stillWinning := checkWinSequenceWasBroken()
+	if stillWinning {
+		Game.SuggestedPosition = board.TOT_SIZE + 1
+		Game.Winner = Game.GetCurrentOpponent().Id
+		return 0, "Move done"
+	}
 	sequences := CompleteSequenceForPosition(position, playerId, &Game.Goban.Tab)
 	winByCaptures := Game.CurrentPlayer.CapturedPieces >= 10
 	winBySeq := false
@@ -154,5 +188,6 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 		updateWhoseTurn()
 		SuggestMove(Game.CurrentPlayer.Id)
 	}
+
 	return 0, "Move done"
 }

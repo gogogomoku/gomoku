@@ -10,8 +10,15 @@
           </div>
 
           <div class="modal-body">
-            Please select your settings
-          </div>
+		<div class="gameOptions">
+			<input type="checkbox"
+				id="checkbox"
+				:checked="suggestorOn"
+				v-bind:disabled="playerInfo.p1.AiStatus > 0 && playerInfo.p2.AiStatus > 0"
+				@change="onToggleSuggestor()">
+            <label for="checkbox">enable suggestor</label>
+		</div>
+        </div>
 
           <div class="modal-footer">
               <button class="modal-default-button" @click="onClose()">
@@ -28,11 +35,26 @@
 export default {
 	name: 'SettingsModal',
 	props: {
-		"showModal": Boolean
+		"showModal": Boolean,
+		"suggestorOn": Boolean,
+		"playerInfo": {
+			type: Object,
+			required: true,
+			validator(value) {
+				return Object.keys(value).includes("p1", "p2")
+			}
+		}
+	},
+	data() {
+		return {
+		}
 	},
 	methods: {
 		onClose() {
 			this.$parent.closeModal()
+		},
+		onToggleSuggestor() {
+			this.$parent.toggleSuggestor()
 		}
 	}
 }

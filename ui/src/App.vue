@@ -3,6 +3,8 @@
     <GomokuHome msg="Welcome to GoGoGomoku" />
     <SettingsModal
         v-if="showModal"
+        :suggestorOn="suggestorOn"
+        :playerInfo="playerInfo"
         :showModal="showModal"
     />
     <GameContainer

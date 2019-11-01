@@ -40,6 +40,8 @@ export default {
 </script>
 
 <style scoped>
+/* Keep modal's style coherent with ControlPanel without refactoring */
+
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -61,7 +63,7 @@ export default {
   width: 300px;
   margin: 0px auto;
   padding: 20px 30px;
-  background-color: #fff;
+  background-color:#24252a;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;
@@ -74,11 +76,34 @@ export default {
 
 .modal-body {
   margin: 20px 0;
+  color: #bbb;
   font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .modal-default-button {
-  float: right;
+  	float: right;
+  	font-family: 'Share Tech Mono', monospace;
+}
+
+.modal-footer {
+	padding-bottom: 28px;
+}
+
+/* button: same as StartButton.vue */
+button {
+	padding: 9px 12px 9px;
+	background-color: #3cadad;
+	border: none;
+	font-size: 16px;
+	font-weight: bolder;
+	letter-spacing:normal;
+	border-radius: 3px;
+}
+button:hover {
+	background-color: #48cece;
+}
+button:active {
+	background-color: #2b7c7c;
 }
 
 /*

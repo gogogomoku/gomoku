@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <GomokuHome msg="Welcome to GoGoGomoku"/>
+    <GomokuHome msg="Welcome to GoGoGomoku" />
+    <SettingsModal
+        v-if="showModal"
+        :showModal="showModal"
+    />
     <GameContainer
         v-bind:size="size"
         v-bind:tab="tab"
@@ -20,6 +24,7 @@
 <script>
 import GomokuHome from './components/GomokuHome.vue'
 import GameContainer from './components/gameContainer/GameContainer.vue'
+import SettingsModal from './components/SettingsModal.vue'
 import axios from "axios"
 
 const TAB = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
@@ -29,6 +34,7 @@ export default {
     components: {
         GomokuHome,
         GameContainer,
+        SettingsModal,
     },
     data() {
         return {
@@ -57,6 +63,7 @@ export default {
                 },
             },
             Winner: 0,
+            showModal: true,
         }
     },
     methods: {
@@ -134,6 +141,10 @@ export default {
             if (player && this._data.gameStatus === 0) {
                 player.AiStatus = !player.AiStatus | 0
             }
+        },
+        closeModal() {
+            // This will have data to update settings before game start
+            this._data.showModal = false
         }
     }
 

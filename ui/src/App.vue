@@ -8,17 +8,17 @@
       :showModal="showModal"
     />
     <GameContainer
-      v-bind:size="size"
-      v-bind:tab="tab"
-      v-bind:turn="turn"
+      v-bind:buttonMessage="buttonMessage"
       v-bind:currentPlayer="currentPlayer"
+      v-bind:gameStatus="gameStatus"
       v-bind:playerInfo="playerInfo"
+      v-bind:size="size"
       v-bind:suggestedPosition="suggestedPosition"
       v-bind:suggestionTimer="suggestionTimer"
       v-bind:suggestorOn="suggestorOn"
-      v-bind:buttonMessage="buttonMessage"
-      v-bind:gameStatus="gameStatus"
-      v-bind:winner="Winner"
+      v-bind:tab="tab"
+      v-bind:turn="turn"
+      v-bind:winner="winner"
     />
   </div>
 </template>
@@ -27,29 +27,8 @@
 import GomokuHome from "./components/GomokuHome.vue";
 import GameContainer from "./components/gameContainer/GameContainer.vue";
 import SettingsModal from "./components/SettingsModal.vue";
+import { TAB } from "./constants";
 import axios from "axios";
-
-const TAB = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-];
 
 export default {
   name: "app",
@@ -60,16 +39,16 @@ export default {
   },
   data() {
     return {
-      turn: 0,
-      size: 19,
-      tab: TAB,
-      currentPlayer: -1,
       buttonMessage: "Start Game",
+      currentPlayer: -1,
       gameStatus: 0,
       http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
+      size: 19,
       suggestedPosition: -1,
       suggestionTimer: 0,
       suggestorOn: false,
+      tab: TAB,
+      turn: 0,
       playerInfo: {
         p1: {
           AiStatus: 1,
@@ -84,8 +63,8 @@ export default {
           PiecesLeft: 0
         }
       },
-      Winner: 0,
-      showModal: true
+      winner: 0,
+      showModal: false
     };
   },
   methods: {
@@ -121,7 +100,7 @@ export default {
         this._data.gameStatus = res.Status;
         this._data.suggestedPosition = res.SuggestedPosition;
         this._data.suggestionTimer = res.SuggestionTimer;
-        this._data.Winner = res.Winner;
+        this._data.winner = res.Winner;
         if (res.Winner != 0) {
           alert("Winner: Player " + res.Winner);
         } else if (res.CurrentPlayer.AiStatus === 1) {
@@ -131,7 +110,7 @@ export default {
       }
     },
     makeMove(tileId, currentPlayer) {
-      if (this._data.gameStatus > 0 && this._data.Winner == 0) {
+      if (this._data.gameStatus > 0 && this._data.winner == 0) {
         axios
           .get(
             this._data.http_endpoint +
@@ -143,39 +122,48 @@ export default {
           .then(response => this.updateTab(response));
       }
     },
-    startGame() {
-      axios
-        .get(this._data.http_endpoint)
-        .then(response => this.updateTab(response));
-      if (typeof this._data.status == "undefined") {
+    startGame(selectedOptions = true) {
+      if (!selectedOptions) this.openRestartDialog();
+      else {
         axios
-          .post(this._data.http_endpoint + "/start", {
+          .get(this._data.http_endpoint)
+          .then(response => this.updateTab(response));
+        if (typeof this._data.status == "undefined") {
+          axios
+            .post(this._data.http_endpoint + "/start", {
+              AiStatus1: this.playerById(1).AiStatus,
+              AiStatus2: this.playerById(2).AiStatus
+            })
+            .then(response => this.updateTab(response));
+          this._data.buttonMessage = "Restart Game";
+        }
+      }
+    },
+    openRestartDialog() {
+      this.showModal = true;
+    },
+    restartGame(selectedOptions = true) {
+      if (!selectedOptions) this.openRestartDialog();
+      else {
+        axios
+          .post(this._data.http_endpoint + "/restart", {
             AiStatus1: this.playerById(1).AiStatus,
             AiStatus2: this.playerById(2).AiStatus
           })
           .then(response => this.updateTab(response));
-        this._data.buttonMessage = "Restart Game";
       }
-    },
-    restartGame() {
-      axios
-        .post(this._data.http_endpoint + "/restart", {
-          AiStatus1: this.playerById(1).AiStatus,
-          AiStatus2: this.playerById(2).AiStatus
-        })
-        .then(response => this.updateTab(response));
     },
     toggleSuggestor() {
       this._data.suggestorOn = !this._data.suggestorOn;
     },
     toggleAiStatus(playerId) {
       const player = this.playerById(playerId);
-      if (player && this._data.gameStatus === 0) {
-        player.AiStatus = !player.AiStatus | 0;
-      }
+      if (player) player.AiStatus = !player.AiStatus | 0;
     },
     closeModal() {
       this._data.showModal = false;
+      if (this.gameStatus > 0) this.restartGame(true);
+      else if (this.gameStatus == 0) this.startGame(true);
     }
   }
 };

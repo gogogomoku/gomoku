@@ -4,7 +4,7 @@
       id="startButton"
       v-bind:buttonMessage="buttonMessage"
       v-bind:gameStatus="gameStatus"
-      v-bind:disabled="gameStatus > 0 && playerInfo.p1.AiStatus > 0 && playerInfo.p2.AiStatus > 0"
+      v-bind:disabled="gameStatus > 0 && playerInfo.p1.AiStatus == 10"
     />
     <PlayerScoreBoard
       id="player1Sb"
@@ -21,6 +21,9 @@
     <div id="generalSb">
       Turn: {{ Math.floor(turn/2) }}
       <br />
+      Winner: {{ winner }}
+      <br />
+      Game status: {{ gameStatus }}
     </div>
 
     <Timer
@@ -43,16 +46,16 @@ export default {
     StartButton,
     Timer
   },
-  props: [
-    "buttonMessage",
-    "currentPlayer",
-    "gameStatus",
-    "playerInfo",
-    "suggestorOn",
-    "suggestionTimer",
-    "turn",
-    "winner"
-  ]
+  props: {
+    "buttonMessage": String,
+    "currentPlayer": Number,
+    "gameStatus": Number,
+    "playerInfo": Object,
+    "suggestorOn": Boolean,
+    "suggestionTimer": Number,
+    "turn": Number,
+    "winner": Number
+  },
 };
 </script>
 

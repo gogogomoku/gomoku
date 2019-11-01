@@ -9,9 +9,9 @@ export default {
   methods: {
     buttonAction: function() {
       if (this.gameStatus == 0) {
-        this.$parent.$parent.$parent.startGame();
+        this.$parent.$parent.$parent.startGame(false);
       } else {
-        this.$parent.$parent.$parent.restartGame();
+        this.$parent.$parent.$parent.restartGame(false);
       }
     }
   }

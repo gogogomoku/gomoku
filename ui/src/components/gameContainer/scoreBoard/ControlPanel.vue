@@ -20,12 +20,6 @@
             Turn: {{ Math.floor(turn/2) }} <br>
         </div>
 
-        <div id="gameOptions">
-            <h2>Settings</h2>
-            <input type="checkbox" id="checkbox" v-model="checked" v-bind:disabled="gameStatus > 0 || winner === 0" @change="onToggleSuggestor($event)">
-            <label for="checkbox">enable suggestor</label>
-        </div>
-
         <Timer
             v-if="suggestorOn && gameStatus > 0"
             v-bind:turn="turn"
@@ -57,23 +51,11 @@ export default {
         "turn",
         "winner"
     ],
-    data() {
-        return {
-            checked: false
-        }
-    },
-    methods: {
-        onToggleSuggestor: function() {
-            if (this.gameStatus === 0 || this.winner)
-                this.$parent.$parent.toggleSuggestor()
-        }
-    }
 }
 </script>
 
 <style scoped>
     #scoreboard {
-        /* TODO: Organize control panel including duplicate child template styles */
         font-family: 'Rubik', 'Avenir', Helvetica, Arial, sans-serif;
         color: #bbb;
         font-size: small;
@@ -108,35 +90,6 @@ export default {
         margin: 10px 0;
         padding: 5px;
         flex-grow: 0;
-    }
-
-    #gameOptions {
-        color: #bbb;
-
-        border: 1px solid #000000;
-        border-radius: 8px;
-
-        margin: 5px 15px;
-        padding: 10px 5px 12px;
-
-        background-color:#24252a;
-
-        flex-grow: 0;
-        width: 100%;
-        box-sizing: border-box;
-        order: 7;
-        margin-top: auto;
-        text-align: left;
-        flex-grow: 0;
-        justify-self: flex-end;
-    }
-
-    #gameOptions label {
-        margin-left: 10px;
-    }
-
-    #gameOptions h2 {
-        margin: 0px 5px 10px;
     }
 
 </style>

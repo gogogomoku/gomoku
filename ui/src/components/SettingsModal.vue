@@ -58,10 +58,6 @@ export default {
 	components: {
 		PlayerSettings,
 	},
-	data() {
-		return {
-		}
-	},
 	methods: {
 		onClose() {
 			this.$parent.closeModal()
@@ -75,7 +71,6 @@ export default {
 </script>
 
 <style scoped>
-/* Keep modal's style coherent with ControlPanel without refactoring */
 
 .modal-mask {
   position: fixed;
@@ -106,7 +101,7 @@ export default {
 
 .modal-header h3 {
   margin-top: 0;
-  color: #42b983;
+  color: #ece2d0;
 }
 
 .modal-body {
@@ -136,9 +131,18 @@ button {
 }
 button:hover {
 	background-color: #48cece;
+	cursor:pointer;
 }
 button:active {
 	background-color: #2b7c7c;
+}
+
+.gameOptions {
+	text-align: right;
+}
+
+.gameOptions label {
+	margin-left: 3px;
 }
 
 /*

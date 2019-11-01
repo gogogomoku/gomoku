@@ -138,14 +138,12 @@ export default {
             this._data.suggestorOn = !this._data.suggestorOn
         },
         toggleAiStatus(playerId) {
-            // Not used yet
             const player = this.playerById(playerId)
             if (player && this._data.gameStatus === 0) {
                 player.AiStatus = !player.AiStatus | 0
             }
         },
         closeModal() {
-            // This will have data to update settings before game start
             this._data.showModal = false
         }
     }

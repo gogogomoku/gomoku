@@ -6,18 +6,26 @@
         <div class="modal-container">
 
           <div class="modal-header">
-            <h3>gogogomoku!</h3>
+            <h3>game settings</h3>
           </div>
 
           <div class="modal-body">
-		<div class="gameOptions">
-			<input type="checkbox"
-				id="checkbox"
-				:checked="suggestorOn"
-				v-bind:disabled="playerInfo.p1.AiStatus > 0 && playerInfo.p2.AiStatus > 0"
-				@change="onToggleSuggestor()">
-            <label for="checkbox">enable suggestor</label>
-		</div>
+			  <PlayerSettings
+					:id="playerInfo.p1.Id"
+				  	:aiStatus="playerInfo.p1.AiStatus"
+				/>
+				<PlayerSettings
+					:id="playerInfo.p2.Id"
+				  	:aiStatus="playerInfo.p2.AiStatus"
+				/>
+				<div class="gameOptions">
+					<input type="checkbox"
+					id="checkbox"
+					:checked="suggestorOn"
+					v-bind:disabled="playerInfo.p1.AiStatus > 0 && playerInfo.p2.AiStatus > 0"
+					@change="onToggleSuggestor()">
+            		<label for="checkbox">enable suggestor</label>
+				</div>
         </div>
 
           <div class="modal-footer">
@@ -32,6 +40,8 @@
 </template>
 
 <script>
+import PlayerSettings from './PlayerSettings.vue'
+
 export default {
 	name: 'SettingsModal',
 	props: {
@@ -44,6 +54,9 @@ export default {
 				return Object.keys(value).includes("p1", "p2")
 			}
 		}
+	},
+	components: {
+		PlayerSettings,
 	},
 	data() {
 		return {
@@ -85,7 +98,7 @@ export default {
   width: 300px;
   margin: 0px auto;
   padding: 20px 30px;
-  background-color:#24252a;
+  background-color:#1c1d21;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
   transition: all .3s ease;

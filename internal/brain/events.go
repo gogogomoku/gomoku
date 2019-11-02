@@ -191,7 +191,7 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 	} else {
 		Game.Turn++
 		updateWhoseTurn()
-		SuggestMove(Game.CurrentPlayer.Id)
+		SuggestMove(Game.CurrentPlayer.Id, position)
 	}
 
 	return 0, "Move done"

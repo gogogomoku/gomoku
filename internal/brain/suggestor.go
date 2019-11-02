@@ -2,15 +2,15 @@ package brain
 
 import (
 	"fmt"
-	"sort"
-	"sync"
-	"time"
+	// "sort"
+	// "sync"
+	// "time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
 	tr "github.com/gogogomoku/gomoku/internal/tree"
 )
 
-var tree tr.Node
+var tree *tr.Node
 
 func getPossibleMoves(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
 	poss := []int16{}
@@ -36,89 +36,99 @@ func getPossibleMoves(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
 	return poss
 }
 
-func addNewLayerPrePruning(poss []int16, node *tr.Node, playerId int16) {
-	maxTestingMoves := 6
-	newMovesToTest := []*tr.Node{}
-	for i, m := range poss {
-		new := tr.Node{
-			Id:    int16(i) + node.Id,
-			Value: 0,
-			// Tab:      newTab,
-			Position: m,
-			Player:   playerId,
-		}
-		new.Tab = node.Tab
-		new.Tab[m] = playerId
-		new.Captured[1] = node.Captured[1]
-		new.Captured[2] = node.Captured[2]
-		// Virtual Capturing
-		captureDirections := checkCapture(m, &node.Tab, playerId)
-		new.Captured[playerId] += 2 * int16(len(captureDirections))
-		capturePairs(m, captureDirections, &new.Tab)
-		new.Value = getHeuristicValue(playerId, &new.Tab, &new.Captured)
-		newMovesToTest = append(newMovesToTest, &new)
-		if len(newMovesToTest) > maxTestingMoves {
-			sort.Slice(newMovesToTest, func(i int, j int) bool {
-				return newMovesToTest[i].Value > newMovesToTest[j].Value
-			})
-			newMovesToTest = newMovesToTest[:maxTestingMoves-1]
-		}
-	}
-
-	i := 0
-	for i < len(newMovesToTest) {
-		newMovesToTest[i].Value = 0
-		tr.AddChild(node, newMovesToTest[i])
-		i++
-	}
-}
-
 func build_tree(depth int16, playerId int16) {
-	//Create tree root
-	tree = tr.Node{Id: 1, Value: 0, Tab: Game.Goban.Tab, Player: Game.CurrentPlayer.Id}
-	tree.Captured[1] = Game.P1.CapturedPieces
-	tree.Captured[2] = Game.P2.CapturedPieces
 
-	//Create tree first layer
-	poss := getPossibleMoves(&(tree.Tab), playerId)
-	addNewLayerPrePruning(poss, &tree, Game.CurrentPlayer.Id)
-
-	//Create the rest of the tree
-	opponent := int16(1)
-	if tree.Player == 1 {
-		opponent = 2
-	}
-	var waitgroup sync.WaitGroup
-	for i, ch := range tree.Children {
-		waitgroup.Add(1)
-		tmpCh := *ch
-		go func(tmpCh *tr.Node, i int16, tree *tr.Node) {
-			defer waitgroup.Done()
-			build_tree_recursive(tmpCh, depth-1, opponent)
-			tree.Children[i] = tmpCh
-		}(&tmpCh, int16(i), &tree)
-	}
-	waitgroup.Wait()
-}
-
-func build_tree_recursive(node *tr.Node, depth int16, playerId int16) {
 	opponent := int16(1)
 	if playerId == 1 {
 		opponent = 2
 	}
-	if depth > 0 {
-		currentDepth := depth - 1
-		poss := getPossibleMoves(&(node.Tab), playerId)
-		addNewLayerPrePruning(poss, node, playerId)
+	tree = &tr.Node{
+		Id:     1,
+		Value:  0,
+		Tab:    Game.Goban.Tab,
+		Player: Game.CurrentPlayer.Id,
+	}
+	poss := getPossibleMoves(&(tree.Tab), tree.Player)
+	// fmt.Println("Found", len(poss), "possible moves")
+	for _, move := range poss {
+		newTab := Game.Goban.Tab
+		newTab[move] = playerId
+		tree.Children = append(tree.Children, &tr.Node{
+			Position: move,
+			Id:       2,
+			Value:    0,
+			Tab:      newTab,
+			Player:   Game.CurrentPlayer.Id,
+		})
+	}
+	for _, ch := range tree.Children {
+		build_tree_recursively(ch, depth, opponent)
+	}
+}
+
+func build_tree_recursively(node *tr.Node, depth int16, playerId int16) {
+	if depth >= -1 {
+		poss := getPossibleMoves(&(node.Tab), node.Player)
+		// fmt.Println("Found", len(poss), "possible moves")
+		for _, move := range poss {
+			newTab := node.Tab
+			newTab[move] = playerId
+			node.Children = append(node.Children, &tr.Node{
+				Position: move,
+				Id:       2,
+				Value:    0,
+				Tab:      newTab,
+				Player:   Game.CurrentPlayer.Id,
+			})
+		}
+		depth -= 1
 		for _, ch := range node.Children {
-			build_tree_recursive(ch, currentDepth, opponent)
+			build_tree_recursively(ch, depth-1, playerId)
 		}
 	}
 }
 
-func SuggestMove(playerId int16) {
+func reuse_tree(depth int16, playerId int16, lastMove int16) {
+	// Find lastMove and move tree head to corresponding child
+	for i, ch := range tree.Children {
+		if ch.Position == lastMove {
+			tree = tree.Children[i]
+		}
+	}
+	for _, ch := range tree.Children {
+		reuse_tree_recursively(ch, depth, playerId)
+	}
+}
 
-	depth := int16(5)
+func reuse_tree_recursively(node *tr.Node, depth int16, playerId int16) {
+	fmt.Println("Check if needed new Layer, depth=", depth)
+	if depth >= -1 {
+		if len(node.Children) == 0 {
+			fmt.Println("Building new Layer")
+			poss := getPossibleMoves(&(node.Tab), node.Player)
+			// fmt.Println("Found", len(poss), "possible moves")
+			for _, move := range poss {
+				newTab := node.Tab
+				newTab[move] = playerId
+				node.Children = append(node.Children, &tr.Node{
+					Position: move,
+					Id:       2,
+					Value:    0,
+					Tab:      newTab,
+					Player:   Game.CurrentPlayer.Id,
+				})
+			}
+		}
+		depth -= 1
+		for _, ch := range node.Children {
+			build_tree_recursively(ch, depth-1, playerId)
+		}
+	}
+}
+
+func SuggestMove(playerId int16, lastMove int16) {
+
+	depth := int16(3)
 
 	if Game.Turn == 0 {
 		center := int16((board.SIZE * board.SIZE) / 2)
@@ -128,22 +138,39 @@ func SuggestMove(playerId int16) {
 		Game.SuggestedPosition = center
 		return
 	}
-	startTime := time.Now()
-	build_tree(depth, playerId)
-	startTimeAlgo := time.Now()
+	if tree == nil {
+		fmt.Println("   Creating tree")
+		build_tree(depth, playerId)
+
+		// // Check depth
+		// if len(tree.Children[0].Children[0].Children[0].Children[0].Children) > 0 {
+		// 	fmt.Println("   Tree built to 5 levels")
+		// }
+
+		// Launch algo
+		LaunchMinimaxPruning(tree, depth)
+		Game.SuggestedPosition = tree.BestChild.Position
+
+		fmt.Println()
+	} else {
+		fmt.Println("   Reusing tree")
+		build_tree(depth, playerId)
+
+		// if len(tree.Children[0].Children[0].Children[0].Children[0].Children) > 0 {
+		// 	fmt.Println("   Tree built to 5 levels")
+		// }
+
+		// Launch algo
+		LaunchMinimaxPruning(tree, depth)
+		Game.SuggestedPosition = tree.BestChild.Position
+	}
+	fmt.Println()
+
+	tree = nil
+
+	return
 
 	// Launch algo
-	LaunchMinimaxPruning(&tree, depth)
+	LaunchMinimaxPruning(tree, depth)
 
-	Game.SuggestedPosition = tree.BestChild.Position
-	duration := time.Since(startTime)
-	durationAlgo := time.Since(startTimeAlgo)
-	Game.SuggestionTimer = int16(duration.Nanoseconds() / 1000000)
-	fmt.Println("Time spent on suggestion:", duration)
-	fmt.Println("Time spent on minimax/pruning:", durationAlgo)
-	fmt.Println(tree.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
-		tree.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
-		tree.BestChild.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")", "->",
-		tree.BestChild.BestChild.BestChild.BestChild.Position, "(", tree.BestChild.Value, ")",
-	)
 }

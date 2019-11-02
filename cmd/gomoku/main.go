@@ -31,7 +31,7 @@ func main() {
 		fmt.Println("Start gomoku | no server")
 		brain.StartRound(0, 0)
 		for brain.Game.Winner == 0 {
-			brain.SuggestMove(brain.Game.CurrentPlayer.Id)
+			brain.SuggestMove(brain.Game.CurrentPlayer.Id, brain.Game.SuggestedPosition)
 			fmt.Println("Suggestion: ", brain.Game.SuggestedPosition)
 			fmt.Println("Player's turn: ", brain.Game.CurrentPlayer.Id)
 			// if brain.Game.CurrentPlayer.Id == 1 {

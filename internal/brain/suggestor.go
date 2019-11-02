@@ -1,11 +1,17 @@
 package brain
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
+
+	bolt "github.com/gogogomoku/gomoku/internal/boltdb"
 	tr "github.com/gogogomoku/gomoku/internal/tree"
 )
 
@@ -133,6 +139,42 @@ func SuggestMove(playerId int16, lastMove int16) {
 		return
 	}
 
+	var hash string
+	if Game.CacheEnabled {
+		h := sha256.New()
+		tabToStr := strings.Trim(strings.Replace(fmt.Sprint(Game.Goban.Tab), " ", "", -1), "[]")
+		uid := fmt.Sprintf(
+			"%v%d%d%d",
+			tabToStr,
+			Game.CurrentPlayer.Id,
+			Game.CurrentPlayer.CapturedPieces,
+			Game.GetCurrentOpponent().CapturedPieces,
+		)
+		fmt.Println(uid)
+		h.Write([]byte(uid))
+		hash = fmt.Sprintf("%x", h.Sum(nil))
+		startTime := time.Now()
+		str := bolt.Get(bolt.Bolt.Bucket, hash)
+		fmt.Println("Return from cache:", str)
+		if str != "none" {
+			fmt.Println("-- Found in cache")
+			cacheSuggestion, err := strconv.ParseInt(str, 10, 64)
+			if err == nil {
+				fmt.Println("-- Returning cache suggestion")
+				Game.SuggestedPosition = int16(cacheSuggestion)
+				duration := time.Since(startTime)
+				Game.SuggestionTimer = int16(duration.Nanoseconds() / 1000000)
+				return
+			} else {
+				fmt.Println(err.Error())
+			}
+		}
+	}
+
+	startTime := time.Now()
+	build_tree(depth, playerId)
+	startTimeAlgo := time.Now()
+
 	// Build the tree if it doesn't exist, or re-use it
 	if tree == nil {
 		buildTree(depth, playerId)
@@ -145,5 +187,10 @@ func SuggestMove(playerId int16, lastMove int16) {
 	LaunchMinimaxPruning(tree, depth)
 	durationSuggestor := time.Since(startTimeSuggestor)
 	Game.SuggestionTimer = int16(durationSuggestor.Nanoseconds() / 1000000)
+	if Game.CacheEnabled {
+		bolt.Put(bolt.Bolt.Bucket, hash, fmt.Sprint(tree.BestChild.Position))
+		// bolt.PrintBucket(bolt.Bolt.Bucket)
+	}
+
 	Game.SuggestedPosition = tree.BestChild.Position
 }

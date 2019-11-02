@@ -29,6 +29,36 @@ import GameContainer from "./components/gameContainer/GameContainer.vue";
 import SettingsModal from "./components/SettingsModal.vue";
 import { TAB } from "./constants";
 import axios from "axios";
+import { cloneDeep } from "lodash";
+
+const initialAppState = {
+  buttonMessage: "Start Game",
+  currentPlayer: -1,
+  gameStatus: 0,
+  http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
+  size: 19,
+  suggestedPosition: -1,
+  suggestionTimer: 0,
+  suggestorOn: false,
+  tab: TAB,
+  turn: 0,
+  playerInfo: {
+    p1: {
+      AiStatus: 1,
+      Id: 1,
+      CapturedPieces: 0,
+      PiecesLeft: 0
+    },
+    p2: {
+      AiStatus: 0,
+      Id: 2,
+      CapturedPieces: 0,
+      PiecesLeft: 0
+    }
+  },
+  winner: 0,
+  showModal: false
+};
 
 export default {
   name: "app",
@@ -38,34 +68,11 @@ export default {
     SettingsModal
   },
   data() {
-    return {
-      buttonMessage: "Start Game",
-      currentPlayer: -1,
-      gameStatus: 0,
-      http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
-      size: 19,
-      suggestedPosition: -1,
-      suggestionTimer: 0,
-      suggestorOn: false,
-      tab: TAB,
-      turn: 0,
-      playerInfo: {
-        p1: {
-          AiStatus: 1,
-          Id: 1,
-          CapturedPieces: 0,
-          PiecesLeft: 0
-        },
-        p2: {
-          AiStatus: 0,
-          Id: 2,
-          CapturedPieces: 0,
-          PiecesLeft: 0
-        }
-      },
-      winner: 0,
-      showModal: false
-    };
+    return cloneDeep(initialAppState);
+  },
+  mounted: function() {
+    // for development, re-init state on page refresh
+    Object.assign(this.$data, initialAppState);
   },
   methods: {
     playerById(playerId) {
@@ -103,6 +110,8 @@ export default {
         this._data.winner = res.Winner;
         if (res.Winner != 0) {
           alert("Winner: Player " + res.Winner);
+          // todo: tell server to refresh too
+          Object.assign(this.$data, initialAppState);
         } else if (res.CurrentPlayer.AiStatus === 1) {
           await sleep(100);
           this.makeMove(res.SuggestedPosition, res.CurrentPlayer.Id);

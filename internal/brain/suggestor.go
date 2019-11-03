@@ -3,7 +3,7 @@ package brain
 import (
 	"fmt"
 	// "sort"
-	// "sync"
+	"sync"
 	// "time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -63,9 +63,17 @@ func build_tree(depth int16, playerId int16) {
 			Player:   Game.CurrentPlayer.Id,
 		})
 	}
-	for _, ch := range tree.Children {
-		build_tree_recursively(ch, depth, opponent)
+	var waitgroup sync.WaitGroup
+	for i, ch := range tree.Children {
+		waitgroup.Add(1)
+		tmpCh := *ch
+		go func(tmpCh *tr.Node, i int16, tree *tr.Node) {
+			defer waitgroup.Done()
+			build_tree_recursively(tmpCh, depth, opponent)
+			tree.Children[i] = tmpCh
+		}(&tmpCh, int16(i), tree)
 	}
+	waitgroup.Wait()
 }
 
 func build_tree_recursively(node *tr.Node, depth int16, playerId int16) {
@@ -130,9 +138,17 @@ func reuse_tree(depth int16, playerId int16, lastMove int16) {
 		return
 	}
 	tree = treeTmp
-	for _, ch := range tree.Children {
-		reuse_tree_recursively(ch, depth, opponent)
+	var waitgroup sync.WaitGroup
+	for i, ch := range tree.Children {
+		waitgroup.Add(1)
+		tmpCh := *ch
+		go func(tmpCh *tr.Node, i int16, tree *tr.Node) {
+			defer waitgroup.Done()
+			reuse_tree_recursively(tmpCh, depth, opponent)
+			tree.Children[i] = tmpCh
+		}(&tmpCh, int16(i), tree)
 	}
+	waitgroup.Wait()
 }
 
 func reuse_tree_recursively(node *tr.Node, depth int16, playerId int16) {

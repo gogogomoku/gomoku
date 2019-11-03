@@ -2,9 +2,9 @@ package brain
 
 import (
 	"fmt"
-	// "sort"
+	"sort"
 	"sync"
-	// "time"
+	"time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
 	tr "github.com/gogogomoku/gomoku/internal/tree"
@@ -77,6 +77,8 @@ func build_tree(depth int16, playerId int16) {
 }
 
 func build_tree_recursively(node *tr.Node, depth int16, playerId int16) {
+	maxTestingMoves := 6
+	newMovesToTest := []*tr.Node{}
 	opponent := int16(1)
 	if playerId == 1 {
 		opponent = 2
@@ -100,7 +102,21 @@ func build_tree_recursively(node *tr.Node, depth int16, playerId int16) {
 			captureDirections := checkCapture(move, &node.Tab, playerId)
 			new.Captured[playerId] += 2 * int16(len(captureDirections))
 			capturePairs(move, captureDirections, &new.Tab)
-			node.Children = append(node.Children, new)
+			new.Value = getHeuristicValue(playerId, &new.Tab, &new.Captured)
+			newMovesToTest = append(newMovesToTest, new)
+			if len(newMovesToTest) > maxTestingMoves {
+				sort.Slice(newMovesToTest, func(i int, j int) bool {
+					return newMovesToTest[i].Value > newMovesToTest[j].Value
+				})
+				newMovesToTest = newMovesToTest[:maxTestingMoves-1]
+			}
+			// node.Children = append(node.Children, new)
+		}
+		i := 0
+		for i < len(newMovesToTest) {
+			newMovesToTest[i].Value = 0
+			tr.AddChild(node, newMovesToTest[i])
+			i++
 		}
 		depth -= 1
 		for _, ch := range node.Children {
@@ -152,6 +168,8 @@ func reuse_tree(depth int16, playerId int16, lastMove int16) {
 }
 
 func reuse_tree_recursively(node *tr.Node, depth int16, playerId int16) {
+	maxTestingMoves := 6
+	newMovesToTest := []*tr.Node{}
 	opponent := int16(1)
 	if playerId == 1 {
 		opponent = 2
@@ -176,8 +194,22 @@ func reuse_tree_recursively(node *tr.Node, depth int16, playerId int16) {
 				captureDirections := checkCapture(move, &node.Tab, playerId)
 				new.Captured[playerId] += 2 * int16(len(captureDirections))
 				capturePairs(move, captureDirections, &new.Tab)
-				node.Children = append(node.Children, new)
+				new.Value = getHeuristicValue(playerId, &new.Tab, &new.Captured)
+				newMovesToTest = append(newMovesToTest, new)
+				if len(newMovesToTest) > maxTestingMoves {
+					sort.Slice(newMovesToTest, func(i int, j int) bool {
+						return newMovesToTest[i].Value > newMovesToTest[j].Value
+					})
+					newMovesToTest = newMovesToTest[:maxTestingMoves-1]
+				}
+				// node.Children = append(node.Children, new)
 			}
+		}
+		i := 0
+		for i < len(newMovesToTest) {
+			newMovesToTest[i].Value = 0
+			tr.AddChild(node, newMovesToTest[i])
+			i++
 		}
 		depth -= 1
 		for _, ch := range node.Children {
@@ -191,7 +223,7 @@ var nodesAnalyzed int
 
 func SuggestMove(playerId int16, lastMove int16) {
 
-	depth := int16(3)
+	depth := int16(5)
 
 	nodesAnalyzed = 0
 
@@ -203,24 +235,13 @@ func SuggestMove(playerId int16, lastMove int16) {
 		Game.SuggestedPosition = center
 		return
 	}
+	startTimeAlgo := time.Now()
 	if tree == nil {
-
 		build_tree(depth, playerId)
-
-		// // Check depth
-		// if len(tree.Children[0].Children[0].Children[0].Children[0].Children) > 0 {
-		// 	fmt.Println("   Tree built to 5 levels")
-		// }
-
 		fmt.Println()
 	} else {
 		// build_tree(depth, playerId)
 		reuse_tree(depth, playerId, lastMove)
-
-		// if len(tree.Children[0].Children[0].Children[0].Children[0].Children) > 0 {
-		// 	fmt.Println("   Tree built to 5 levels")
-		// }
-
 	}
 	fmt.Println()
 
@@ -228,6 +249,8 @@ func SuggestMove(playerId int16, lastMove int16) {
 
 	// Launch algo
 	LaunchMinimaxPruning(tree, depth)
+	durationAlgo := time.Since(startTimeAlgo)
+	Game.SuggestionTimer = int16(durationAlgo.Nanoseconds() / 1000000)
 	Game.SuggestedPosition = tree.BestChild.Position
 	fmt.Println("Nodes Analyzed: ", nodesAnalyzed)
 

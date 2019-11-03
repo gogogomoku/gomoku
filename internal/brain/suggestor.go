@@ -37,7 +37,7 @@ func getPossibleMoves(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
 }
 
 func build_tree(depth int16, playerId int16) {
-
+	fmt.Println("   Creating tree")
 	opponent := int16(1)
 	if playerId == 1 {
 		opponent = 2
@@ -48,6 +48,8 @@ func build_tree(depth int16, playerId int16) {
 		Tab:    Game.Goban.Tab,
 		Player: Game.CurrentPlayer.Id,
 	}
+	tree.Captured[1] = Game.P1.CapturedPieces
+	tree.Captured[2] = Game.P2.CapturedPieces
 	poss := getPossibleMoves(&(tree.Tab), tree.Player)
 	// fmt.Println("Found", len(poss), "possible moves")
 	for _, move := range poss {
@@ -67,68 +69,115 @@ func build_tree(depth int16, playerId int16) {
 }
 
 func build_tree_recursively(node *tr.Node, depth int16, playerId int16) {
+	opponent := int16(1)
+	if playerId == 1 {
+		opponent = 2
+	}
 	if depth >= -1 {
-		poss := getPossibleMoves(&(node.Tab), node.Player)
+		poss := getPossibleMoves(&(node.Tab), playerId)
+		nodesAnalyzed++
 		// fmt.Println("Found", len(poss), "possible moves")
 		for _, move := range poss {
-			newTab := node.Tab
-			newTab[move] = playerId
-			node.Children = append(node.Children, &tr.Node{
+			new := &tr.Node{
 				Position: move,
 				Id:       2,
 				Value:    0,
-				Tab:      newTab,
-				Player:   Game.CurrentPlayer.Id,
-			})
+				Player:   playerId,
+			}
+			new.Tab = node.Tab
+			new.Tab[move] = playerId
+			new.Captured[1] = node.Captured[1]
+			new.Captured[2] = node.Captured[2]
+			// Virtual Capturing
+			captureDirections := checkCapture(move, &node.Tab, playerId)
+			new.Captured[playerId] += 2 * int16(len(captureDirections))
+			capturePairs(move, captureDirections, &new.Tab)
+			node.Children = append(node.Children, new)
 		}
 		depth -= 1
 		for _, ch := range node.Children {
-			build_tree_recursively(ch, depth-1, playerId)
+			build_tree_recursively(ch, depth-1, opponent)
 		}
 	}
 }
 
 func reuse_tree(depth int16, playerId int16, lastMove int16) {
-	// Find lastMove and move tree head to corresponding child
+	opponent := int16(1)
+	if playerId == 1 {
+		opponent = 2
+	}
+	treeTmp := &tr.Node{
+		Id:     1,
+		Value:  0,
+		Tab:    Game.Goban.Tab,
+		Player: Game.CurrentPlayer.Id,
+	}
+	treeTmp.Captured[1] = Game.P1.CapturedPieces
+	treeTmp.Captured[2] = Game.P2.CapturedPieces
+
+	// Find lastMove and move tree children to corresponding grandchildren
+	found := false
 	for i, ch := range tree.Children {
 		if ch.Position == lastMove {
-			tree = tree.Children[i]
+			found = true
+			treeTmp.Children = tree.Children[i].Children
+			fmt.Println("   Reusing tree")
+
 		}
 	}
+	if !found {
+		build_tree(depth, playerId)
+		return
+	}
+	tree = treeTmp
 	for _, ch := range tree.Children {
-		reuse_tree_recursively(ch, depth, playerId)
+		reuse_tree_recursively(ch, depth, opponent)
 	}
 }
 
 func reuse_tree_recursively(node *tr.Node, depth int16, playerId int16) {
-	fmt.Println("Check if needed new Layer, depth=", depth)
+	opponent := int16(1)
+	if playerId == 1 {
+		opponent = 2
+	}
 	if depth >= -1 {
 		if len(node.Children) == 0 {
-			fmt.Println("Building new Layer")
-			poss := getPossibleMoves(&(node.Tab), node.Player)
+			poss := getPossibleMoves(&(node.Tab), playerId)
+			nodesAnalyzed++
 			// fmt.Println("Found", len(poss), "possible moves")
 			for _, move := range poss {
-				newTab := node.Tab
-				newTab[move] = playerId
-				node.Children = append(node.Children, &tr.Node{
+				new := &tr.Node{
 					Position: move,
 					Id:       2,
 					Value:    0,
-					Tab:      newTab,
-					Player:   Game.CurrentPlayer.Id,
-				})
+					Player:   playerId,
+				}
+				new.Tab = node.Tab
+				new.Tab[move] = playerId
+				new.Captured[1] = node.Captured[1]
+				new.Captured[2] = node.Captured[2]
+				// Virtual Capturing
+				captureDirections := checkCapture(move, &node.Tab, playerId)
+				new.Captured[playerId] += 2 * int16(len(captureDirections))
+				capturePairs(move, captureDirections, &new.Tab)
+				node.Children = append(node.Children, new)
 			}
 		}
 		depth -= 1
 		for _, ch := range node.Children {
-			build_tree_recursively(ch, depth-1, playerId)
+			ch.Value = 0
+			reuse_tree_recursively(ch, depth-1, opponent)
 		}
 	}
 }
 
+var nodesAnalyzed int
+
 func SuggestMove(playerId int16, lastMove int16) {
 
 	depth := int16(3)
+
+	nodesAnalyzed = 0
 
 	if Game.Turn == 0 {
 		center := int16((board.SIZE * board.SIZE) / 2)
@@ -139,7 +188,7 @@ func SuggestMove(playerId int16, lastMove int16) {
 		return
 	}
 	if tree == nil {
-		fmt.Println("   Creating tree")
+
 		build_tree(depth, playerId)
 
 		// // Check depth
@@ -147,30 +196,23 @@ func SuggestMove(playerId int16, lastMove int16) {
 		// 	fmt.Println("   Tree built to 5 levels")
 		// }
 
-		// Launch algo
-		LaunchMinimaxPruning(tree, depth)
-		Game.SuggestedPosition = tree.BestChild.Position
-
 		fmt.Println()
 	} else {
-		fmt.Println("   Reusing tree")
-		build_tree(depth, playerId)
+		// build_tree(depth, playerId)
+		reuse_tree(depth, playerId, lastMove)
 
 		// if len(tree.Children[0].Children[0].Children[0].Children[0].Children) > 0 {
 		// 	fmt.Println("   Tree built to 5 levels")
 		// }
 
-		// Launch algo
-		LaunchMinimaxPruning(tree, depth)
-		Game.SuggestedPosition = tree.BestChild.Position
 	}
 	fmt.Println()
 
-	tree = nil
-
-	return
+	// tree = nil
 
 	// Launch algo
 	LaunchMinimaxPruning(tree, depth)
+	Game.SuggestedPosition = tree.BestChild.Position
+	fmt.Println("Nodes Analyzed: ", nodesAnalyzed)
 
 }

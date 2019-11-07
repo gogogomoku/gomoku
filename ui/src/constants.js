@@ -1,3 +1,7 @@
+export const NOT_STARTED = 0
+export const RUNNING = 1
+export const CONCLUDED = 2
+
 export const TAB = [
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

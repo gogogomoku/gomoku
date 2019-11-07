@@ -5,7 +5,7 @@
         <div class="tile" v-for="(tile, posX) in line" :key="posX">
           <!-- {{posX + (posY * size)}} -->
           <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition && suggestorOn">
-            <div v-if="currentPlayer == 1">
+            <div v-if="currentPlayer === 1">
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
@@ -15,7 +15,7 @@
                 src="1.png"
               />
             </div>
-            <div v-else-if="currentPlayer == 2">
+            <div v-else-if="currentPlayer === 2">
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
@@ -24,6 +24,17 @@
                 class="tileSuggested"
                 src="2.png"
               />
+            </div>
+          </div>
+          <div class="tileImage tileAlpha postgameTile" v-else-if="inPostgame">
+            <div v-if="tile === 0">
+              <img :id="posX + (posY * size)" class="tile0" src="0.png" />
+            </div>
+            <div v-else-if="tile === 1">
+              <img :id="posX + (posY * size)" class="tile1" src="1.png" />
+            </div>
+            <div v-else-if="tile === 2">
+              <img :id="posX + (posY * size)" class="tile2" src="2.png" />
             </div>
           </div>
           <div class="tileImage" v-else>
@@ -57,6 +68,7 @@ export default {
   props: [
     "currentPlayer",
     "gameStatus",
+    "inPostgame",
     "size",
     "suggestedPosition",
     "suggestorOn",
@@ -136,5 +148,8 @@ export default {
   filter: contrast(70%);
   /* filter: blur(1px); */
   opacity: 0.3;
+}
+.postgameTile {
+  cursor: initial;
 }
 </style>

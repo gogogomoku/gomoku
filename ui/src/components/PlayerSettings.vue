@@ -1,23 +1,18 @@
 <template>
-  <div class="playerSb" v-bind:class="{active: currentPlayer === playerInfo.Id }">
-    <div v-if="playerInfo.Id === 1" class="playerPieceImgWrapper">
+  <div class="playerSettingsWrapper">
+    <div v-if="id === 1" class="playerPieceImgWrapper">
       <img class="playerPieceImg" src="1.png" />
     </div>
-    <div v-else-if="playerInfo.Id === 2" class="playerPieceImgWrapper">
+    <div v-else-if="id === 2" class="playerPieceImgWrapper">
       <img class="playerPieceImg" src="2.png" />
     </div>
     <div class="sbText">
       <font-awesome-icon
-        v-bind:icon="!playerInfo.AiStatus ? 'user' : 'robot'"
-        class="aiStatusIndicator"
-        v-bind:class="{interactive: false}"
+        v-bind:icon="!aiStatus ? 'user' : 'robot'"
+        class="aiStatusIndicator interactive"
         @click="onToggleAiStatus()"
       />
-      Player {{ playerInfo.Id }}
-      <br />
-      captures: {{ playerInfo.CapturedPieces }}
-      <br />
-      Pieces left: {{ playerInfo.PiecesLeft }}
+      Player {{ id }}
       <br />
     </div>
   </div>
@@ -25,15 +20,34 @@
 
 <script>
 export default {
-  name: "Scoreboard",
-  props: ["gameStatus", "currentPlayer", "playerInfo"]
+  name: "PlayerSettings",
+  props: {
+    id: {
+      type: Number,
+      required: true,
+      validator(val) {
+        return val == 1 || val == 2;
+      }
+    },
+    aiStatus: {
+      type: Number,
+      required: true,
+      default: 0
+    }
+  },
+  methods: {
+    onToggleAiStatus: function() {
+      this.$parent.$parent.toggleAiStatus(this.id);
+    }
+  }
 };
 </script>
 
 <style scoped>
-.playerSb {
+/* match PlayerScoreBoard.vue for now */
+.playerSettingsWrapper {
   border: 1px solid #000000;
-  border-radius: 8px;
+  border-radius: 2px;
 
   margin: 5px 15px;
   padding: 10px 5px 12px;
@@ -73,5 +87,13 @@ export default {
 
 .aiStatusIndicator {
   margin-right: 3px;
+}
+
+.aiStatusIndicator.interactive {
+  color: orange;
+}
+
+.aiStatusIndicator.interactive:hover {
+  cursor: pointer;
 }
 </style>

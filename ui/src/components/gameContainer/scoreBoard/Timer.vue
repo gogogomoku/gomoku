@@ -2,7 +2,7 @@
   <div id="timer">
     <!-- <div v-if="suggestedPosition && !msElapsedServer"... -->
     <!-- <div v-if-else="msElapsedServer"...> -->
-    <div id="time-up">Suggestion computed in </div>
+    <div id="time-up">Suggestion computed in</div>
     <div>{{ suggestionTimer }} ms</div>
   </div>
 </template>
@@ -12,8 +12,8 @@ export default {
   name: "Timer",
   props: {
     turn: Number,
-    "suggestionTimer": Number,
-  },
+    suggestionTimer: Number
+  }
 };
 </script>
 
@@ -42,8 +42,8 @@ export default {
 }
 
 #time-up {
-    text-align: left;
-    font-size: smaller;
+  text-align: left;
+  font-size: smaller;
 }
 
 .lds-ripple {
@@ -79,5 +79,4 @@ export default {
     opacity: 0;
   }
 }
-
 </style>

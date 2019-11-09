@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     onClose() {
-      this.$parent.closeModal();
+      this.$parent.closeModal("SettingsModal");
     },
     onToggleSuggestor() {
       this.$parent.toggleSuggestor();

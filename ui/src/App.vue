@@ -27,7 +27,8 @@
 import GomokuHome from "./components/GomokuHome.vue";
 import GameContainer from "./components/gameContainer/GameContainer.vue";
 import SettingsModal from "./components/SettingsModal.vue";
-import { TAB, NOT_STARTED, CONCLUDED, RUNNING } from "./constants";
+import EndGameModal from "./components/EndGameModal.vue";
+import { TAB } from "./constants";
 import axios from "axios";
 import { cloneDeep, merge } from "lodash";
 
@@ -76,12 +77,14 @@ const initialAppState = {
     winner: 0
   },
   winner: 0,
+  showEndGameModal: false,
   showModal: false
 };
 
 export default {
   name: "app",
   components: {
+    EndGameModal,
     GomokuHome,
     GameContainer,
     SettingsModal
@@ -190,10 +193,20 @@ export default {
       const player = this.playerById(playerId);
       if (player) player.AiStatus = !player.AiStatus | 0;
     },
-    closeModal() {
-      this._data.showModal = false;
-      if (this.gameStatus === RUNNING || this.gameStatus === CONCLUDED) this.restartGame(true);
-      else if (this.gameStatus === NOT_STARTED) this.startGame(true);
+    closeModal(modalComponentName = "SettingsModal") {
+      switch (modalComponentName) {
+        case "SettingsModal":
+          this._data.showModal = false;
+          if (this.gameStatus === 1 || this.gameStatus === 2 || this.gameStatus === 3) this.restartGame(true);
+          else if (this.gameStatus === 0) this.startGame(true);
+          break;
+        case "EndGameModal":
+          this._data.showEndGameModal = false;
+          break;
+        default:
+          console.warn(`No modal component with name ${modalComponentName} exists to close.`)
+          break;
+      }
     }
   }
 };

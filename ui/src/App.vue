@@ -7,6 +7,10 @@
       :playerInfo="playerInfo"
       :showModal="showModal"
     />
+    <EndGameModal
+      v-if="showEndGameModal"
+      :showModal="showEndGameModal"
+    />
     <GameContainer
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
@@ -126,6 +130,7 @@ export default {
         this._data.suggestionTimer = res.SuggestionTimer;
         this._data.winner = res.Winner;
         if (res.Winner != 0) {
+<<<<<<< HEAD
           alert("Winner: Player " + res.Winner);
           const postgameInfo = {
             inPostgame: true,
@@ -137,6 +142,11 @@ export default {
           merge(this.$data, initialAppState);
           this._data.gameStatus = CONCLUDED;
           this._data.postgameInfo = postgameInfo;
+=======
+          // alert("Winner: Player " + res.Winner);
+          const showEndGameModal = true;
+          Object.assign(this.$data, initialAppState, { showEndGameModal });
+>>>>>>> modal ctrl flow
         } else if (res.CurrentPlayer.AiStatus === 1) {
           await sleep(100);
           this.makeMove(res.SuggestedPosition, res.CurrentPlayer.Id);

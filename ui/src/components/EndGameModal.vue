@@ -5,11 +5,7 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
-            <h3>lorem ipsum</h3>
-          </div>
-
-          <div class="modal-body">
-            <p>Some info</p>
+            <h3>Player {{ winner }} wins!</h3>
           </div>
 
           <div class="modal-footer">
@@ -30,7 +26,13 @@ export default {
 			type: Boolean,
 			required: true
 		},
-  },
+		winner: {
+			required: true,
+			validator(w) {
+				return w === 1 || w === 2
+			}
+		}
+	},
   methods: {
     onClose() {
       this.$parent.closeModal("EndGameModal");

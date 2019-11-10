@@ -10,6 +10,7 @@
     <EndGameModal
       v-if="showEndGameModal"
       :showModal="showEndGameModal"
+      :winner="winner"
     />
     <GameContainer
       v-bind:currentPlayer="currentPlayer"
@@ -145,6 +146,7 @@ export default {
 =======
           // alert("Winner: Player " + res.Winner);
           const showEndGameModal = true;
+          // todo: save winner in postgame, send to modal
           Object.assign(this.$data, initialAppState, { showEndGameModal });
 >>>>>>> modal ctrl flow
         } else if (res.CurrentPlayer.AiStatus === 1) {

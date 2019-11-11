@@ -41,11 +41,12 @@
             <div v-if="tile === 0">
             <font-awesome-icon
                 :icon="iconTileEmpty"
+                :ref="posX + (posY * size)"
                 :style="{ color: '#333' }"
                 :id="posX + (posY * size)"
                 size=2x
                 v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
-                v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
+                v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
               />
             <!-- <div class="tileAlpha" v-if="tile === 0">
@@ -89,25 +90,44 @@ export default {
     return {
       iconTileEmpty: ["far", "times-circle"],
       iconTileFilled: ["fas", "times-circle"],
+      colorSpace: "#333",
+      colorP1: "black",
+      colorP2: "#a9a9a9",
     }
   },
   computed: {
-    playerColor: function() {
-            return this.currentPlayer === 1 ? this.colorP1 : (this.currentPlayer === 2 ? this.colorP2 : this.colorSpace)
-        },
+
   },
   methods: {
+    playerColor: function() {
+      console.log('this.currentPlayer: ', this.currentPlayer);
+      return this.currentPlayer === 1 ? this.colorP1 : (this.currentPlayer === 2 ? this.colorP2 : this.colorSpace)
+    },
+    icon: function(value) {
+      return value === 0 ? this.iconTileEmpty : this.iconTileFilled;
+    },
+    color: function(value) {
+      return value === 1 ? this.colorP1 : (value === 2 ? this.colorP2 : this.colorSpace)
+    },
     mouseOver: function(tileId, currentPlayer) {
       document.getElementById(tileId).src = currentPlayer + ".png";
       document.getElementById(tileId).opacity = 0.5;
     },
-    mouseOverSvg: function(tileId, currentPlayer = 0) {
-      document.getElementById(tileId).style.color = this.playerColor;
+    mouseOverSvg: function(tileId, currentPlayer) {
+      document.getElementById(tileId).style.color = this.color(currentPlayer);
+      // document.getElementById(tileId).icon = this.iconTileFilled;
       document.getElementById(tileId).style.opacity = 0.3;
     },
     mouseOut: function(tileId, tile) {
       document.getElementById(tileId).src = tile + ".png";
       document.getElementById(tileId).opacity = 1;
+    },
+    mouseOutSvg: function(tileId, tile) {
+      console.log('this.$refs[tileId]: ', this.$refs[tileId]);
+      this.$refs[tileId].icon = this.icon(tile); // todo - make it go
+      // document.getElementById(tileId).icon = this.icon(tile);
+      document.getElementById(tileId).style.color = this.color(tile);
+      document.getElementById(tileId).style.opacity = 1;
     },
     mouseOutSuggested: function(tileId, tile) {
       document.getElementById(tileId).src = tile + ".png";

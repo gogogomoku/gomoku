@@ -38,7 +38,17 @@
             </div>
           </div>
           <div class="tileImage" v-else>
-            <div class="tileAlpha" v-if="tile === 0">
+            <div v-if="tile === 0">
+            <font-awesome-icon
+                :icon="iconTileEmpty"
+                :style="{ color: '#333' }"
+                :id="posX + (posY * size)"
+                size=2x
+                v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
+                v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
+                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+              />
+            <!-- <div class="tileAlpha" v-if="tile === 0">
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
@@ -46,7 +56,7 @@
                 :id="posX + (posY * size)"
                 class="tile0"
                 src="0.png"
-              />
+              /> -->
             </div>
             <div v-else-if="tile === 1">
               <img :id="posX + (posY * size)" class="tile1" src="1.png" />
@@ -75,10 +85,25 @@ export default {
     "tab",
     "turn"
   ],
+  data() {
+    return {
+      iconTileEmpty: ["far", "times-circle"],
+      iconTileFilled: ["fas", "times-circle"],
+    }
+  },
+  computed: {
+    playerColor: function() {
+            return this.currentPlayer === 1 ? this.colorP1 : (this.currentPlayer === 2 ? this.colorP2 : this.colorSpace)
+        },
+  },
   methods: {
     mouseOver: function(tileId, currentPlayer) {
       document.getElementById(tileId).src = currentPlayer + ".png";
       document.getElementById(tileId).opacity = 0.5;
+    },
+    mouseOverSvg: function(tileId, currentPlayer = 0) {
+      document.getElementById(tileId).style.color = this.playerColor;
+      document.getElementById(tileId).style.opacity = 0.3;
     },
     mouseOut: function(tileId, tile) {
       document.getElementById(tileId).src = tile + ".png";

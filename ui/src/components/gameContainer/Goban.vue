@@ -41,14 +41,15 @@
             <div v-if="tile === 0">
             <font-awesome-icon
                 :icon="iconTileEmpty"
-                :ref="posX + (posY * size)"
                 :style="{ color: '#333' }"
                 :id="posX + (posY * size)"
                 size=2x
                 v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+
               />
+              <!-- v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)" -->
             <!-- <div class="tileAlpha" v-if="tile === 0">
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
@@ -115,7 +116,6 @@ export default {
     },
     mouseOverSvg: function(tileId, currentPlayer) {
       document.getElementById(tileId).style.color = this.color(currentPlayer);
-      // document.getElementById(tileId).icon = this.iconTileFilled;
       document.getElementById(tileId).style.opacity = 0.3;
     },
     mouseOut: function(tileId, tile) {
@@ -123,9 +123,7 @@ export default {
       document.getElementById(tileId).opacity = 1;
     },
     mouseOutSvg: function(tileId, tile) {
-      console.log('this.$refs[tileId]: ', this.$refs[tileId]);
-      this.$refs[tileId].icon = this.icon(tile); // todo - make it go
-      // document.getElementById(tileId).icon = this.icon(tile);
+      // this.$refs[tileId][0].icon = this.icon(tile); // todo - make it go
       document.getElementById(tileId).style.color = this.color(tile);
       document.getElementById(tileId).style.opacity = 1;
     },

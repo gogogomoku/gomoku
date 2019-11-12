@@ -8,10 +8,10 @@
       :showModal="showModal"
     />
     <GameContainer
-      v-bind:buttonMessage="buttonMessage"
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
       v-bind:playerInfo="playerInfo"
+      v-bind:postgameInfo="postgameInfo"
       v-bind:size="size"
       v-bind:suggestedPosition="suggestedPosition"
       v-bind:suggestionTimer="suggestionTimer"
@@ -27,20 +27,19 @@
 import GomokuHome from "./components/GomokuHome.vue";
 import GameContainer from "./components/gameContainer/GameContainer.vue";
 import SettingsModal from "./components/SettingsModal.vue";
-import { TAB } from "./constants";
+import { TAB, NOT_STARTED, CONCLUDED, RUNNING } from "./constants";
 import axios from "axios";
-import { cloneDeep } from "lodash";
+import { cloneDeep, merge } from "lodash";
 
 const initialAppState = {
-  buttonMessage: "Start Game",
   currentPlayer: -1,
-  gameStatus: 0,
+  gameStatus: NOT_STARTED,
   http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
   size: 19,
   suggestedPosition: -1,
   suggestionTimer: 0,
   suggestorOn: false,
-  tab: TAB,
+  tab: cloneDeep(TAB),
   turn: 0,
   playerInfo: {
     p1: {
@@ -55,6 +54,26 @@ const initialAppState = {
       CapturedPieces: 0,
       PiecesLeft: 0
     }
+  },
+  postgameInfo: {
+    inPostgame: false,
+    tab: cloneDeep(TAB),
+    playerInfo: {
+      p1: {
+        AiStatus: -1,
+        Id: 1,
+        CapturedPieces: -1,
+        PiecesLeft: -1
+      },
+      p2: {
+        AiStatus: -1,
+        Id: 2,
+        CapturedPieces: -1,
+        PiecesLeft: -1
+      }
+    },
+    totalTurns: -1,
+    winner: 0
   },
   winner: 0,
   showModal: false
@@ -72,16 +91,11 @@ export default {
   },
   mounted: function() {
     // for development, re-init state on page refresh
-    Object.assign(this.$data, initialAppState);
+    merge(this.$data, initialAppState);
   },
   methods: {
     playerById(playerId) {
       return this._data.playerInfo[`p${playerId}`] || null;
-    },
-    getTab() {
-      axios
-        .get(this._data.http_endpoint)
-        .then(response => this.updateTab(response));
     },
     async updateTab(response) {
       var res = response.data;
@@ -110,16 +124,28 @@ export default {
         this._data.winner = res.Winner;
         if (res.Winner != 0) {
           alert("Winner: Player " + res.Winner);
-          // todo: tell server to refresh too
-          Object.assign(this.$data, initialAppState);
+          const postgameInfo = {
+            inPostgame: true,
+            tab: cloneDeep(this.tab),
+            playerInfo: cloneDeep(this.playerInfo),
+            totalTurns: this.turn,
+            winner: this.winner
+          };
+          merge(this.$data, initialAppState);
+          this._data.gameStatus = CONCLUDED;
+          this._data.postgameInfo = postgameInfo;
         } else if (res.CurrentPlayer.AiStatus === 1) {
           await sleep(100);
           this.makeMove(res.SuggestedPosition, res.CurrentPlayer.Id);
         }
+      } else {
+        // eslint-disable-next-line
+        console.log(`(debug) res.Goban undefined`);
       }
     },
     makeMove(tileId, currentPlayer) {
-      if (this._data.gameStatus > 0 && this._data.winner == 0) {
+      // console.log(`this.showModal:`, this.showModal);
+      if (!this.showModal && this._data.gameStatus === RUNNING && this._data.winner === 0) {
         axios
           .get(
             this._data.http_endpoint +
@@ -135,20 +161,15 @@ export default {
       if (!selectedOptions) this.openRestartDialog();
       else {
         axios
-          .get(this._data.http_endpoint)
-          .then(response => this.updateTab(response));
-        if (typeof this._data.status == "undefined") {
-          axios
-            .post(this._data.http_endpoint + "/start", {
-              AiStatus1: this.playerById(1).AiStatus,
-              AiStatus2: this.playerById(2).AiStatus
-            })
-            .then(response => this.updateTab(response));
-          this._data.buttonMessage = "Restart Game";
-        }
+          .post(this._data.http_endpoint + "/start", {
+            AiStatus1: this.playerById(1).AiStatus,
+            AiStatus2: this.playerById(2).AiStatus
+          })
+          .then(response => this.updateTab(response))
       }
     },
     openRestartDialog() {
+      merge(this._data.postgameInfo, initialAppState.postgameInfo)
       this.showModal = true;
     },
     restartGame(selectedOptions = true) {
@@ -171,8 +192,8 @@ export default {
     },
     closeModal() {
       this._data.showModal = false;
-      if (this.gameStatus > 0) this.restartGame(true);
-      else if (this.gameStatus == 0) this.startGame(true);
+      if (this.gameStatus === RUNNING || this.gameStatus === CONCLUDED) this.restartGame(true);
+      else if (this.gameStatus === NOT_STARTED) this.startGame(true);
     }
   }
 };

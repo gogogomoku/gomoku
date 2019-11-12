@@ -2,21 +2,23 @@
   <div id="scoreboard">
     <StartButton
       id="startButton"
-      v-bind:buttonMessage="buttonMessage"
       v-bind:gameStatus="gameStatus"
-      v-bind:disabled="gameStatus > 0 && playerInfo.p1.AiStatus == 10"
     />
     <PlayerScoreBoard
       id="player1Sb"
       v-bind:gameStatus="gameStatus"
       v-bind:currentPlayer="currentPlayer"
       v-bind:playerInfo="playerInfo.p1"
+      v-bind:postgameAIStatus="postgameInfo.playerInfo.p1.aiStatus"
+      v-bind:won="postgameInfo.inPostgame && postgameInfo.winner === 1"
     />
     <PlayerScoreBoard
       id="player2Sb"
       v-bind:gameStatus="gameStatus"
       v-bind:currentPlayer="currentPlayer"
       v-bind:playerInfo="playerInfo.p2"
+      v-bind:postgameAIStatus="postgameInfo.playerInfo.p2.aiStatus"
+      v-bind:won="postgameInfo.inPostgame && postgameInfo.winner === 2"
     />
     <div id="generalSb">
       Turn: {{ Math.floor(turn/2) }}
@@ -24,10 +26,12 @@
       Winner: {{ winner }}
       <br />
       Game status: {{ gameStatus }}
+      <br />
+      Suggestor on: {{ suggestorOn }}
     </div>
 
     <Timer
-      v-if="suggestorOn && gameStatus > 0"
+      v-if="suggestorOn"
       v-bind:turn="turn"
       v-bind:suggestionTimer="suggestionTimer"
     />
@@ -47,15 +51,18 @@ export default {
     Timer
   },
   props: {
-    "buttonMessage": String,
     "currentPlayer": Number,
     "gameStatus": Number,
     "playerInfo": Object,
     "suggestorOn": Boolean,
     "suggestionTimer": Number,
     "turn": Number,
-    "winner": Number
-  },
+    "winner": Number,
+    "postgameInfo": {
+      required: true,
+      type: Object
+    }
+  }
 };
 </script>
 
@@ -92,8 +99,19 @@ export default {
 }
 
 #generalSb {
-  margin: 10px 0;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 10px 0px;
   padding: 5px;
   flex-grow: 0;
+  text-align: right;
+  background-color: black;
+  font-size: 10px;
+}
+#generalSb::before {
+  content: "temporary/debug";
+  font-size: 10px;
+  color: red;
+  display: block;
 }
 </style>

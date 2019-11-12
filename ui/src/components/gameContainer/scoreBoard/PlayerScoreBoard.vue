@@ -8,12 +8,11 @@
     </div>
     <div class="sbText">
       <font-awesome-icon
-        v-bind:icon="!playerInfo.AiStatus ? 'user' : 'robot'"
+        v-bind:icon="aiStatus === 0 ? 'user' : 'robot'"
         class="aiStatusIndicator"
-        v-bind:class="{interactive: false}"
-        @click="onToggleAiStatus()"
       />
       Player {{ playerInfo.Id }}
+      <font-awesome-icon v-if="won" icon="crown" class="playerCrown" />
       <br />
       captures: {{ playerInfo.CapturedPieces }}
       <br />
@@ -24,9 +23,15 @@
 </template>
 
 <script>
+import { CONCLUDED } from '../../../constants'
 export default {
-  name: "Scoreboard",
-  props: ["gameStatus", "currentPlayer", "playerInfo"]
+  name: "PlayerScoreboard",
+  props: ["gameStatus", "postgameAIStatus", "currentPlayer", "playerInfo", "won"],
+  computed: {
+    aiStatus() {
+      return this.gameStatus === CONCLUDED ? this.postgameAIStatus : this.playerInfo.AiStatus
+    }
+  }
 };
 </script>
 
@@ -73,5 +78,9 @@ export default {
 
 .aiStatusIndicator {
   margin-right: 3px;
+}
+
+.playerCrown {
+  color: #ffca28;
 }
 </style>

@@ -43,12 +43,12 @@ func StartServer() {
 		StackSize: 1 << 10, // 1 KB
 	}))
 	e.GET("/", home)
+	// e.POST("/end", ClearGame) // keep for now
 	e.POST("/start", StartGame)
 	e.POST("/restart", RestartGame)
 	e.GET("/move/:pos/id/:id", MakeMove)
 	e.Debug = true
 	e.Start(":4242")
-
 }
 
 func returnGameInfo(c echo.Context) error {
@@ -56,12 +56,15 @@ func returnGameInfo(c echo.Context) error {
 		return c.JSON(http.StatusOK, &SimpleResponse{1, "Game hasn't started yet"})
 	} else if brain.Game.Status == brain.Running {
 		return c.JSON(http.StatusOK, brain.Game)
+	} else if brain.Game.Status == brain.Concluded {
+		return c.JSON(http.StatusOK, brain.Game)
 	} else {
-		return c.JSON(http.StatusOK, &SimpleResponse{3, "Game finished"})
+		return c.JSON(http.StatusOK, &SimpleResponse{1, "Game status not recognized"})
 	}
 }
 
 func home(c echo.Context) error {
+	brain.Game.Winner = 0 // todo: reset whole state here ?
 	return returnGameInfo(c)
 }
 
@@ -74,8 +77,7 @@ func StartGame(c echo.Context) error {
 	return returnGameInfo(c)
 }
 
-func RestartGame(c echo.Context) error {
-	brain.InitializeValues(0, 0)
+func RestartGame(c echo.Context) error { // todo: rmv if same as StartGame
 	m := StartGameParams{}
 	if err := c.Bind(&m); err != nil {
 		return err
@@ -83,6 +85,16 @@ func RestartGame(c echo.Context) error {
 	brain.StartRound(m.AiStatus1, m.AiStatus2)
 	return returnGameInfo(c)
 }
+
+// keep for now
+// func ClearGame(c echo.Context) error {
+// 	m := StartGameParams{}
+// 	if err := c.Bind(&m); err != nil {
+// 		return err
+// 	}
+// 	brain.ClearRound(m.AiStatus1, m.AiStatus2)
+// 	return returnGameInfo(c)
+// }
 
 func MakeMove(c echo.Context) error {
 	id, err1 := (strconv.Atoi(c.Param("id")))
@@ -92,6 +104,7 @@ func MakeMove(c echo.Context) error {
 		return c.JSON(http.StatusOK, &SimpleResponse{-1, txtErr})
 	}
 	code, msg := brain.HandleMove(int16(id), int16(position))
+	fmt.Printf("(debug) brain.HandleMove() msg :: %#v\n", msg)
 	if code == 0 {
 		return c.JSON(http.StatusOK, brain.Game)
 	} else {

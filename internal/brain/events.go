@@ -8,15 +8,17 @@ import (
 )
 
 func StartRound(AiStatus1 int16, AiStatus2 int16) {
+	InitializeValues(AiStatus1, AiStatus2)
 	Game.Status = Running
-	player.ResetPlayers(Game.P1, Game.P2, MAXPIECES, AiStatus1, AiStatus2)
 	Game.CurrentPlayer = Game.P1
-	center := int16((board.TOT_SIZE) / 2)
-	if board.SIZE%2 == 0 {
-		center += board.SIZE / 2
-	}
 	SuggestMove(Game.CurrentPlayer.Id)
 }
+
+// keep for now
+// func ClearRound(AiStatus1 int16, AiStatus2 int16) {
+// 	InitializeValues(AiStatus1, AiStatus2)
+// 	Game.Status = Concluded
+// }
 
 func CheckValidMove(position int16, tab [board.TOT_SIZE]int16, playerId int16) bool {
 	if position >= 0 && position <= (board.TOT_SIZE)-1 {
@@ -172,7 +174,8 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 	if stillWinning {
 		Game.SuggestedPosition = board.TOT_SIZE + 1
 		Game.Winner = Game.GetCurrentOpponent().Id
-		return 0, "Move done"
+		Game.Status = Concluded
+		return 0, "There was a winner."
 	}
 	sequences := CompleteSequenceForPosition(position, playerId, &Game.Goban.Tab)
 	winByCaptures := Game.CurrentPlayer.CapturedPieces >= 10
@@ -183,6 +186,8 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 	if winBySeq || winByCaptures {
 		Game.SuggestedPosition = board.TOT_SIZE + 1
 		Game.Winner = playerId
+		Game.Status = Concluded
+		return 0, "There was a winner."
 	} else {
 		Game.Turn++
 		updateWhoseTurn()

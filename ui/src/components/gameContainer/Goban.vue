@@ -2,69 +2,87 @@
   <div id="gobanContainer">
     <div id="goban">
       <div class="row" v-for="(line, posY) in tab" :key="posY">
-        <div class="tile" v-for="(tile, posX) in line" :key="posX">
+        <div class="tile" v-for="(tile, posX) in line" :key="posX + (posY * size)">
           <!-- {{posX + (posY * size)}} -->
-          <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition && suggestorOn">
-            <div v-if="currentPlayer === 1">
-              <img
-                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
-                v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
-                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
-                :id="posX + (posY * size)"
-                class="tileSuggested"
-                src="1.png"
-              />
-            </div>
-            <div v-else-if="currentPlayer === 2">
-              <img
-                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
-                v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
-                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
-                :id="posX + (posY * size)"
-                class="tileSuggested"
-                src="2.png"
-              />
-            </div>
-          </div>
-          <div class="tileImage tileAlpha postgameTile" v-else-if="inPostgame">
-            <div v-if="tile === 0">
-              <img :id="posX + (posY * size)" class="tile0" src="0.png" />
-            </div>
-            <div v-else-if="tile === 1">
-              <img :id="posX + (posY * size)" class="tile1" src="1.png" />
-            </div>
-            <div v-else-if="tile === 2">
-              <img :id="posX + (posY * size)" class="tile2" src="2.png" />
-            </div>
-          </div>
-          <div class="tileImage" v-else>
-            <div v-if="tile === 0">
-            <font-awesome-icon
-                :icon="iconTileEmpty"
-                :style="{ color: '#333' }"
-                :id="posX + (posY * size)"
-                size=2x
+          <div class="tileImage" v-if="gameStatus === 1 && posX + (posY * size) == suggestedPosition && suggestorOn">
+            <div v-if="currentPlayer == 1"
+                class="tileSvgContainer"
+                :style="{cursor: 'pointer'}"
                 v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
-
+                >
+               <font-awesome-icon
+                :icon="iconTileFilled"
+                :color="colorP1"
+                :id="posX + (posY * size) + '-filled'"
+                size=2x
+                class="tileSvgFilled svgSuggested"
               />
-              <!-- v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)" -->
-            <!-- <div class="tileAlpha" v-if="tile === 0">
-              <img
-                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
-                v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
+            </div>
+            <div v-else-if="currentPlayer == 2"
+                class="tileSvgContainer"
+                :style="{cursor: 'pointer'}"
+                v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
+                v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
+                v-on:click="clickTile(posX + (posY * size), currentPlayer)">
+              <font-awesome-icon
+                :icon="iconTileFilled"
+                :color="colorP2"
+                :id="posX + (posY * size) + '-filled'"
+                size=2x
+                class="tileSvgFilled svgSuggested"
+              />
+            </div>
+          </div>
+          <div class="tileImage" v-else-if="gameStatus === 1">
+            <div v-if="tile === 0" class="tileSvgContainer"
+                :style="{cursor: 'pointer'}"
+                v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
+                v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
-                :id="posX + (posY * size)"
-                class="tile0"
-                src="0.png"
-              /> -->
+                >
+              <font-awesome-icon
+                :icon="iconTileEmpty"
+                :style="{ color: colorSpace, visibility: 'visible' }"
+                :id="posX + (posY * size) + '-empty'"
+                class="tileSvg"
+                size=2x
+              />
+              <font-awesome-icon
+                :icon="iconTileFilled"
+                :style="{ visibility: 'hidden' }"
+                :id="posX + (posY * size) + '-filled'"
+                size=2x
+                class="tileSvgFilled"
+              />
             </div>
-            <div v-else-if="tile === 1">
-              <img :id="posX + (posY * size)" class="tile1" src="1.png" />
+             <div v-else-if="tile === 1" class="tileSvgContainer">
+              <font-awesome-icon
+                :icon="iconTileFilled"
+                :style="{ color: colorP1 }"
+                class="tileSvg"
+                size=2x
+              />
+              </div>
+              <div v-else-if="tile === 2" class="tileSvgContainer">
+              <font-awesome-icon
+                :icon="iconTileFilled"
+                :style="{ color: colorP2 }"
+                class="tileSvg"
+                size=2x
+              />
             </div>
-            <div v-else-if="tile === 2">
-              <img :id="posX + (posY * size)" class="tile2" src="2.png" />
+          </div>
+          <div class="tileImage" v-else>
+            <div class="tileSvgContainer">
+              <font-awesome-icon
+                :icon="icon(tile)"
+                :style="{ color: color(tile) }"
+                class="tileSvg"
+                size=2x
+              />
+
             </div>
           </div>
         </div>
@@ -115,17 +133,18 @@ export default {
       document.getElementById(tileId).opacity = 0.5;
     },
     mouseOverSvg: function(tileId, currentPlayer) {
-      document.getElementById(tileId).style.color = this.color(currentPlayer);
-      document.getElementById(tileId).style.opacity = 0.3;
+      document.getElementById(`${tileId}-empty`).style.visibility = "hidden";
+      document.getElementById(`${tileId}-filled`).style.visibility = "visible";
+      document.getElementById(`${tileId}-filled`).style.color = this.color(currentPlayer);
     },
     mouseOut: function(tileId, tile) {
       document.getElementById(tileId).src = tile + ".png";
       document.getElementById(tileId).opacity = 1;
     },
     mouseOutSvg: function(tileId, tile) {
-      // this.$refs[tileId][0].icon = this.icon(tile); // todo - make it go
-      document.getElementById(tileId).style.color = this.color(tile);
-      document.getElementById(tileId).style.opacity = 1;
+      document.getElementById(`${tileId}-filled`).style.visibility = "hidden";
+      document.getElementById(`${tileId}-empty`).style.visibility = "visible";
+      document.getElementById(`${tileId}-empty`).style.color = this.colorSpace;
     },
     mouseOutSuggested: function(tileId, tile) {
       document.getElementById(tileId).src = tile + ".png";
@@ -162,6 +181,7 @@ export default {
   padding: 10px;
   margin: 0 auto;
   flex-basis: 700px;
+  height: 700px;
   flex-grow: 0;
   display: flex;
   flex-wrap: wrap;
@@ -173,24 +193,48 @@ export default {
   display: flex;
   align-items: stretch;
   justify-content: center;
+  /* border: 1px pink solid; */
 }
 
 .tile {
-  /* width: 4.7%; */
-  display: inline-block;
-  margin: 0.25%;
-  cursor: pointer;
+  height: auto;
+  width: 100%;
 }
-.tile img {
+
+/* .tile img {
   width: 100%;
 }
 .tileAlpha img {
   opacity: 0.5;
-}
-.tileSuggested {
+} */
+/* .tileSuggested {
   filter: contrast(70%);
-  /* filter: blur(1px); */
   opacity: 0.3;
+} */
+
+.tileSvgContainer {
+  position: relative;
+  /* border: 1px solid white; */
+  width: 100%;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+
+.tileSvg {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 0;
+}
+
+.svgSuggested {
+  opacity: 0.5;
+}
+
+.tileSvg.tileSvgFilled {
+  z-index: 1;
+  position: absolute;
 }
 .postgameTile {
   cursor: initial;

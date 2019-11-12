@@ -201,24 +201,9 @@ export default {
   width: 100%;
 }
 
-/* .tile img {
-  width: 100%;
-}
-.tileAlpha img {
-  opacity: 0.5;
-} */
-/* .tileSuggested {
-  filter: contrast(70%);
-  opacity: 0.3;
-} */
-
 .tileSvgContainer {
   position: relative;
-  /* border: 1px solid white; */
   width: 100%;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
 }
 
 .tileSvg {

@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <GomokuHome msg="Welcome to GoGoGomoku" />
+    <GomokuHome
+      msg="Welcome to GoGoGomoku"
+      :httpPending="httpPending"
+      :httpError="httpError"
+      />
     <SettingsModal
       v-if="showModal"
       :suggestorOn="suggestorOn"
@@ -9,6 +13,8 @@
     />
     <GameContainer
       v-bind:currentPlayer="currentPlayer"
+      v-bind:httpPending="httpPending"
+      v-bind:httpError="httpError"
       v-bind:gameStatus="gameStatus"
       v-bind:playerInfo="playerInfo"
       v-bind:postgameInfo="postgameInfo"
@@ -34,6 +40,8 @@ import { cloneDeep, merge } from "lodash";
 const initialAppState = {
   currentPlayer: -1,
   gameStatus: NOT_STARTED,
+  httpError: '',
+  httpPending: true,
   http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
   size: 19,
   suggestedPosition: -1,
@@ -90,8 +98,12 @@ export default {
     return cloneDeep(initialAppState);
   },
   mounted: function() {
-    // for development, re-init state on page refresh
-    merge(this.$data, initialAppState);
+    // merge(this.$data, initialAppState);
+    this.httpPending = true;
+    axios.post(this._data.http_endpoint)
+      .then(response => this.updateTab(response))
+      .catch(err => this.httpError = err.message)
+      .finally(sleep(2000).then(() => {this.httpPending = false}))
   },
   methods: {
     playerById(playerId) {

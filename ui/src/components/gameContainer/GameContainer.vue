@@ -1,6 +1,7 @@
 <template>
   <div id="gameContainer">
     <Goban
+      :style="{border: '1px solid yellow'}"
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
       v-bind:size="size"
@@ -11,6 +12,7 @@
       v-bind:turn="turn"
     />
     <ControlPanel
+      :style="{border: '1px solid white'}"
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
       v-bind:playerInfo="playerInfo"
@@ -41,6 +43,14 @@ export default {
     "gameStatus": {
       required: true,
       type: Number
+    },
+    "httpPending": {
+      type: Boolean,
+      required: true,
+    },
+    "httpError": {
+      type: String,
+      required: true,
     },
     "playerInfo": {
       required: true,
@@ -92,5 +102,6 @@ export default {
 
   margin: 0px auto;
   width: 900px;
+  border: 1px solid pink;
 }
 </style>

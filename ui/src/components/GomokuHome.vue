@@ -3,6 +3,8 @@
     <div class="header">
       <!-- <img src="noun_go_181275_duygu_ozkan.png" /> -->
       <h1>gogogomoku</h1>
+      <h3 v-show="httpPending">Pending...</h3>
+      <h3 v-show="httpError">{{ httpError }}</h3>
       <div id="author">
         <div id="authorImgWrapper">
           <img src="github-logo.svg" width="15" height="15" />
@@ -18,7 +20,16 @@
 <script>
 export default {
   name: "GomokuHome",
-  props: {}
+  props: {
+    httpPending: {
+      type: Boolean,
+      required: true,
+    },
+    httpError: {
+      type: String,
+      required: true,
+    }
+  }
 };
 </script>
 

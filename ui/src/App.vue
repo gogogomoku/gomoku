@@ -130,7 +130,7 @@ export default {
         this._data.suggestedPosition = res.SuggestedPosition;
         this._data.suggestionTimer = res.SuggestionTimer;
         this._data.winner = res.Winner;
-        if (res.Winner != 0) {
+        if (res.Winner === 1 || res.Winner === 2) {
           const postgameInfo = {
             inPostgame: true,
             tab: cloneDeep(this.tab),
@@ -139,9 +139,6 @@ export default {
             winner: this.winner
           };
           merge(this.$data, initialAppState);
-
-          // todo: save winner in postgame, send to modal
-          // Object.assign(this.$data, initialAppState, { showEndGameModal });
           this._data.gameStatus = CONCLUDED;
           this._data.postgameInfo = postgameInfo;
           this._data.showEndGameModal = true;

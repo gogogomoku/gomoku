@@ -1,10 +1,10 @@
 <template>
   <div class="playerSettingsWrapper">
     <div v-if="id === 1" class="playerPieceImgWrapper">
-      <img class="playerPieceImg" src="1.png" />
+      <font-awesome-icon :icon="icons.iconTileFilled" :color="colors.color1" size="2x" />
     </div>
     <div v-else-if="id === 2" class="playerPieceImgWrapper">
-      <img class="playerPieceImg" src="2.png" />
+      <font-awesome-icon :icon="icons.iconTileFilled" :color="colors.color2" size="2x" />
     </div>
     <div class="sbText">
       <font-awesome-icon
@@ -38,6 +38,20 @@ export default {
   methods: {
     onToggleAiStatus: function() {
       this.$parent.$parent.toggleAiStatus(this.id);
+    }
+  },
+  computed: {
+    colors() {
+      return {
+        color1: "black",
+        color2: "#a9a9a9"
+      };
+    },
+    icons() {
+      return {
+        iconTileEmpty: ["far", "times-circle"],
+        iconTileFilled: ["fas", "times-circle"]
+      };
     }
   }
 };

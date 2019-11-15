@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <div class="header">
-      <!-- <img src="noun_go_181275_duygu_ozkan.png" /> -->
       <h1>gogogomoku</h1>
       <div id="author">
         <div id="authorImgWrapper">

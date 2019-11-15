@@ -19,29 +19,13 @@
             v-else-if="gameStatus === 1 && posX + (posY * size) == suggestedPosition && suggestorOn"
           >
             <div
-              v-if="currentPlayer === 1"
               class="tileSvgContainer"
               :style="{cursor: 'pointer'}"
               v-on:click="clickTile(posX + (posY * size), currentPlayer)"
             >
-            <font-awesome-icon
+              <font-awesome-icon
                 :icon="iconTileFilled"
-                :color="colorP1"
-                :style="{ visibility: 'visible' }"
-                :id="posX + (posY * size) + '-filled'"
-                size="2x"
-                class="tileSvgFilled svgSuggested"
-              />
-            </div>
-           <div
-              v-else-if="currentPlayer === 2"
-              class="tileSvgContainer"
-              :style="{cursor: 'pointer'}"
-              v-on:click="clickTile(posX + (posY * size), currentPlayer)"
-            >
-            <font-awesome-icon
-                :icon="iconTileFilled"
-                :color="colorP2"
+                :color="color(currentPlayer)"
                 :style="{ visibility: 'visible' }"
                 :id="posX + (posY * size) + '-filled'"
                 size="2x"
@@ -50,18 +34,10 @@
             </div>
           </div>
           <div class="tileImage" v-else-if="gameStatus === 1">
-            <div v-if="tile === 1" class="tileSvgContainer">
+            <div v-if="tile === 1 || tile === 2" class="tileSvgContainer">
               <font-awesome-icon
                 :icon="iconTileFilled"
-                :style="{ color: colorP1 }"
-                class="tileSvg"
-                size="2x"
-              />
-            </div>
-            <div v-else-if="tile === 2" class="tileSvgContainer">
-              <font-awesome-icon
-                :icon="iconTileFilled"
-                :style="{ color: colorP2 }"
+                :style="{ color: color(tile) }"
                 class="tileSvg"
                 size="2x"
               />
@@ -71,7 +47,7 @@
               class="tileSvgContainer"
               :style="{cursor: 'pointer'}"
               v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
-              v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
+              v-on:mouseleave="mouseOutSvg(posX + (posY * size))"
               v-on:click="clickTile(posX + (posY * size), currentPlayer)"
             >
               <font-awesome-icon
@@ -89,9 +65,6 @@
                 class="tileSvgFilled"
               />
             </div>
-          </div>
-          <div class="tileImage" v-else>
-            ???
           </div>
         </div>
       </div>
@@ -124,14 +97,6 @@ export default {
   },
   computed: {},
   methods: {
-    playerColor: function() {
-      console.log("this.currentPlayer: ", this.currentPlayer);
-      return this.currentPlayer === 1
-        ? this.colorP1
-        : this.currentPlayer === 2
-        ? this.colorP2
-        : this.color0;
-    },
     icon: function(value) {
       return value === 0 ? this.iconTileEmpty : this.iconTileFilled;
     },
@@ -142,10 +107,6 @@ export default {
         ? this.colorP2
         : this.color0;
     },
-    mouseOver: function(tileId, currentPlayer) {
-      document.getElementById(tileId).src = currentPlayer + ".png";
-      document.getElementById(tileId).opacity = 0.5;
-    },
     mouseOverSvg: function(tileId, currentPlayer) {
       document.getElementById(`${tileId}-empty`).style.visibility = "hidden";
       document.getElementById(`${tileId}-filled`).style.visibility = "visible";
@@ -153,18 +114,10 @@ export default {
         currentPlayer
       );
     },
-    mouseOut: function(tileId, tile) {
-      document.getElementById(tileId).src = tile + ".png";
-      document.getElementById(tileId).opacity = 1;
-    },
-    mouseOutSvg: function(tileId, tile) {
+    mouseOutSvg: function(tileId) {
       document.getElementById(`${tileId}-filled`).style.visibility = "hidden";
       document.getElementById(`${tileId}-empty`).style.visibility = "visible";
       document.getElementById(`${tileId}-empty`).style.color = this.color0;
-    },
-    mouseOutSuggested: function(tileId, tile) {
-      document.getElementById(tileId).src = tile + ".png";
-      document.getElementById(tileId).opacity = 0.5;
     },
     clickTile: function(tileId, currentPlayer) {
       // eslint-disable-next-line
@@ -230,20 +183,20 @@ export default {
   z-index: 0;
 }
 
-.svgSuggested {
-  opacity: 0.2;
-}
-
 .tileSvg.tileSvgFilled {
   z-index: 1;
   position: absolute;
 }
+
 .postgameTile {
   cursor: initial;
+}
+
+.svgSuggested {
+  opacity: 0.2;
 }
 
 .tileSvgSuggested:hover {
   opacity: 0.5;
 }
-
 </style>

@@ -89,10 +89,6 @@ export default {
       document.getElementById(tileId).opacity = 0.5;
     },
     clickTile: function(tileId, currentPlayer) {
-      // eslint-disable-next-line
-      console.log(
-        "Make move: \nID: " + tileId + " currentPlayer" + currentPlayer
-      );
       this.$parent.$parent.makeMove(tileId, currentPlayer);
     }
   }

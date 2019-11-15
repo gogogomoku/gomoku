@@ -1,16 +1,13 @@
 <template>
   <div class="playerSb" v-bind:class="{active: currentPlayer === playerInfo.Id }">
     <div v-if="playerInfo.Id === 1" class="playerPieceImgWrapper">
-      <img class="playerPieceImg" src="1.png" />
+      <font-awesome-icon :icon="icons.iconTileFilled" :color="colors.color1" size="2x" />
     </div>
     <div v-else-if="playerInfo.Id === 2" class="playerPieceImgWrapper">
-      <img class="playerPieceImg" src="2.png" />
+      <font-awesome-icon :icon="icons.iconTileFilled" :color="colors.color2" size="2x" />
     </div>
     <div class="sbText">
-      <font-awesome-icon
-        v-bind:icon="aiStatus === 0 ? 'user' : 'robot'"
-        class="aiStatusIndicator"
-      />
+      <font-awesome-icon v-bind:icon="aiStatus === 0 ? 'user' : 'robot'" class="aiStatusIndicator" />
       Player {{ playerInfo.Id }}
       <font-awesome-icon v-if="won" icon="crown" class="playerCrown" />
       <br />
@@ -23,13 +20,33 @@
 </template>
 
 <script>
-import { CONCLUDED } from '../../../constants'
+import { CONCLUDED } from "../../../constants";
 export default {
   name: "PlayerScoreboard",
-  props: ["gameStatus", "postgameAIStatus", "currentPlayer", "playerInfo", "won"],
+  props: [
+    "gameStatus",
+    "postgameAIStatus",
+    "currentPlayer",
+    "playerInfo",
+    "won"
+  ],
   computed: {
     aiStatus() {
-      return this.gameStatus === CONCLUDED ? this.postgameAIStatus : this.playerInfo.AiStatus
+      return this.gameStatus === CONCLUDED
+        ? this.postgameAIStatus
+        : this.playerInfo.AiStatus;
+    },
+    colors() {
+      return {
+        color1: "black",
+        color2: "#a9a9a9"
+      };
+    },
+    icons() {
+      return {
+        iconTileEmpty: ["far", "times-circle"],
+        iconTileFilled: ["fas", "times-circle"]
+      };
     }
   }
 };

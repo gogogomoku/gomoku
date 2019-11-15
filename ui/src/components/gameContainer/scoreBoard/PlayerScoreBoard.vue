@@ -80,12 +80,6 @@ export default {
   flex-basis: 20%;
   height: auto;
 }
-.playerPieceImg {
-  width: 25px;
-  border-radius: 50%;
-  display: inline-block;
-  margin: 1px;
-}
 
 .sbText {
   text-align: left;

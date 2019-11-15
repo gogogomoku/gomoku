@@ -10,6 +10,7 @@
                 :icon="icon(tile)"
                 :style="{ color: color(tile) }"
                 class="tileSvg"
+                :class="{postgameTile: inPostgame}"
                 size="2x"
               />
             </div>
@@ -190,6 +191,7 @@ export default {
 
 .postgameTile {
   cursor: initial;
+  opacity: 0.3;
 }
 
 .svgSuggested {

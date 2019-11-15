@@ -22,29 +22,27 @@
               v-if="currentPlayer === 1"
               class="tileSvgContainer"
               :style="{cursor: 'pointer'}"
-              v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
-              v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
               v-on:click="clickTile(posX + (posY * size), currentPlayer)"
             >
-              <font-awesome-icon
+            <font-awesome-icon
                 :icon="iconTileFilled"
                 :color="colorP1"
+                :style="{ visibility: 'visible' }"
                 :id="posX + (posY * size) + '-filled'"
                 size="2x"
                 class="tileSvgFilled svgSuggested"
               />
             </div>
-            <div
+           <div
               v-else-if="currentPlayer === 2"
               class="tileSvgContainer"
               :style="{cursor: 'pointer'}"
-              v-on:mouseover="mouseOverSvg(posX + (posY * size), currentPlayer)"
-              v-on:mouseleave="mouseOutSvg(posX + (posY * size), tile)"
               v-on:click="clickTile(posX + (posY * size), currentPlayer)"
             >
-              <font-awesome-icon
+            <font-awesome-icon
                 :icon="iconTileFilled"
                 :color="colorP2"
+                :style="{ visibility: 'visible' }"
                 :id="posX + (posY * size) + '-filled'"
                 size="2x"
                 class="tileSvgFilled svgSuggested"
@@ -173,6 +171,7 @@ export default {
       console.log(
         "Make move: \nID: " + tileId + " currentPlayer" + currentPlayer
       );
+      document.getElementById(`${tileId}-filled`).style.opacity = 1;
       this.$parent.$parent.makeMove(tileId, currentPlayer);
     }
   }
@@ -232,7 +231,7 @@ export default {
 }
 
 .svgSuggested {
-  opacity: 0.5;
+  opacity: 0.2;
 }
 
 .tileSvg.tileSvgFilled {
@@ -243,7 +242,8 @@ export default {
   cursor: initial;
 }
 
-.tileSvgSuggested {
-  opacity: 0.3;
+.tileSvgSuggested:hover {
+  opacity: 0.5;
 }
+
 </style>

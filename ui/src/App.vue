@@ -1,10 +1,6 @@
 <template>
   <div id="app">
-    <GomokuHome
-      msg="Welcome to GoGoGomoku"
-      :httpPending="httpPending"
-      :httpError="httpError"
-      />
+    <GomokuHome :httpError="httpError" />
     <SettingsModal
       v-if="showModal"
       :suggestorOn="suggestorOn"
@@ -40,7 +36,7 @@ import { cloneDeep, merge } from "lodash";
 const initialAppState = {
   currentPlayer: -1,
   gameStatus: NOT_STARTED,
-  httpError: '',
+  httpError: "",
   httpPending: true,
   http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
   size: 19,
@@ -100,10 +96,15 @@ export default {
   mounted: function() {
     // merge(this.$data, initialAppState);
     this.httpPending = true;
-    axios.post(this._data.http_endpoint)
+    axios
+      .get(this._data.http_endpoint)
       .then(response => this.updateTab(response))
-      .catch(err => this.httpError = err.message)
-      .finally(sleep(2000).then(() => {this.httpPending = false}))
+      .catch(err => (this.httpError = err.message))
+      .finally(
+        sleep(2000).then(() => {
+          this.httpPending = false;
+        })
+      );
   },
   methods: {
     playerById(playerId) {
@@ -157,7 +158,11 @@ export default {
     },
     makeMove(tileId, currentPlayer) {
       // console.log(`this.showModal:`, this.showModal);
-      if (!this.showModal && this._data.gameStatus === RUNNING && this._data.winner === 0) {
+      if (
+        !this.showModal &&
+        this._data.gameStatus === RUNNING &&
+        this._data.winner === 0
+      ) {
         axios
           .get(
             this._data.http_endpoint +
@@ -177,11 +182,11 @@ export default {
             AiStatus1: this.playerById(1).AiStatus,
             AiStatus2: this.playerById(2).AiStatus
           })
-          .then(response => this.updateTab(response))
+          .then(response => this.updateTab(response));
       }
     },
     openRestartDialog() {
-      merge(this._data.postgameInfo, initialAppState.postgameInfo)
+      merge(this._data.postgameInfo, initialAppState.postgameInfo);
       this.showModal = true;
     },
     restartGame(selectedOptions = true) {
@@ -204,7 +209,8 @@ export default {
     },
     closeModal() {
       this._data.showModal = false;
-      if (this.gameStatus === RUNNING || this.gameStatus === CONCLUDED) this.restartGame(true);
+      if (this.gameStatus === RUNNING || this.gameStatus === CONCLUDED)
+        this.restartGame(true);
       else if (this.gameStatus === NOT_STARTED) this.startGame(true);
     }
   }

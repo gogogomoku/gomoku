@@ -1,10 +1,8 @@
 <template>
   <div class="home">
     <div class="header">
-      <!-- <img src="noun_go_181275_duygu_ozkan.png" /> -->
       <h1>gogogomoku</h1>
-      <h3 v-show="httpPending">Pending...</h3>
-      <h3 v-show="httpError">{{ httpError }}</h3>
+      <h4 v-show="httpError" id="errorText">{{ httpError }}</h4>
       <div id="author">
         <div id="authorImgWrapper">
           <img src="github-logo.svg" width="15" height="15" />
@@ -21,13 +19,9 @@
 export default {
   name: "GomokuHome",
   props: {
-    httpPending: {
-      type: Boolean,
-      required: true,
-    },
     httpError: {
       type: String,
-      required: true,
+      required: true
     }
   }
 };
@@ -61,4 +55,10 @@ export default {
   text-decoration: none;
   vertical-align: center;
 }
+
+#errorText {
+  color: rgb(224, 90, 90);
+  max-width: 400px;
+}
+
 </style>

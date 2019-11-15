@@ -1,17 +1,17 @@
 <template>
   <div id="app">
-    <GomokuHome :httpError="httpError" />
+    <GomokuHome v-bind:httpError="httpError" />
     <SettingsModal
       v-if="showModal"
-      :suggestorOn="suggestorOn"
-      :playerInfo="playerInfo"
-      :showModal="showModal"
+      v-bind:suggestorOn="suggestorOn"
+      v-bind:playerInfo="playerInfo"
+      v-bind:showModal="showModal"
     />
     <GameContainer
       v-bind:currentPlayer="currentPlayer"
-      v-bind:httpPending="httpPending"
-      v-bind:httpError="httpError"
       v-bind:gameStatus="gameStatus"
+      v-bind:httpError="httpError"
+      v-bind:httpPending="httpPending"
       v-bind:playerInfo="playerInfo"
       v-bind:postgameInfo="postgameInfo"
       v-bind:size="size"

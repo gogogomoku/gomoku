@@ -13,7 +13,7 @@
       v-bind:turn="turn"
     />
     <ControlPanel
-      :style="{border: '1px solid white'}"
+      v-bind:style="{border: '1px solid white'}"
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
       v-bind:playerInfo="playerInfo"

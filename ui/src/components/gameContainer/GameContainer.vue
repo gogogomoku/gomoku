@@ -1,9 +1,10 @@
 <template>
   <div id="gameContainer">
     <Goban
-      :style="{border: '1px solid yellow'}"
+      v-bind:style="{border: '1px solid yellow'}"
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
+      v-bind:httpPending="httpPending"
       v-bind:size="size"
       v-bind:suggestedPosition="suggestedPosition"
       v-bind:suggestorOn="suggestorOn"
@@ -49,7 +50,7 @@ export default {
       required: true,
     },
     "httpError": {
-      type: String,
+      type: [String, Boolean],
       required: true,
     },
     "playerInfo": {

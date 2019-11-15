@@ -20,7 +20,7 @@ export default {
   name: "GomokuHome",
   props: {
     httpError: {
-      type: String,
+      type: [Boolean, String],
       required: true
     }
   }

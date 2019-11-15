@@ -94,17 +94,14 @@ export default {
     return cloneDeep(initialAppState);
   },
   mounted: function() {
-    // merge(this.$data, initialAppState);
-    this.httpPending = true;
     axios
       .get(this._data.http_endpoint)
       .then(response => this.updateTab(response))
-      .catch(err => (this.httpError = err.message))
-      .finally(
-        sleep(2000).then(() => {
-          this.httpPending = false;
-        })
-      );
+      .then((this.httpError = false))
+      .catch(err => {
+        this.httpError = err.message;
+        this.httpPending = false;
+      });
   },
   methods: {
     playerById(playerId) {

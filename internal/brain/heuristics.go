@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	SEQ2_BLOCKED1_SCORE = 1
-	SEQ2_FREE_SCORE     = 2
+	SEQ2_BLOCKED1_SCORE = 2
+	SEQ2_FREE_SCORE     = 4
 	SEQ3_BLOCKED1_SCORE = 10
-	SEQ4_BLOCKED1_SCORE = 800
+	SEQ4_BLOCKED1_SCORE = 90
 	SEQ4_FREE_SCORE     = 2000
 	SEQ4_BROKEN         = 1000
 	F3_SCORE            = 100
@@ -22,7 +22,7 @@ const (
 //Add tests
 //Add tests
 //Add tests
-var CAPTURED_SCORE = [5]int16{1, 2, 10, 100, 1000}
+var CAPTURED_SCORE = [5]int16{1, 2, 3, 4, 5}
 
 func convertArrayToSlice(line [board.SIZE]int16) []int16 {
 	new := make([]int16, board.SIZE)

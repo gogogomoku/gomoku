@@ -11,7 +11,7 @@ func StartRound(AiStatus1 int16, AiStatus2 int16) {
 	InitializeValues(AiStatus1, AiStatus2)
 	Game.Status = Running
 	Game.CurrentPlayer = Game.P1
-	SuggestMove(Game.CurrentPlayer.Id)
+	SuggestMove(Game.CurrentPlayer.Id, -1)
 }
 
 // keep for now
@@ -191,7 +191,7 @@ func HandleMove(playerId int16, position int16) (code int16, msg string) {
 	} else {
 		Game.Turn++
 		updateWhoseTurn()
-		SuggestMove(Game.CurrentPlayer.Id)
+		SuggestMove(Game.CurrentPlayer.Id, position)
 	}
 
 	return 0, "Move done"

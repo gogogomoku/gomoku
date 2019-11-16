@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -170,10 +169,6 @@ func SuggestMove(playerId int16, lastMove int16) {
 			}
 		}
 	}
-
-	startTime := time.Now()
-	build_tree(depth, playerId)
-	startTimeAlgo := time.Now()
 
 	// Build the tree if it doesn't exist, or re-use it
 	if tree == nil {

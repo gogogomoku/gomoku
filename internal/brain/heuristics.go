@@ -22,7 +22,7 @@ const (
 //Add tests
 //Add tests
 //Add tests
-var CAPTURED_SCORE = [5]int16{1, 2, 3, 4, 5}
+var CAPTURED_SCORE = [5]int16{0, 1, 2, 100, 1000}
 
 func convertArrayToSlice(line [board.SIZE]int16) []int16 {
 	new := make([]int16, board.SIZE)

@@ -3,6 +3,8 @@ package brain
 import (
 	"github.com/gogogomoku/gomoku/internal/board"
 	"github.com/gogogomoku/gomoku/internal/player"
+
+	bolt "github.com/gogogomoku/gomoku/internal/boltdb"
 )
 
 const MAXPIECES = 150
@@ -34,6 +36,8 @@ type Round struct {
 	SuggestedPosition int16
 	SuggestionTimer   int16
 	Winner            int16
+	CacheEnabled      bool
+	CacheDB           *bolt.BboltBucket
 }
 
 func (round Round) GetCurrentOpponent() *player.Player {

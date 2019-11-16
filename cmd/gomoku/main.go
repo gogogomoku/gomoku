@@ -13,17 +13,22 @@ import (
 	"github.com/gogogomoku/gomoku/internal/brain"
 
 	"github.com/akamensky/argparse"
-	"github.com/pkg/profile"
+	// "github.com/pkg/profile"
 )
 
 func main() {
-	defer profile.Start().Stop()
+	// defer profile.Start().Stop()
 	parser := argparse.NewParser("gomoku", "A great Gomoku game, and solving algorithm")
 	s := parser.Flag("s", "server", &argparse.Options{Help: "Launch web server"})
+	c := parser.Flag("c", "cache", &argparse.Options{Help: "Use cache"})
 	err := parser.Parse(os.Args)
 	if err != nil {
 		fmt.Print(parser.Usage(err))
 		os.Exit(1)
+	}
+	if *c {
+		brain.Game.CacheEnabled = true
+		fmt.Println("Enabling cache...")
 	}
 	if *s || os.Getenv("RUNSERVER") == "true" {
 		server.StartServer()

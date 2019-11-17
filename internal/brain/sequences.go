@@ -4,6 +4,22 @@ import (
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
+const (
+	NS = iota
+	EW
+	NWSE
+	NESW
+)
+
+const (
+	N_DIAG_SEQ_DIV_2         = 18
+	NWSE_FIRST_SEQ_GOBAN_POS = 342
+	MAX_ROW                  = 18
+	MAX_COL                  = 18
+)
+
+var AXES = [4]int16{NS, EW, NWSE, NESW}
+
 // For each direction in usual order, return how many contiguous pieces for playerId are present
 func CheckSequence(position int16, playerId int16, tab *[board.TOT_SIZE]int16) []int16 {
 	sequenceLengths := []int16{0, 0, 0, 0, 0, 0, 0, 0}

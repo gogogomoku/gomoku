@@ -4,26 +4,13 @@ import (
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
-const (
-	NS = iota
-	EW
-	NWSE
-	NESW
-)
-
-var AXES = [4]int16{NS, EW, NWSE, NESW}
-
-const N_DIAG_SEQ_DIV_2 = 18
-const NWSE_FIRST_SEQ_GOBAN_POS = 342
-const MAX_ROW = 18
-const MAX_COL = 18
-
 /*
+** (old)
 ** Takes arbitrary slice of Goban sequence values
 ** Return starting index of each F3 found
  */
 
-func CheckSequenceForF3(sequence []int16, playerId int16) []int16 {
+func CheckSequenceForF3Old(sequence []int16, playerId int16) []int16 {
 	seqLen := len(sequence)
 	if seqLen < 5 {
 		return nil
@@ -80,6 +67,70 @@ func CheckSequenceForF3(sequence []int16, playerId int16) []int16 {
 
 		if totalMine == 3 {
 			f3StartPoss = append(f3StartPoss, i)
+		}
+	}
+	return f3StartPoss
+}
+
+/*
+** (WIP, new)
+** Takes arbitrary slice of Goban sequence values
+** Return n F3s
+** TODO: Needs to only check axis once, then will be fine
+** otherwise use 2F3 checker
+ */
+
+func CheckSequenceForF3(sequence *[]int16, playerId int16) int16 {
+	seqLen := len(*sequence)
+	if seqLen < 5 {
+		return 0
+	}
+
+	// todo: no multiple ⬇️
+	nSubSeq := int16(seqLen - 4) // how many sub sequences to evaluate
+	var f3StartPoss int16
+
+	var i int16
+	for i = 0; i < nSubSeq; i++ {
+		maxSubSeqLen := (maximum(int16(minimum(int16(len((*sequence)[i:])), int16(5))), int16(minimum(int16(len((*sequence)[i:])), int16(6)))))
+
+		if maxSubSeqLen < 5 || (*sequence)[i] != 0 {
+			continue
+		}
+
+		if (*sequence)[i] == 0 && (*sequence)[i+4] == 0 {
+			if (*sequence)[i+1] == playerId && (*sequence)[i+1] == (*sequence)[i+2] && (*sequence)[i+2] == (*sequence)[i+3] {
+				f3StartPoss++
+			}
+		}
+
+		// if only 5 in sequence and doesn't match above pattern, not an f3
+		if maxSubSeqLen == 5 {
+			continue
+		}
+
+		if (*sequence)[i+5] != 0 {
+			continue // east extreme must be 0
+		}
+
+		// check middle of sequence
+		totalMine := 0
+		for k, val := range (*sequence)[i+1 : i+5] {
+			switch {
+			case val > 0 && val != playerId:
+				totalMine = -10
+			case val == playerId:
+				totalMine++
+			case (k == 0 || k == 3) && val == 0:
+				totalMine = -10
+			}
+			if totalMine < 0 {
+				break
+			}
+		}
+
+		if totalMine == 3 {
+			f3StartPoss++
 		}
 	}
 	return f3StartPoss

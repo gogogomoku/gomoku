@@ -1,8 +1,8 @@
 package brain
 
 import (
-	// "fmt"
-
+	"fmt"
+	"os"
 	"sync"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -24,6 +24,12 @@ const (
 //Add tests
 var CAPTURED_SCORE = [5]int16{0, 1, 2, 100, 1000}
 
+var nTimesGetHeuristics = 0
+var displayedCalls = false
+
+var nTimesCheckedHorizontalSeq = 0
+var displayedHorizAlready = false
+
 func convertArrayToSlice(line [board.SIZE]int16) []int16 {
 	new := make([]int16, board.SIZE)
 	for i := 0; i < board.SIZE; i++ {
@@ -33,6 +39,13 @@ func convertArrayToSlice(line [board.SIZE]int16) []int16 {
 }
 
 func checkHorizontalSequences(playerId int16, tab *[board.TOT_SIZE]int16) int16 {
+	if Game.Turn == 10 {
+		nTimesCheckedHorizontalSeq += 1
+	}
+	if Game.Turn == 11 && !displayedHorizAlready {
+		fmt.Fprintf(os.Stderr, "Checked HZ sequence in Turn 11 [[ %d ]] times", nTimesCheckedHorizontalSeq)
+		displayedHorizAlready = true
+	}
 	score := int16(0)
 	for l := 0; l < board.SIZE; l++ {
 		line := [board.SIZE]int16{}
@@ -107,6 +120,24 @@ func checkDiagonalNESWSequences(playerId int16, tab *[board.TOT_SIZE]int16) int1
 }
 
 func getHeuristicValue(playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]int16) int16 {
+	if Game.Turn == 1 {
+		nTimesGetHeuristics += 1
+	}
+	if Game.Turn == 2 && !displayedCalls {
+		fmt.Fprintln(os.Stderr, nTimesGetHeuristics)
+		displayedCalls = true
+		nTimesGetHeuristics = 0
+	}
+
+	if Game.Turn == 4 {
+		nTimesGetHeuristics += 1
+		displayedCalls = false
+	}
+	if Game.Turn == 5 && !displayedCalls {
+		fmt.Fprintf(os.Stderr, "Called heuristics for turn 5: %d\n", nTimesGetHeuristics)
+		displayedCalls = true
+		nTimesGetHeuristics = 0
+	}
 	boardScorePlayerHV := int16(0)
 	boardScorePlayerDINWSE := int16(0)
 	boardScorePlayerDINESW := int16(0)
@@ -271,6 +302,6 @@ func checkSequence(line []int16, playerId int16) int16 {
 		score += tmpScore
 		i++
 	}
-	score += int16(len(CheckSequenceForF3(line, playerId))) * F3_SCORE
+	score += CheckSequenceForF3(&line, playerId) * F3_SCORE
 	return score
 }

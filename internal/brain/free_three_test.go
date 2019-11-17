@@ -7,6 +7,20 @@ import (
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
+func BenchmarkTestCheckSequenceForF3Old(b *testing.B) {
+	sequences := make([][]int16, 4)
+	for i := 0; i < b.N; i++ {
+		sequences[0] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+		sequences[1] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+		sequences[2] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+		sequences[3] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+		for j := range sequences {
+			CheckSequenceForF3Old(sequences[j], 1)
+		}
+
+	}
+}
+
 func BenchmarkTestCheckSequenceForF3(b *testing.B) {
 	sequences := make([][]int16, 4)
 	for i := 0; i < b.N; i++ {
@@ -15,7 +29,7 @@ func BenchmarkTestCheckSequenceForF3(b *testing.B) {
 		sequences[2] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 		sequences[3] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 		for j := range sequences {
-			CheckSequenceForF3(sequences[j], 1)
+			CheckSequenceForF3(&(sequences[j]), 1)
 		}
 
 	}
@@ -121,7 +135,7 @@ func TestGetNWSESeqIndex(t *testing.T) {
 	}
 }
 
-func TestCheckSequenceForF3(t *testing.T) {
+func TestCheckSequenceForF3Old(t *testing.T) {
 
 	tables := []struct {
 		sequence []int16
@@ -164,9 +178,62 @@ func TestCheckSequenceForF3(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		actual := CheckSequenceForF3(table.sequence, table.playerId)
+		actual := CheckSequenceForF3Old(table.sequence, table.playerId)
 		if !reflect.DeepEqual(actual, table.expected) {
 			t.Errorf("⛔️ F3 in sequence %v: got %v, expected %v\n", table.sequence, actual, table.expected)
+		} else {
+			print("✓")
+		}
+	}
+}
+
+func TestCheckSequenceForF3(t *testing.T) {
+
+	tables := []struct {
+		sequence []int16
+		playerId int16
+		expected []int16 // not used
+		expekted int16
+	}{
+		//Simple
+		{[]int16{0, 1, 1, 1, 0}, 1, []int16{0}, 1},
+		// Wrong player
+		{[]int16{0, 1, 1, 1, 0}, 2, []int16{}, 0},
+		// Mixed players (enemy in sequence)
+		{[]int16{0, 1, 1, 2, 0}, 2, []int16{}, 0},
+		{[]int16{0, 1, 1, 2, 1, 0}, 1, []int16{}, 0},
+
+		// should find 1 at position 0
+		{[]int16{0, 1, 1, 0, 1, 0}, 1, []int16{0}, 1},
+		{[]int16{0, 1, 0, 1, 1, 0}, 1, []int16{0}, 1},
+		{[]int16{0, 2, 2, 0, 2, 0}, 2, []int16{0}, 1},
+
+		// should find none
+		{[]int16{1, 0, 1, 0, 1, 0}, 1, []int16{}, 0},
+		{[]int16{0, 1, 1, 0, 0, 0}, 1, []int16{}, 0},
+		{[]int16{1, 0, 1, 0, 0, 1}, 1, []int16{}, 0},
+		{[]int16{0, 1, 1, 1, 1, 0}, 1, []int16{}, 0},
+		{[]int16{0, 1, 0, 2, 1, 0}, 1, []int16{}, 0},
+
+		// should find 1 at position 1
+		{[]int16{0, 0, 1, 1, 0, 1, 0}, 1, []int16{1}, 1},
+
+		// should find 2
+		{[]int16{0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0}, 1, []int16{1, 6}, 2},
+		{[]int16{0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0}, 1, []int16{1, 5}, 2},
+		{[]int16{0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0}, 1, []int16{0, 5}, 2},
+
+		// should find 1
+		{[]int16{0, 0, 1, 1, 0, 1, 0, 1, 2, 1, 0}, 1, []int16{1}, 1},
+
+		// should find 3 overlapping
+		{[]int16{0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0}, 1, []int16{0, 3, 5}, 3},
+	}
+
+	for _, table := range tables {
+		actual := CheckSequenceForF3(&table.sequence, table.playerId)
+		if !reflect.DeepEqual(actual, table.expekted) {
+			t.Errorf("⛔️ n F3 in sequence %v: got %v, expected %v\n", table.sequence, actual, table.expekted)
 		} else {
 			print("✓")
 		}

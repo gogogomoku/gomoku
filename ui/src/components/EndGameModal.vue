@@ -5,22 +5,7 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
-            <h3>game settings</h3>
-          </div>
-
-          <div class="modal-body">
-            <PlayerSettings :id="playerInfo.p1.Id" :aiStatus="playerInfo.p1.AiStatus" />
-            <PlayerSettings :id="playerInfo.p2.Id" :aiStatus="playerInfo.p2.AiStatus" />
-            <div class="gameOptions">
-              <input
-                type="checkbox"
-                id="checkbox"
-                :checked="suggestorOn"
-                v-bind:disabled="playerInfo.p1.AiStatus > 0 && playerInfo.p2.AiStatus > 0"
-                @change="onToggleSuggestor()"
-              />
-              <label for="checkbox">enable suggestor</label>
-            </div>
+            <h3>Player {{ winner }} wins!</h3>
           </div>
 
           <div class="modal-footer">
@@ -33,31 +18,25 @@
 </template>
 
 <script>
-import PlayerSettings from "./PlayerSettings.vue";
 
 export default {
-  name: "SettingsModal",
+  name: "EndGameModal",
   props: {
-    showModal: Boolean,
-    suggestorOn: Boolean,
-    playerInfo: {
-      type: Object,
-      required: true,
-      validator(value) {
-        return Object.keys(value).includes("p1", "p2");
-      }
-    }
-  },
-  components: {
-    PlayerSettings
-  },
+    showModal: {
+			type: Boolean,
+			required: true
+		},
+		winner: {
+			required: true,
+			validator(w) {
+				return w === 1 || w === 2
+			}
+		}
+	},
   methods: {
     onClose() {
-      this.$parent.closeModal("SettingsModal");
+      this.$parent.closeModal("EndGameModal");
     },
-    onToggleSuggestor() {
-      this.$parent.toggleSuggestor();
-    }
   }
 };
 </script>

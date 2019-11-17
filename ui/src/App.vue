@@ -209,7 +209,6 @@ export default {
           this._data.showEndGameModal = false;
           break;
         default:
-          console.warn(`No modal component with name ${modalComponentName} exists to close.`)
           break;
       }
     }

@@ -11,7 +11,7 @@
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
-                class="tileSuggested"
+                class="tileSuggested active"
                 src="1.png"
               />
             </div>
@@ -21,7 +21,7 @@
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
-                class="tileSuggested"
+                class="tileSuggested active"
                 src="2.png"
               />
             </div>
@@ -45,6 +45,7 @@
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
                 class="tile0"
+                :class="{active: gameStatus === 1}"
                 src="0.png"
               />
             </div>
@@ -132,8 +133,13 @@ export default {
   /* width: 4.7%; */
   display: inline-block;
   margin: 0.25%;
+  cursor: initial;
+}
+
+.active {
   cursor: pointer;
 }
+
 .tile img {
   width: 100%;
 }

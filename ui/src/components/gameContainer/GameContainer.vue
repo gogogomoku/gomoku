@@ -1,7 +1,6 @@
 <template>
   <div id="gameContainer">
     <Goban
-      v-bind:style="{border: '1px solid yellow'}"
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
       v-bind:httpPending="httpPending"
@@ -13,7 +12,6 @@
       v-bind:turn="turn"
     />
     <ControlPanel
-      v-bind:style="{border: '1px solid white'}"
       v-bind:currentPlayer="currentPlayer"
       v-bind:gameStatus="gameStatus"
       v-bind:playerInfo="playerInfo"
@@ -103,6 +101,5 @@ export default {
 
   margin: 0px auto;
   width: 900px;
-  border: 1px solid pink;
 }
 </style>

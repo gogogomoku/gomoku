@@ -14,6 +14,7 @@
     />
     <GameContainer
       v-bind:currentPlayer="currentPlayer"
+      v-bind:invalidMoves="invalidMoves"
       v-bind:gameStatus="gameStatus"
       v-bind:playerInfo="playerInfo"
       v-bind:postgameInfo="postgameInfo"
@@ -61,6 +62,7 @@ const initialAppState = {
       PiecesLeft: 0
     }
   },
+  invalidMoves: [],
   postgameInfo: {
     inPostgame: false,
     tab: cloneDeep(TAB),
@@ -130,6 +132,7 @@ export default {
         this._data.suggestedPosition = res.SuggestedPosition;
         this._data.suggestionTimer = res.SuggestionTimer;
         this._data.winner = res.Winner;
+        this._data.invalidMoves = res.InvalidMovesForCurrentPlayer;
         if (res.Winner === 1 || res.Winner === 2) {
           const postgameInfo = {
             inPostgame: true,
@@ -152,7 +155,6 @@ export default {
       }
     },
     makeMove(tileId, currentPlayer) {
-      // console.log(`this.showModal:`, this.showModal);
       if (!this.showModal && this._data.gameStatus === RUNNING && this._data.winner === 0) {
         axios
           .get(
@@ -202,8 +204,8 @@ export default {
       switch (modalComponentName) {
         case "SettingsModal":
           this._data.showModal = false;
-          if (this.gameStatus === 1 || this.gameStatus === 2 || this.gameStatus === 3) this.restartGame(true);
-          else if (this.gameStatus === 0) this.startGame(true);
+          if (this.gameStatus === RUNNING || this.gameStatus === CONCLUDED) this.restartGame(true);
+          else if (this.gameStatus === NOT_STARTED) this.startGame(true);
           break;
         case "EndGameModal":
           this._data.showEndGameModal = false;

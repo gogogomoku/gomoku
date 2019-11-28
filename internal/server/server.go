@@ -104,6 +104,8 @@ func MakeMove(c echo.Context) error {
 		return c.JSON(http.StatusOK, &SimpleResponse{-1, txtErr})
 	}
 	code, msg := brain.HandleMove(int16(id), int16(position))
+	// After turn change
+	brain.GetInvalidMovesForCurrentPlayer()
 	fmt.Printf("(debug) brain.HandleMove() msg :: %#v\n", msg)
 	if code == 0 {
 		return c.JSON(http.StatusOK, brain.Game)

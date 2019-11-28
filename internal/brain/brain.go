@@ -37,7 +37,7 @@ type Round struct {
 	SuggestionTimer   int16
 	Winner            int16
 	CacheEnabled      bool
-	CacheDB           *bolt.BboltBucket
+	CacheDB           *bolt.BoltDB
 }
 
 func (round Round) GetCurrentOpponent() *player.Player {

@@ -3,9 +3,12 @@ package brain
 import (
 	// "fmt"
 
+	"fmt"
+	"strconv"
 	"sync"
 
 	"github.com/gogogomoku/gomoku/internal/board"
+	bolt "github.com/gogogomoku/gomoku/internal/boltdb"
 )
 
 const (
@@ -237,6 +240,22 @@ func getSequenceScore(counter int16, blocked int16, line *[]int16, i int16) int1
 }
 
 func checkSequence(line []int16, playerId int16) int16 {
+
+	key := fmt.Sprintf("%v%d", line, Game.CurrentPlayer.Id)
+	if Game.CacheDB != nil {
+		strValue := bolt.Get(Game.CacheDB.Bucket, key)
+		if strValue != "none" {
+			// fmt.Println("FOUND CACHED VALUE: ", strValue)
+			cachedValue, err := strconv.ParseInt(strValue, 10, 64)
+			if err == nil {
+				// fmt.Println("-- Returning cache suggestion")
+				return int16(cachedValue)
+			} else {
+				fmt.Println(err.Error())
+			}
+		}
+	}
+
 	hasPlayer := checkLineHasId(&line, playerId)
 	if !hasPlayer {
 		return 0
@@ -272,5 +291,9 @@ func checkSequence(line []int16, playerId int16) int16 {
 		i++
 	}
 	score += int16(len(CheckSequenceForF3(line, playerId))) * F3_SCORE
+	if Game.CacheDB != nil {
+		// fmt.Println("Storing in cache, key:", key, "value:", score)
+		bolt.Put(Game.CacheDB.Bucket, key, fmt.Sprint(score))
+	}
 	return score
 }

@@ -11,12 +11,12 @@ import (
 
 func StartRound(AiStatus1 int16, AiStatus2 int16) {
 	InitializeValues(AiStatus1, AiStatus2)
-	if Game.CacheEnabled && Game.CacheDB == nil {
+	if Game.CacheDB == nil {
 		fmt.Println("************GOMOKU CACHE***************")
 		bolt.CreateDB()
 		bolt.Bolt.Bucket = &bolt.BboltBucket{Name: "list"}
 		bolt.CreateBucket(bolt.Bolt.Bucket)
-		Game.CacheDB = bolt.Bolt.Bucket
+		Game.CacheDB = &bolt.Bolt
 	}
 	Game.Status = Running
 	Game.CurrentPlayer = Game.P1

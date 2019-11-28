@@ -41,7 +41,7 @@ type BboltBucket struct {
 
 func handleError(err error) {
 	if err != nil {
-		log.Print(err)
+		log.Print("BOLT ERROR:", err)
 	}
 }
 
@@ -101,7 +101,7 @@ func Get(bucket *BboltBucket, key string) string {
 		if val != nil {
 			str = string(val)
 		}
-		fmt.Println(string(val))
+		// fmt.Println("VALUE:", string(val))
 		return nil
 	})
 	handleError(err)

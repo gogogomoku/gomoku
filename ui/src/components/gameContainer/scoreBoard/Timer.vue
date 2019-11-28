@@ -2,7 +2,7 @@
   <div id="timer">
     <!-- <div v-if="suggestedPosition && !msElapsedServer"... -->
     <!-- <div v-if-else="msElapsedServer"...> -->
-    <div id="time-up">Suggestion computed in</div>
+    <div id="time-up">Move computed in</div>
     <div>{{ suggestionTimer }} ms</div>
   </div>
 </template>

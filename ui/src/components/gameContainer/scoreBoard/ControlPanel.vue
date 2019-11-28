@@ -31,7 +31,6 @@
     </div>
 
     <Timer
-      v-if="suggestorOn"
       v-bind:turn="turn"
       v-bind:suggestionTimer="suggestionTimer"
     />

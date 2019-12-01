@@ -72,25 +72,24 @@ func TestLaunchCheckSequence(t *testing.T) {
 	}
 }
 
-// func TestGetHeuristicValue(t *testing.T) {
-// 	center := (board.SIZE * board.SIZE) / 2
-// 	if board.SIZE%2 == 0 {
-// 		center += board.SIZE / 2
-// 	}
-// 	tab := [board.SIZE * board.SIZE]int16{}
-// 	tab[center-2] = 1
-// 	tab[center-1] = 1
-// 	tab[center] = 1
-// 	tab[center+1] = 1
-// 	position := int16(center)
-// 	score := getHeuristicValue(position, 1, &tab, &[3]int16{})
-// 	if score != SEQ4_FREE_SCORE {
-// 		t.Errorf("Error in getHeuristicValue. Expected: %d, got: %d", score, SEQ4_FREE_SCORE)
-// 	}
-// }
+func TestGetHeuristicValueOG(t *testing.T) {
+	center := (board.SIZE * board.SIZE) / 2
+	if board.SIZE%2 == 0 {
+		center += board.SIZE / 2
+	}
+	tab := [board.SIZE * board.SIZE]int16{}
+	tab[center-2] = 1
+	tab[center-1] = 1
+	tab[center] = 1
+	tab[center+1] = 1
+	score := getHeuristicValueOG(1, &tab, &[3]int16{})
+	if score != SEQ4_FREE_SCORE {
+		t.Errorf("Error in getHeuristicValueOG. Expected: %d, got: %d", score, SEQ4_FREE_SCORE)
+	}
+}
 
-func BenchmarkGetHeuristicValue(b *testing.B) {
-	// blankBoard := board.MakeTab([]int16{}, []int16{})
+func BenchmarkGetHeuristicValueOG(b *testing.B) {
+	blankBoard := board.MakeTab([]int16{}, []int16{})
 
 	allP1s := make([]int16, board.TOT_SIZE)
 	for i := range allP1s {
@@ -98,8 +97,25 @@ func BenchmarkGetHeuristicValue(b *testing.B) {
 	}
 	boardWithManyP1s := board.MakeTab(allP1s, []int16{})
 	b.ResetTimer()
+	// 30433 ns/op
 	for i := 0; i < b.N; i++ {
-		// getHeuristicValue(int16(160), 1, blankBoard, &[3]int16{})       // 15214/op
-		getHeuristicValue(int16(160), 1, boardWithManyP1s, &[3]int16{}) // 14851 ns/op, 12617 with cp only HV
+		getHeuristicValueOG(1, blankBoard, &[3]int16{})       // 15214/op
+		getHeuristicValueOG(1, boardWithManyP1s, &[3]int16{}) // 14851 ns/op
+	}
+}
+
+func BenchmarkGetHeuristicValue(b *testing.B) {
+	blankBoard := board.MakeTab([]int16{}, []int16{})
+
+	allP1s := make([]int16, board.TOT_SIZE)
+	for i := range allP1s {
+		allP1s[i] = int16(i)
+	}
+	boardWithManyP1s := board.MakeTab(allP1s, []int16{})
+	b.ResetTimer()
+	// 21649 ns/op
+	for i := 0; i < b.N; i++ {
+		getHeuristicValue(int16(160), 1, blankBoard, &[3]int16{})       // 10742/op
+		getHeuristicValue(int16(160), 1, boardWithManyP1s, &[3]int16{}) // 10829/op
 	}
 }

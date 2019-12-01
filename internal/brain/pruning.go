@@ -62,6 +62,7 @@ func MinimaxRecursivePruning(node *tr.Node, depth int16, max bool, alpha int16, 
 	nodeCounter++
 	if depth == 0 || len(node.Children) == 0 || node.WinMove {
 		node.Value = getHeuristicValue(node.Position, node.Player, &node.Tab, &node.Captured)
+		// node.Value = getHeuristicValueOG(node.Player, &node.Tab, &node.Captured)
 		// fmt.Println("Position: ", node.Position, "Value: ", node.Value)
 		if node.Value >= WIN_SCORE {
 			node.WinMove = true

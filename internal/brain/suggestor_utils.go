@@ -23,6 +23,7 @@ func initializeNode(node *tr.Node, move int16, playerId int16) *tr.Node {
 	new.Captured[playerId] += 2 * int16(len(captureDirections))
 	capturePairs(move, captureDirections, &new.Tab)
 	new.Value = getHeuristicValue(move, playerId, &new.Tab, &new.Captured)
+	// new.Value = getHeuristicValueOG(playerId, &new.Tab, &new.Captured)
 	return new
 }
 

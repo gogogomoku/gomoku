@@ -104,6 +104,31 @@ func checkDiagonalNWSESequences(playerId int16, tab *[board.TOT_SIZE]int16) int1
 	return score
 }
 
+func checkDiagonalNWSESequence(sequenceIndex int16, playerId int16, tab *[board.TOT_SIZE]int16) int16 {
+	score := int16(0)
+	d := sequenceIndex
+	// for d := 1; d < board.SIZE+board.SIZE/2; d++ {
+	line := [board.SIZE * 2]int16{}
+	// First element of last row to start diagonals
+	x := board.SIZE * (board.SIZE - d)
+	// When transpassing board limit, start new diagonal
+	lineLen := 0
+	for x < board.SIZE*board.SIZE {
+		if x >= 0 && x < (board.SIZE*board.SIZE)-(board.SIZE*(d-board.SIZE)) {
+			line[lineLen] = (*tab)[x]
+			lineLen++
+		}
+		x += board.SIZE + 1
+	}
+	line[lineLen] = -1
+	line2 := line[:lineLen]
+	if len(line2) > 0 {
+		score += checkSequence(line2, playerId)
+	}
+	// }
+	return score
+}
+
 func checkDiagonalNESWSequences(playerId int16, tab *[board.TOT_SIZE]int16) int16 {
 	score := int16(0)
 	for d := 1; d < board.SIZE*2; d++ {
@@ -126,6 +151,96 @@ func checkDiagonalNESWSequences(playerId int16, tab *[board.TOT_SIZE]int16) int1
 		}
 	}
 	return score
+}
+
+func checkDiagonalNESWSequence(d int16, playerId int16, tab *[board.TOT_SIZE]int16) int16 {
+	score := int16(0)
+	// for d := 1; d < board.SIZE*2; d++ {
+	line := [board.SIZE * 2]int16{}
+	// Last element of first row to start diagonals
+	x := (d*board.SIZE - 1) - (board.SIZE-1)*board.SIZE
+	// When transpassing board limit, start new diagonal
+	lineLen := 0
+	for x < board.SIZE*board.SIZE {
+		if x >= 0 && x <= (d-1)*board.SIZE {
+			line[lineLen] = (*tab)[x]
+			lineLen++
+		}
+		x += board.SIZE - 1
+	}
+	line[lineLen] = -1
+	line2 := line[:lineLen]
+	if len(line2) > 0 {
+		score += checkSequence(line2, playerId)
+	}
+	// }
+	return score
+}
+
+func getHeuristicValueOG(playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]int16) int16 {
+	boardScorePlayerHV := int16(0)
+	boardScorePlayerDINWSE := int16(0)
+	boardScorePlayerDINESW := int16(0)
+	boardScoreOpponentHV := int16(0)
+	boardScoreOpponentDINWSE := int16(0)
+	boardScoreOpponentDINESW := int16(0)
+	opponent := int16(1)
+	if playerId == 1 {
+		opponent = 2
+	}
+	var waitgroup sync.WaitGroup
+	// Check sequences for player
+	waitgroup.Add(6)
+	go func() {
+		defer waitgroup.Done()
+		boardScorePlayerHV += checkHorizontalSequences(playerId, tab)
+		boardScorePlayerHV += checkVerticalSequences(playerId, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScorePlayerDINWSE += checkDiagonalNWSESequences(playerId, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScorePlayerDINESW += checkDiagonalNESWSequences(playerId, tab)
+	}()
+
+	// Check sequences for opponent
+	go func() {
+		defer waitgroup.Done()
+		boardScoreOpponentHV += checkHorizontalSequences(opponent, tab)
+		boardScoreOpponentHV += checkVerticalSequences(opponent, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScoreOpponentDINWSE += checkDiagonalNWSESequences(opponent, tab)
+	}()
+	go func() {
+		defer waitgroup.Done()
+		boardScoreOpponentDINESW += checkDiagonalNESWSequences(opponent, tab)
+	}()
+	waitgroup.Wait()
+	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV
+	if captured[playerId] > 0 && captured[playerId] <= 8 {
+		playerScore += CAPTURED_SCORE[(captured[playerId]/2)-1]
+	} else if captured[playerId] > 8 {
+		playerScore += WIN_SCORE
+	}
+	opponentScore := boardScoreOpponentDINWSE + boardScoreOpponentDINESW + boardScoreOpponentHV
+	if captured[opponent] > 0 && captured[opponent] <= 8 {
+		opponentScore += CAPTURED_SCORE[(captured[opponent]/2)-1]
+	} else if captured[opponent] > 8 {
+		playerScore += WIN_SCORE
+	}
+	if playerScore >= WIN_SCORE {
+		playerScore = WIN_SCORE
+	} else if opponentScore >= WIN_SCORE {
+		opponentScore = WIN_SCORE
+		playerScore = 0
+	} else {
+		opponentScore += opponentScore / 5
+	}
+	return playerScore - opponentScore
 }
 
 func getHeuristicValue(position int16, playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]int16) int16 {
@@ -153,14 +268,20 @@ func getHeuristicValue(position int16, playerId int16, tab *[board.TOT_SIZE]int1
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScorePlayerDINWSE += checkDiagonalNWSESequences(playerId, tab)
+		d := getNWSESeqIndex(position)
+		boardScorePlayerDINWSE += checkDiagonalNWSESequence(d, playerId, tab)
+		// boardScorePlayerDINWSE += checkDiagonalNWSESequences(playerId, tab)
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScorePlayerDINESW += checkDiagonalNESWSequences(playerId, tab)
+		// boardScorePlayerDINESW += checkDiagonalNESWSequences(playerId, tab)
+		d := getNESWSeqIndex(position)
+		boardScorePlayerDINESW += checkDiagonalNESWSequence(d, playerId, tab)
+
 	}()
 
 	// Check sequences for opponent
+	// todo: different position to decide which sequences?
 	go func() {
 		defer waitgroup.Done()
 		boardScoreOpponentHV += checkHorizontalSequences(opponent, tab)

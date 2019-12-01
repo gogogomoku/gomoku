@@ -45,6 +45,17 @@ func checkHorizontalSequences(playerId int16, tab *[board.TOT_SIZE]int16) int16 
 	return score
 }
 
+func checkHorizontalSequence(row int16, playerId int16, tab *[board.TOT_SIZE]int16) int16 {
+	score := int16(0)
+	line := [board.SIZE]int16{}
+	for c := 0; c < board.SIZE; c++ {
+		line[c] = (*tab)[row*board.SIZE+int16(c)]
+	}
+	lineSlice := convertArrayToSlice(line)
+	score += checkSequence(lineSlice, playerId)
+	return score
+}
+
 func checkVerticalSequences(playerId int16, tab *[board.TOT_SIZE]int16) int16 {
 	score := int16(0)
 	for c := 0; c < board.SIZE; c++ {
@@ -55,6 +66,17 @@ func checkVerticalSequences(playerId int16, tab *[board.TOT_SIZE]int16) int16 {
 		lineSlice := convertArrayToSlice(line)
 		score += checkSequence(lineSlice, playerId)
 	}
+	return score
+}
+
+func checkVerticalSequence(col int16, playerId int16, tab *[board.TOT_SIZE]int16) int16 {
+	score := int16(0)
+	line := [board.SIZE]int16{}
+	for l := 0; l < board.SIZE; l++ {
+		line[l] = (*tab)[int16(l*board.SIZE)+col]
+	}
+	lineSlice := convertArrayToSlice(line)
+	score += checkSequence(lineSlice, playerId)
 	return score
 }
 
@@ -106,7 +128,7 @@ func checkDiagonalNESWSequences(playerId int16, tab *[board.TOT_SIZE]int16) int1
 	return score
 }
 
-func getHeuristicValue(playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]int16) int16 {
+func getHeuristicValue(position int16, playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]int16) int16 {
 	boardScorePlayerHV := int16(0)
 	boardScorePlayerDINWSE := int16(0)
 	boardScorePlayerDINESW := int16(0)
@@ -122,8 +144,12 @@ func getHeuristicValue(playerId int16, tab *[board.TOT_SIZE]int16, captured *[3]
 	waitgroup.Add(6)
 	go func() {
 		defer waitgroup.Done()
-		boardScorePlayerHV += checkHorizontalSequences(playerId, tab)
-		boardScorePlayerHV += checkVerticalSequences(playerId, tab)
+		horizontalSequenceIndex := position % board.SIZE
+		verticalSequenceIndex := position / board.SIZE
+		boardScorePlayerHV += checkHorizontalSequence(horizontalSequenceIndex, playerId, tab)
+		boardScorePlayerHV += checkVerticalSequence(verticalSequenceIndex, playerId, tab)
+		// boardScorePlayerHV += checkHorizontalSequences(playerId, tab)
+		// boardScorePlayerHV += checkVerticalSequences(playerId, tab)
 	}()
 	go func() {
 		defer waitgroup.Done()

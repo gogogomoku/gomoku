@@ -9,6 +9,7 @@
       v-bind:tab="postgameInfo.inPostgame ? postgameInfo.tab : tab"
       v-bind:inPostgame="postgameInfo.inPostgame"
       v-bind:turn="turn"
+      v-bind:invalidMoves="invalidMoves"
     />
     <ControlPanel
       v-bind:currentPlayer="currentPlayer"
@@ -34,6 +35,10 @@ export default {
     ControlPanel
   },
   props: {
+    "invalidMoves": {
+      type: Array,
+      required: true,
+    },
     "currentPlayer": {
       required: true,
       type: Number
@@ -77,7 +82,7 @@ export default {
     "winner": {
       required: true,
       type: Number
-    }
+    },
   },
   methods: {}
 };

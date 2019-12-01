@@ -38,11 +38,20 @@
             </div>
           </div>
           <div class="tileImage" v-else>
-            <div class="tileAlpha" v-if="tile === 0">
+            <div class="tileAlpha" v-if="tile === 0 && !invalidMoves.includes((posX + (posY * size)))">
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
                 v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                :id="posX + (posY * size)"
+                class="tile0"
+                src="0.png"
+              />
+            </div>
+            <div class="tileAlpha" v-else-if="tile === 0 && invalidMoves.includes((posX + (posY * size)))">
+              <img
+                v-on:mouseover="mouseOverError(posX + (posY * size), currentPlayer)"
+                v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
                 :id="posX + (posY * size)"
                 class="tile0"
                 src="0.png"
@@ -66,6 +75,7 @@ export default {
   name: "Goban",
   components: {},
   props: [
+    "invalidMoves",
     "currentPlayer",
     "gameStatus",
     "inPostgame",
@@ -82,11 +92,17 @@ export default {
     },
     mouseOut: function(tileId, tile) {
       document.getElementById(tileId).src = tile + ".png";
-      document.getElementById(tileId).opacity = 1;
+      document.getElementById(tileId).style.opacity = null;
+      document.getElementById(tileId).style.cursor = null;
     },
     mouseOutSuggested: function(tileId, tile) {
       document.getElementById(tileId).src = tile + ".png";
-      document.getElementById(tileId).opacity = 0.5;
+      document.getElementById(tileId).opacity = null;
+    },
+    mouseOverError: function(tileId) {
+      document.getElementById(tileId).src = "error.png"
+      document.getElementById(tileId).style.cursor = "not-allowed"
+      document.getElementById(tileId).style.opacity = 0.3;
     },
     clickTile: function(tileId, currentPlayer) {
       // eslint-disable-next-line
@@ -95,7 +111,7 @@ export default {
       );
       this.$parent.$parent.makeMove(tileId, currentPlayer);
     }
-  }
+  },
 };
 </script>
 

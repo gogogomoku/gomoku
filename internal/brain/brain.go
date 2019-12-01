@@ -27,17 +27,18 @@ const (
 )
 
 type Round struct {
-	P1                *player.Player
-	P2                *player.Player
-	Goban             board.Board
-	Status            int16
-	CurrentPlayer     *player.Player
-	Turn              int16
-	SuggestedPosition int16
-	SuggestionTimer   int16
-	Winner            int16
-	CacheEnabled      bool
-	CacheDB           *bolt.BboltBucket
+	P1                           *player.Player
+	P2                           *player.Player
+	Goban                        board.Board
+	Status                       int16
+	CurrentPlayer                *player.Player
+	Turn                         int16
+	SuggestedPosition            int16
+	SuggestionTimer              int16
+	Winner                       int16
+	CacheEnabled                 bool
+	CacheDB                      *bolt.BboltBucket
+	InvalidMovesForCurrentPlayer []int16
 }
 
 func (round Round) GetCurrentOpponent() *player.Player {
@@ -65,4 +66,5 @@ func InitializeValues(aiStatus1 int16, aiStatus2 int16) {
 	Game.SuggestionTimer = 0
 	Game.SuggestedPosition = 0
 	Game.CurrentPlayer = nil
+	Game.InvalidMovesForCurrentPlayer = []int16{}
 }

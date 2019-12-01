@@ -19,14 +19,12 @@ export default {
   computed: {
     buttonMessage() {
       switch (this.gameStatus) {
-        case NOT_STARTED:
-          return "Start Game"
         case RUNNING:
           return "Restart Game"
         case CONCLUDED:
           return "Rematch"
         default:
-          return "Start Game?"
+          return "Start Game"
       }
     }
   }
@@ -42,6 +40,7 @@ button {
   font-weight: bolder;
   letter-spacing: normal;
   border-radius: 3px;
+  cursor: pointer;
 }
 button:hover {
   background-color: #48cece;

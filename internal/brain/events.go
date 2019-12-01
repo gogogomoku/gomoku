@@ -38,6 +38,25 @@ func CheckValidMove(position int16, tab [board.TOT_SIZE]int16, playerId int16) b
 	return false
 }
 
+// Only called from server; improves UI
+func getInvalidMovesForCurrentPlayer(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
+	invalidMoves := []int16{}
+	for idx := range *tab {
+		isValid := CheckValidMove(int16(idx), *tab, playerId)
+		if !isValid {
+			invalidMoves = append(invalidMoves, int16(idx))
+		}
+	}
+	return invalidMoves
+}
+
+func GetInvalidMovesForCurrentPlayer() {
+	Game.InvalidMovesForCurrentPlayer = []int16{}
+	if Game.CurrentPlayer.AiStatus == 0 {
+		Game.InvalidMovesForCurrentPlayer = getInvalidMovesForCurrentPlayer(&Game.Goban.Tab, Game.CurrentPlayer.Id)
+	}
+}
+
 func getNextIndexForDirection(position int16, direction int16) (nextIndex int16, edge bool) {
 	directions := [4]bool{true, true, true, true}
 	// First row

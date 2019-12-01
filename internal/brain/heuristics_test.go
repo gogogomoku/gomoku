@@ -113,9 +113,9 @@ func BenchmarkGetHeuristicValue(b *testing.B) {
 	}
 	boardWithManyP1s := board.MakeTab(allP1s, []int16{})
 	b.ResetTimer()
-	// 21649 ns/op
+	// 10128 ns/op
 	for i := 0; i < b.N; i++ {
-		getHeuristicValue(int16(160), 1, blankBoard, &[3]int16{})       // 10742/op
-		getHeuristicValue(int16(160), 1, boardWithManyP1s, &[3]int16{}) // 10829/op
+		getHeuristicValue(int16(160), 1, blankBoard, &[3]int16{})
+		getHeuristicValue(int16(160), 1, boardWithManyP1s, &[3]int16{})
 	}
 }

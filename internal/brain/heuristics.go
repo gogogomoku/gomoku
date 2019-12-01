@@ -284,16 +284,25 @@ func getHeuristicValue(position int16, playerId int16, tab *[board.TOT_SIZE]int1
 	// todo: different position to decide which sequences?
 	go func() {
 		defer waitgroup.Done()
-		boardScoreOpponentHV += checkHorizontalSequences(opponent, tab)
-		boardScoreOpponentHV += checkVerticalSequences(opponent, tab)
+		// boardScoreOpponentHV += checkHorizontalSequences(opponent, tab)
+		// boardScoreOpponentHV += checkVerticalSequences(opponent, tab)
+		horizontalSequenceIndex := position % board.SIZE
+		verticalSequenceIndex := position / board.SIZE
+		boardScoreOpponentHV += checkHorizontalSequence(horizontalSequenceIndex, opponent, tab)
+		boardScoreOpponentHV += checkVerticalSequence(verticalSequenceIndex, opponent, tab)
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScoreOpponentDINWSE += checkDiagonalNWSESequences(opponent, tab)
+		// boardScoreOpponentDINWSE += checkDiagonalNWSESequences(opponent, tab)
+		d := getNWSESeqIndex(position)
+		boardScoreOpponentDINWSE += checkDiagonalNWSESequence(d, opponent, tab)
 	}()
 	go func() {
 		defer waitgroup.Done()
-		boardScoreOpponentDINESW += checkDiagonalNESWSequences(opponent, tab)
+		// boardScoreOpponentDINESW += checkDiagonalNESWSequences(opponent, tab)
+		d := getNESWSeqIndex(position)
+		boardScoreOpponentDINWSE += checkDiagonalNESWSequence(d, opponent, tab)
+
 	}()
 	waitgroup.Wait()
 	playerScore := boardScorePlayerDINWSE + boardScorePlayerDINESW + boardScorePlayerHV

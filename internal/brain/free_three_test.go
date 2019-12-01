@@ -9,6 +9,8 @@ import (
 
 func BenchmarkTestCheckSequenceForF3(b *testing.B) {
 	sequences := make([][]int16, 4)
+
+	// 467 ns/loop
 	for i := 0; i < b.N; i++ {
 		sequences[0] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 		sequences[1] = []int16{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -17,7 +19,6 @@ func BenchmarkTestCheckSequenceForF3(b *testing.B) {
 		for j := range sequences {
 			CheckSequenceForF3(sequences[j], 1)
 		}
-
 	}
 }
 
@@ -414,8 +415,10 @@ func BenchmarkCheck2F3s(b *testing.B) {
 		allP1s[i] = int16(i)
 	}
 	boardWithManyP1s := board.MakeTab(allP1s, []int16{})
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
+		// 164 ns/op
 		Check2F3s(1, board.TOT_SIZE/2, blankBoard)
 		Check2F3s(1, board.TOT_SIZE/2, boardWithManyP1s)
 	}

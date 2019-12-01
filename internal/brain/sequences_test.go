@@ -71,6 +71,72 @@ func TestCheckSequence(t *testing.T) {
 	}
 }
 
+func BenchmarkCheckSequence(b *testing.B) {
+	InitializeValues(0, 0)
+	Game.CurrentPlayer = Game.P1
+	center := int16((board.SIZE * board.SIZE) / 2)
+	if board.SIZE%2 == 0 {
+		center += board.SIZE / 2
+	}
+	allP1s := make([]int16, board.TOT_SIZE)
+	for i := range allP1s {
+		allP1s[i] = int16(i)
+	}
+	benchmarks := []struct {
+		name                   string
+		position               int16
+		opponentPositions      []int16
+		currentPlayerPositions []int16
+	}{
+		{
+			name:                   "Empty board",
+			position:               center,
+			opponentPositions:      []int16{},
+			currentPlayerPositions: []int16{},
+		},
+		{
+			name:                   "A few pieces",
+			position:               center,
+			opponentPositions:      []int16{center + 1, center + 2},
+			currentPlayerPositions: []int16{center, center + 3},
+		},
+		{
+			name:                   "A few more pieces",
+			position:               center,
+			opponentPositions:      []int16{center - 1, center - 2},
+			currentPlayerPositions: []int16{center, center + 1, center - 3},
+		},
+		{
+			name:                   "A few more pieces 2",
+			position:               center,
+			opponentPositions:      []int16{center - board.SIZE, center - (2 * board.SIZE)},
+			currentPlayerPositions: []int16{center, center + board.SIZE, center - (board.SIZE), center + 1, center - 1, center - 2, center - 3},
+		},
+		{
+			name:                   "A few more pieces 3",
+			position:               center,
+			opponentPositions:      []int16{},
+			currentPlayerPositions: []int16{center, center - (board.SIZE) + 1, center - (board.SIZE) - 1, center + (board.SIZE) + 1, center + (board.SIZE) - 1},
+		},
+		{
+			name:                   "A ton of p1 pieces",
+			position:               center,
+			opponentPositions:      []int16{},
+			currentPlayerPositions: allP1s, // remidner make p2
+		},
+	}
+	for _, bm := range benchmarks {
+		Game.Goban.Tab = *board.MakeTab(bm.opponentPositions, bm.currentPlayerPositions)
+
+		b.Run(bm.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				// AppendFloat(dst[:0], bm.float, bm.fmt, bm.prec, bm.bitSize)
+				CheckSequence(bm.position, Game.P1.Id, &Game.Goban.Tab)
+			}
+		})
+	}
+}
+
 func TestCompleteSequenceForPosition(t *testing.T) {
 	// Initialize
 	Game.Goban.Tab = [board.TOT_SIZE]int16{}

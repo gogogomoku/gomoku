@@ -6,6 +6,21 @@ import (
 	"github.com/gogogomoku/gomoku/internal/board"
 )
 
+func BenchmarkCheckDiagonalNWSESequences(b *testing.B) {
+	blankBoard := board.MakeTab([]int16{}, []int16{})
+
+	allP1s := make([]int16, board.TOT_SIZE)
+	for i := range allP1s {
+		allP1s[i] = int16(i)
+	}
+	boardWithManyP1s := board.MakeTab(allP1s, []int16{})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		checkDiagonalNWSESequences(1, blankBoard)       // 2667 ns/op
+		checkDiagonalNWSESequences(1, boardWithManyP1s) // 3811 ns/op
+	}
+}
+
 func TestLaunchCheckSequence(t *testing.T) {
 	score := checkSequence([]int16{0, 0, 1, 1, 1, 1, 0, 0}, 1)
 	if score != SEQ4_FREE_SCORE {
@@ -70,5 +85,20 @@ func TestGetHeuristicValue(t *testing.T) {
 	score := getHeuristicValue(1, &tab, &[3]int16{})
 	if score != SEQ4_FREE_SCORE {
 		t.Errorf("Error in getHeuristicValue. Expected: %d, got: %d", score, SEQ4_FREE_SCORE)
+	}
+}
+
+func BenchmarkGetHeuristicValue(b *testing.B) {
+	blankBoard := board.MakeTab([]int16{}, []int16{})
+
+	allP1s := make([]int16, board.TOT_SIZE)
+	for i := range allP1s {
+		allP1s[i] = int16(i)
+	}
+	boardWithManyP1s := board.MakeTab(allP1s, []int16{})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		getHeuristicValue(1, blankBoard, &[3]int16{})       // 15214/op
+		getHeuristicValue(1, boardWithManyP1s, &[3]int16{}) // 14851 ns/op
 	}
 }

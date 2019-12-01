@@ -236,6 +236,7 @@ func getSequenceScore(counter int16, blocked int16, line *[]int16, i int16) int1
 	return tmpScore
 }
 
+// Need to not check all sequences
 func checkSequence(line []int16, playerId int16) int16 {
 	hasPlayer := checkLineHasId(&line, playerId)
 	if !hasPlayer {

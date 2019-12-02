@@ -63,10 +63,10 @@ func MinimaxRecursivePruning(node *tr.Node, depth int16, max bool, alpha int16, 
 	if depth == 0 || len(node.Children) == 0 || node.WinMove {
 		node.Value = getHeuristicValue(node.Player, &node.Tab, &node.Captured)
 		// fmt.Println("Position: ", node.Position, "Value: ", node.Value)
-		if node.Value >= WIN_SCORE {
+		if node.Value >= 19000 {
 			node.WinMove = true
 		}
-		return node.Value - 2*node.Value/int16(totalDepth-depth)
+		return node.Value //- 2*node.Value/int16(totalDepth-depth)
 	}
 	if max {
 		node.Value = getMaxChild(node, depth, max, alpha, beta)

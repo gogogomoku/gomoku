@@ -48,12 +48,12 @@ func TestLaunchCheckSequence(t *testing.T) {
 		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN+2*SEQ2_BLOCKED1_SCORE, score)
 	}
 	score = checkSequence([]int16{2, 1, 1, 1, 0, 1, 2}, 1)
-	if score != SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE {
-		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE, score)
+	if score != SEQ4_BROKEN {
+		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN, score)
 	}
 	score = checkSequence([]int16{2, 1, 0, 1, 1, 1, 2}, 1)
-	if score != SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE {
-		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN+SEQ3_BLOCKED1_SCORE, score)
+	if score != SEQ4_BROKEN {
+		t.Errorf("Error in checkSequence. Expected: %d, got: %d", SEQ4_BROKEN, score)
 	}
 }
 

@@ -23,18 +23,28 @@ func buildTree(depth int16, playerId int16) {
 	tree = initializeRootNode(playerId)
 
 	// Create first layer
+	newMovesToTest := []*tr.Node{}
 	poss := getPossibleMoves(&(tree.Tab), tree.Player)
 	for _, move := range poss {
 		newTab := Game.Goban.Tab
 		newTab[move] = playerId
-		tree.Children = append(tree.Children, &tr.Node{
+		newMovesToTest = append(newMovesToTest, &tr.Node{
 			Position: move,
 			Value:    0,
 			Tab:      newTab,
 			Player:   Game.CurrentPlayer.Id,
+			WinMove:  false,
 		})
-	}
 
+		// Sort best moves and limit to maxPrepruningMoves
+		if len(newMovesToTest) > maxPrepruningMoves {
+			sort.Slice(newMovesToTest, func(i int, j int) bool {
+				return newMovesToTest[i].Value > newMovesToTest[j].Value
+			})
+			newMovesToTest = newMovesToTest[:maxPrepruningMoves-1]
+		}
+	}
+	addBestChildrenToNode(&newMovesToTest, tree)
 	// Create the rest of the layers recursively and concurrently
 	addRemainingLayers(depth, playerId, false)
 }
@@ -79,6 +89,7 @@ func reuseTree(depth int16, playerId int16, lastMove int16) {
 			found = true
 			treeTmp.Children = tree.Children[i].Children
 			fmt.Println("   Reusing tree")
+			break
 		}
 	}
 	if !found {
@@ -123,6 +134,8 @@ func reuseTreeRecursive(node *tr.Node, depth int16, playerId int16) {
 }
 
 func SuggestMove(playerId int16, lastMove int16) {
+
+	fmt.Println("Make suggestion")
 
 	depth := int16(5)
 	maxPrepruningMoves = 5
@@ -171,7 +184,7 @@ func SuggestMove(playerId int16, lastMove int16) {
 	}
 
 	// Build the tree if it doesn't exist, or re-use it
-	if tree == nil {
+	if tree == nil || Game.Turn == 0 {
 		buildTree(depth, playerId)
 	} else {
 		reuseTree(depth, playerId, lastMove)
@@ -179,7 +192,16 @@ func SuggestMove(playerId int16, lastMove int16) {
 	fmt.Println()
 
 	// Launch algo
-	LaunchMinimaxPruning(tree, depth)
+	tree.BestChild = nil
+	for _, ch := range tree.Children {
+		if ch.WinMove {
+			tree.BestChild = ch
+			break
+		}
+	}
+	if tree.BestChild == nil {
+		LaunchMinimaxPruning(tree, depth)
+	}
 	durationSuggestor := time.Since(startTimeSuggestor)
 	Game.SuggestionTimer = int16(durationSuggestor.Nanoseconds() / 1000000)
 	if Game.CacheEnabled {
@@ -188,4 +210,26 @@ func SuggestMove(playerId int16, lastMove int16) {
 	}
 
 	Game.SuggestedPosition = tree.BestChild.Position
+	// fmt.Println("First row")
+	// for _, ch := range tree.Children {
+	// 	fmt.Println(ch.Position, ch.Value)
+	// }
+	// fmt.Println("Second row (from best child)", tree.BestChild.Position)
+	// for _, ch := range tree.BestChild.Children {
+	// 	fmt.Println(ch.Position, ch.Value)
+	// }
+	// fmt.Println("Third row (from best child)", tree.BestChild.BestChild.Position)
+	// for _, ch := range tree.BestChild.BestChild.Children {
+	// 	fmt.Println(ch.Position, ch.Value)
+	// }
+	// fmt.Println("Fourth row (from best child)", tree.BestChild.BestChild.BestChild.Position)
+	// for _, ch := range tree.BestChild.BestChild.BestChild.Children {
+	// 	fmt.Println(ch.Position, ch.Value)
+	// }
+	// fmt.Println("Fifth row (from best child)", tree.BestChild.BestChild.BestChild.BestChild.Position)
+	// for _, ch := range tree.BestChild.BestChild.BestChild.BestChild.Children {
+	// 	fmt.Println(ch.Position, ch.Value)
+	// }
+	// fmt.Println("Final state:")
+	// board.PrintBoard(tree.BestChild.BestChild.BestChild.BestChild.BestChild.Tab, board.SIZE)
 }

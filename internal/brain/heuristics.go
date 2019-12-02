@@ -204,29 +204,32 @@ func getSequenceScore(counter int16, blocked int16, line *[]int16, i int16) int1
 			}
 		}
 	case 3:
-		if blocked == 1 {
-			tmpScore += SEQ3_BLOCKED1_SCORE
-		}
+
 		if blocked != 2 {
-			// Check 2 sequence of 1(or more) and 3 separated by empty space
-			// AFTER SEQ_3
+			isBroken4 := false
 			if i < int16(len(*line)-2) && (*line)[i] == 0 {
+				// Check 2 sequence of 1(or more) and 3 separated by empty space
+				// AFTER SEQ_3
 				if (*line)[i+1] == (*line)[i-1] {
 					tmpScore += SEQ4_BROKEN
+					isBroken4 = true
 				}
-			}
-			// Check 2 sequence of 1(or more) and 3 separated by empty space
-			// BEFORE SEQ_3
-			if i > 4 && (*line)[i-4] == 0 {
+			} else if i > 4 && (*line)[i-4] == 0 {
+				// Check 2 sequence of 1(or more) and 3 separated by empty space
+				// BEFORE SEQ_3
 				if (*line)[i-5] == (*line)[i-3] {
 					tmpScore += SEQ4_BROKEN
+					isBroken4 = true
 				}
+			}
+			if blocked == 1 && !isBroken4 {
+				tmpScore += SEQ3_BLOCKED1_SCORE
 			}
 		}
 	case 4:
 		if blocked == 0 {
 			tmpScore += SEQ4_FREE_SCORE
-		} else {
+		} else if blocked == 1 {
 			tmpScore += SEQ4_BLOCKED1_SCORE
 		}
 	}

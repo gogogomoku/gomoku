@@ -41,17 +41,21 @@ func initializeRootNode(playerId int16) *tr.Node {
 
 func getPossibleMoves(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
 	poss := []int16{}
-	possMap := map[int16]int16{}
 	for i := int16(0); i < (board.SIZE * board.SIZE); i++ {
 		if tab[i] == 0 {
 			if CheckValidMove(i, *tab, playerId) {
 				lines := CheckNextN(i, *tab, 1)
 				for _, line := range lines {
+					added := false
 					for _, piece := range line {
 						if piece != 0 {
-							possMap[i] = 1
+							poss = append(poss, i)
+							added = true
 							break
 						}
+					}
+					if added {
+						break
 					}
 				}
 
@@ -67,10 +71,6 @@ func getPossibleMoves(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
 				// }
 			}
 		}
-	}
-	// Avoid duplicates using map
-	for ind, _ := range possMap {
-		poss = append(poss, ind)
 	}
 	sort.Slice(poss, func(i int, j int) bool {
 		return poss[i] > poss[j]

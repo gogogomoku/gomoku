@@ -9,7 +9,7 @@
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
-                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                v-on:click="clicked ? null : clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
                 class="tileSuggested"
                 src="1.png"
@@ -19,7 +19,7 @@
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
-                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                v-on:click="clicked ? null : clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
                 class="tileSuggested"
                 src="2.png"
@@ -42,7 +42,7 @@
               <img
                 v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
-                v-on:click="clickTile(posX + (posY * size), currentPlayer)"
+                v-on:click="clicked ? null : clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
                 class="tile0"
                 src="0.png"
@@ -73,8 +73,18 @@ export default {
     "suggestedPosition",
     "suggestorOn",
     "tab",
-    "turn"
+    "turn",
   ],
+  data() {
+    return {
+      clicked: false,
+    }
+  },
+  watch: {
+    tab: function() {
+      this.clicked = false
+    }
+  },
   methods: {
     mouseOver: function(tileId, currentPlayer) {
       document.getElementById(tileId).src = currentPlayer + ".png";
@@ -90,6 +100,7 @@ export default {
     },
     clickTile: function(tileId, currentPlayer) {
       // eslint-disable-next-line
+      this.clicked = true
       console.log(
         "Make move: \nID: " + tileId + " currentPlayer" + currentPlayer
       );

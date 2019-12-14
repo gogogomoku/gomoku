@@ -5,9 +5,9 @@
         <div class="tile" v-for="(tile, posX) in line" :key="posX">
           <!-- {{posX + (posY * size)}} -->
           <div class="tileImage" v-if="posX + (posY * size) == suggestedPosition && suggestorOn">
-            <div v-if="currentPlayer === 1">
+            <div v-if="currentPlayer === 1 && currentPlayerAIStatus === 0">
               <img
-                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                v-on:mouseover="clicked ? null : mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
                 v-on:click="clicked ? null : clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
@@ -15,9 +15,9 @@
                 src="1.png"
               />
             </div>
-            <div v-else-if="currentPlayer === 2">
+            <div v-else-if="currentPlayer === 2 && currentPlayerAIStatus === 0">
               <img
-                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                v-on:mouseover="clicked ? null : mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOutSuggested(posX + (posY * size), currentPlayer)"
                 v-on:click="clicked ? null : clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"
@@ -40,7 +40,7 @@
           <div class="tileImage" v-else>
             <div class="tileAlpha" v-if="tile === 0">
               <img
-                v-on:mouseover="mouseOver(posX + (posY * size), currentPlayer)"
+                v-on:mouseover="clicked ? null : mouseOver(posX + (posY * size), currentPlayer)"
                 v-on:mouseleave="mouseOut(posX + (posY * size), tile)"
                 v-on:click="clicked ? null : clickTile(posX + (posY * size), currentPlayer)"
                 :id="posX + (posY * size)"

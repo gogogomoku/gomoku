@@ -2,6 +2,7 @@
   <div id="gameContainer">
     <Goban
       v-bind:currentPlayer="currentPlayer"
+      v-bind:currentPlayerAIStatus="playerInfo[`p${currentPlayer}`]"
       v-bind:gameStatus="gameStatus"
       v-bind:size="size"
       v-bind:suggestedPosition="suggestedPosition"

@@ -2,13 +2,13 @@
 
 ⚪️⚫️⚪️⚫️
 
-## Get it
+## Development
+
+### Get it
 
 ```console
 GO111MODULE=off go get -u github.com/gogogomoku/gomoku
 ```
-
-## Development environment
 
 ### Install Golang dependencies
 
@@ -24,6 +24,8 @@ go run cmd/gomoku/main.go -s
 ```
 
 ### Run UI
+
+You will need `node` (with `npm` and `npx`, included in recent node distributions).
 
 ```console
 cd ./ui
@@ -57,13 +59,10 @@ go tool pprof --pdf _FILE_ > file.pdf
 open file.pdf
 ```
 
-## Docker
+## Production
 
-Get a build up. You will need `docker` and `docker-compose`.
+Make a production-ready build. You will need `docker` and `docker-compose`.
 
-## Reminder
-
-```console
-docker-compose build --no-cache
-docker-compose up --force-recreate
+```shell
+[sudo] ./runit.sh
 ```

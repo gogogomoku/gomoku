@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gogogomoku/gomoku/internal/brain"
@@ -23,11 +24,14 @@ type StartGameParams struct {
 
 func StartServer() {
 	e := echo.New()
+	url := fmt.Sprintf("http://%s:%s", os.Getenv("APP_SERVER"), os.Getenv("VUE_APP_PORT"))
+	fmt.Println(url)
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
 			"http://localhost:8080",
 			"http://127.0.0.1:8080",
 			"http://192.168.1.19:8080",
+			url,
 		},
 		AllowHeaders: []string{
 			echo.HeaderOrigin,
@@ -48,7 +52,7 @@ func StartServer() {
 	e.POST("/restart", RestartGame)
 	e.GET("/move/:pos/id/:id", MakeMove)
 	e.Debug = true
-	e.Start(":4242")
+	e.Start(":4243")
 }
 
 func returnGameInfo(c echo.Context) error {

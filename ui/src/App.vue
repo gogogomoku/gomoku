@@ -41,7 +41,7 @@ import { cloneDeep, merge } from "lodash";
 const initialAppState = {
   currentPlayer: -1,
   gameStatus: NOT_STARTED,
-  http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4242",
+  http_endpoint: process.env.VUE_APP_SERVER_HTTP || "http://localhost:4243",
   size: 19,
   suggestedPosition: -1,
   suggestionTimer: 0,
@@ -155,7 +155,11 @@ export default {
       }
     },
     makeMove(tileId, currentPlayer) {
-      if (!this.showModal && this._data.gameStatus === RUNNING && this._data.winner === 0) {
+      if (
+        !this.showModal &&
+        this._data.gameStatus === RUNNING &&
+        this._data.winner === 0
+      ) {
         axios
           .get(
             this._data.http_endpoint +
@@ -175,11 +179,11 @@ export default {
             AiStatus1: this.playerById(1).AiStatus,
             AiStatus2: this.playerById(2).AiStatus
           })
-          .then(response => this.updateTab(response))
+          .then(response => this.updateTab(response));
       }
     },
     openRestartDialog() {
-      merge(this._data.postgameInfo, initialAppState.postgameInfo)
+      merge(this._data.postgameInfo, initialAppState.postgameInfo);
       this.showModal = true;
     },
     restartGame(selectedOptions = true) {
@@ -204,7 +208,8 @@ export default {
       switch (modalComponentName) {
         case "SettingsModal":
           this._data.showModal = false;
-          if (this.gameStatus === RUNNING || this.gameStatus === CONCLUDED) this.restartGame(true);
+          if (this.gameStatus === RUNNING || this.gameStatus === CONCLUDED)
+            this.restartGame(true);
           else if (this.gameStatus === NOT_STARTED) this.startGame(true);
           break;
         case "EndGameModal":

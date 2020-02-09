@@ -87,16 +87,16 @@ export default {
   ],
   methods: {
     mouseOver: function(tileId, currentPlayer) {
-      document.getElementById(tileId).src = currentPlayer + ".png";
+      document.getElementById(tileId).src = (currentPlayer < 0 ? 0 : currentPlayer) + ".png";
       document.getElementById(tileId).opacity = 0.5;
     },
     mouseOut: function(tileId, tile) {
-      document.getElementById(tileId).src = tile + ".png";
+      document.getElementById(tileId).src = (tile < 0 ? 0 : tile) + ".png";
       document.getElementById(tileId).style.opacity = null;
       document.getElementById(tileId).style.cursor = null;
     },
     mouseOutSuggested: function(tileId, tile) {
-      document.getElementById(tileId).src = tile + ".png";
+      document.getElementById(tileId).src = (tile < 0 ? 0 : tile) + ".png";
       document.getElementById(tileId).opacity = null;
     },
     mouseOverError: function(tileId) {

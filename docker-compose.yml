@@ -6,16 +6,18 @@ services:
     container_name: gomokuapp
     build: ./
     ports:
-      - "4242:4242"
-    environment: 
+      - "4243:4243"
+    env_file:
+      - gomoku-env.list
+    environment:
       - RUNSERVER=true
   ui:
     container_name: ui
-    build: ./ui/
-    environment:
-      - VUE_APP_SERVER_HTTP=http://localhost:4242
-    ports: 
+    build:
+      context: ./ui
+      args:
+        VUE_APP_SERVER_HTTP: ${VUE_APP_SERVER_HTTP}
+    ports:
       - "8080:8080"
-    depends_on: 
+    depends_on:
       - gomokuapp
-

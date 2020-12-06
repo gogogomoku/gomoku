@@ -66,7 +66,7 @@ func MinimaxRecursivePruning(node *tr.Node, depth int16, max bool, alpha int16, 
 		if node.Value >= WIN_SCORE {
 			node.WinMove = true
 		}
-		return node.Value - 2*node.Value/int16(totalDepth-depth)
+		return node.Value //- 2*node.Value/int16(totalDepth-depth)
 	}
 	if max {
 		node.Value = getMaxChild(node, depth, max, alpha, beta)

@@ -1,6 +1,8 @@
 package brain
 
 import (
+	// "fmt"
+	"sort"
 	"sync"
 
 	"github.com/gogogomoku/gomoku/internal/board"
@@ -42,22 +44,37 @@ func getPossibleMoves(tab *[board.TOT_SIZE]int16, playerId int16) []int16 {
 	for i := int16(0); i < (board.SIZE * board.SIZE); i++ {
 		if tab[i] == 0 {
 			if CheckValidMove(i, *tab, playerId) {
-				affectsTab := false
 				lines := CheckNextN(i, *tab, 1)
 				for _, line := range lines {
+					added := false
 					for _, piece := range line {
 						if piece != 0 {
-							affectsTab = true
+							poss = append(poss, i)
+							added = true
 							break
 						}
 					}
+					if added {
+						break
+					}
 				}
-				if affectsTab {
-					poss = append(poss, i)
-				}
+
+				// if (i > 0 && tab[i-1] != 0) ||
+				// 	(i > board.SIZE-1 && tab[i-board.SIZE] != 0) ||
+				// 	(i > board.SIZE && i%board.SIZE != 0 && tab[i-board.SIZE-1] != 0) ||
+				// 	(i > board.SIZE && i%board.SIZE != board.SIZE-1 && tab[i-board.SIZE+1] != 0) ||
+				// 	(i < board.TOT_SIZE-1 && tab[i+1] != 0) ||
+				// 	(i < board.TOT_SIZE-1-board.SIZE && tab[i+board.SIZE] != 0) ||
+				// 	(i < board.TOT_SIZE-1-board.SIZE && i%board.SIZE != board.SIZE-1 && tab[i+board.SIZE+1] != 0) ||
+				// 	(i < board.TOT_SIZE-1-board.SIZE && i%board.SIZE != 0 && tab[i+board.SIZE-1] != 0) {
+				// 	poss = append(poss, i)
+				// }
 			}
 		}
 	}
+	sort.Slice(poss, func(i int, j int) bool {
+		return poss[i] > poss[j]
+	})
 	return poss
 }
 
